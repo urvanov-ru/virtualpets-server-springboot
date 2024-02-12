@@ -1,9 +1,12 @@
 Urvanov's Pretty Virtual Pets
 =============================
 
+Spring Boot version.
+
 Это исходные коды игры про виртуальных питомцев. 
 Используются следующие технологии:
-Java + Spring Framework + Jpa + Hibernate + PostgreSQL + JUnit + dbunit.
+Java + Spring Framework + SpringBoot
+ + Jpa + Hibernate + PostgreSQL + JUnit + dbunit.
 
 virtualpets-server - сервлет сайта. 
 virtualpets-shared - Проект, содержащий общие коды сервера и клиента.
