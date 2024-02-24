@@ -4,11 +4,6 @@
 package ru.urvanov.virtualpets.server.test.config;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.sql.Driver;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -16,24 +11,11 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.ext.h2.H2DataTypeFactory;
-import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
-import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.util.fileloader.XlsDataFileLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
-import org.springframework.jdbc.datasource.embedded.DataSourceFactory;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 /**
  * @author fedya

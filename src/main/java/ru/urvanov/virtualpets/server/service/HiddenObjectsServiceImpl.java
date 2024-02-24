@@ -131,13 +131,13 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         Authentication authentication = (Authentication) securityContext
                 .getAuthentication();
         User user = (User) authentication.getPrincipal();
-        user = userDao.findById(user.getId());
+        user = userDao.findById(user.getId()).orElseThrow();
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
         
-        Pet pet = petDao.findById(selectedPet.getId());
+        Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
 
         HiddenObjectsGame foundGame = null;
         HiddenObjectsPlayer player = new HiddenObjectsPlayer();
@@ -235,7 +235,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                     .getRequestAttributes();
             SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                     ServletRequestAttributes.SCOPE_SESSION);
-            Pet pet = petDao.findById(selectedPet.getId());
+            Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
             HiddenObjectsPlayer player = foundGame.getPlayer(pet.getUser()
                     .getId());
             ru.urvanov.virtualpets.shared.domain.HiddenObjectsReward resultReward = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsReward();
@@ -419,7 +419,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                     if (game.getObjectsForSearchCount() == 0) {
                         Random random = new Random();
                         random.nextInt(MAX_OBJECTS_FOR_SEARCH);
-                        Room room = roomDao.findByPetId(player.getPetId());
+                        Room room = roomDao.findByPetId(player.getPetId()).orElseThrow();
                         Refrigerator refrigerator = room.getRefrigerator();
                         MachineWithDrinks machineWithDrinks = room
                                 .getMachineWithDrinks();
@@ -429,7 +429,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                                     .nextInt(refrigerator.getMaxFoodType() + 1)];
                         }
                         if (random.nextInt(100) < 10) {
-                            clothId = random.nextInt(clothDao.getCount()) + 1;
+                            clothId = random.nextInt((int)clothDao.count()) + 1;
                         }
                         if (random.nextInt(100) < 10) {
                             int buildingMaterialRandom = random.nextInt(100);
@@ -468,16 +468,16 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 player.setReward(reward);
 
                 PetFood food = petFoodDao.findByPetIdAndFoodType(
-                        player.getPetId(), foodType);
+                        player.getPetId(), foodType).orElseThrow();
                 if (food == null) {
                     food = new PetFood();
-                    food.setPet(petDao.getReference(player.getPetId()));
-                    food.setFood(foodDao.findByCode(foodType));
+                    food.setPet(petDao.getReferenceById(player.getPetId()));
+                    food.setFood(foodDao.findByCode(foodType).orElseThrow());
                     food.setFoodCount(0);
                 }
                 food.setFoodCount(food.getFoodCount() + 1);
                 petFoodDao.save(food);
-                Pet fullPet = petDao.findFullById(player.getPetId());
+                Pet fullPet = petDao.findFullById(player.getPetId()).orElseThrow();
                 fullPet.setMood(100);
                 Set<Cloth> cloths = fullPet.getCloths();
                 boolean clothFound = false;
@@ -487,14 +487,14 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                     }
                 }
                 if ((!clothFound) && (clothId != null)) {
-                    cloths.add(clothDao.findById(clothId));
+                    cloths.add(clothDao.findById(clothId).orElseThrow());
                     reward.setClothId(clothId);
                 }
                 if (buildingMaterialType != null) {
                     Map<BuildingMaterial, PetBuildingMaterial> mapBuildingMaterials = fullPet
                             .getBuildingMaterials();
                     BuildingMaterial buildingMaterial = buildingMaterialDao
-                            .findByCode(buildingMaterialType);
+                            .findByCode(buildingMaterialType).orElseThrow();
                     PetBuildingMaterial petBuildingMaterial = mapBuildingMaterials
                             .get(buildingMaterial);
                     if (petBuildingMaterial == null) {
@@ -512,7 +512,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 }
                 if (drinkType != null) {
                     Map<Drink, PetDrink> mapDrinks = fullPet.getDrinks();
-                    Drink drink = drinkDao.findByCode(drinkType);
+                    Drink drink = drinkDao.findByDrinkType(drinkType).orElseThrow();
                     PetDrink petDrink = mapDrinks.get(drink);
                     if (petDrink == null) {
                         petDrink = new PetDrink();
@@ -567,7 +567,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 levelInfo.setLevel(fullPet.getLevel().getId());
                 levelInfo.setMinExperience(fullPet.getLevel().getExperience());
                 Level nextLevel = levelDao.findById(fullPet.getLevel()
-                        .getId() + 1);
+                        .getId() + 1).orElseThrow();
                 if (nextLevel != null) {
                     levelInfo.setMaxExperience(nextLevel.getExperience());
                 } else {
@@ -576,8 +576,8 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 reward.setExperience(experienceReward);
                 reward.setLevelInfo(levelInfo);
 
-                ru.urvanov.virtualpets.server.dao.domain.AchievementCode[] achievements = petService
-                        .calculateAchievements(fullPet)
+                ru.urvanov.virtualpets.server.dao.domain.AchievementCode[] achievements
+                        = petService.calculateAchievements(fullPet)
                         .toArray(
                                 new ru.urvanov.virtualpets.server.dao.domain.AchievementCode[0]);
 

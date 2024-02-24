@@ -3,10 +3,9 @@
  */
 package ru.urvanov.virtualpets.server.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 //import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         User user = (User)authentication.getPrincipal();
-        user = userDao.findById(user.getId());
+        user = userDao.findById(user.getId()).orElseThrow();
         
 //        byte[] b = new byte[256];
 //        Random r = new Random();
@@ -90,15 +89,15 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     @Override
     public RefreshUsersOnlineResult getUsersOnline(
             RefreshUsersOnlineArg argument) {
-        List<User> users = userDao.findOnline();
-        UserInfo[] userInfos = new UserInfo[users.size()];
-        int n = 0;
-        for (User u : users) {
-            userInfos[n] = new UserInfo();
-            userInfos[n].setId(u.getId());
-            userInfos[n].setName(u.getName());
-            n++;
-        }
+        Iterable<User> users = userDao.findOnline();
+        UserInfo[] userInfos = StreamSupport.stream(users.spliterator(), false)
+                .map(u -> {
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.setId(u.getId());
+                    userInfo.setName(u.getName());
+                    return userInfo;
+                }).toArray(UserInfo[]::new);
+        
         RefreshUsersOnlineResult result = new RefreshUsersOnlineResult();
         result.setSuccess(true);
         result.setUsers(userInfos);
@@ -109,7 +108,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     @Transactional
     public UserInformation getUserInformation(UserInformationArg argument) {
         Integer userId = argument.getUserId();
-        User user = userDao.findById(userId);
+        User user = userDao.findById(userId).orElseThrow();
         UserInformation result = new UserInformation();
         result.setId(userId);
         result.setName(user.getName());
@@ -130,7 +129,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         User user = (User)authentication.getPrincipal();
-        user = userDao.findById(user.getId());
+        user = userDao.findById(user.getId()).orElseThrow();
         user.setUnid(null);
         userDao.save(user);
     }
@@ -167,7 +166,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
         User user = (User) auth.getPrincipal();
         Integer id = user.getId();
         if (id.equals(arg.getId())) {
-            user = userDao.findById(id);
+            user = userDao.findById(id).orElseThrow();
             user.setName(arg.getName());
             user.setSex(conversionService.convert(arg.getSex(), ru.urvanov.virtualpets.server.dao.domain.Sex.class));
             user.setBirthdate(arg.getBirthdate());
@@ -218,12 +217,12 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     }
 
     @Override
-    public List<User> findLastRegisteredUsers(int start, int limit) {
+    public Iterable<User> findLastRegisteredUsers(int start, int limit) {
         return userDao.findLastRegisteredUsers(start, limit);
     }
 
     @Override
-    public User findByRecoverPasswordKey(String recoverPasswordKey) {
+    public Optional<User> findByRecoverPasswordKey(String recoverPasswordKey) {
         return userDao.findByRecoverPasswordKey(recoverPasswordKey);
     }
 
@@ -231,7 +230,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        return userDao.findByLogin(username);
+        return userDao.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
 }

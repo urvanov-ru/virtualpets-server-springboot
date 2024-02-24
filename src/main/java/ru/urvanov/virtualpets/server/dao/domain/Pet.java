@@ -5,7 +5,6 @@ package ru.urvanov.virtualpets.server.dao.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,14 +21,12 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKey;
-import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
 import jakarta.validation.constraints.Size;
 
 /**

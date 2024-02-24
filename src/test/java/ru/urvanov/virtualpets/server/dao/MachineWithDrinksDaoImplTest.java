@@ -3,14 +3,13 @@
  */
 package ru.urvanov.virtualpets.server.dao;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import ru.urvanov.virtualpets.server.dao.MachineWithDrinksDao;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
 import ru.urvanov.virtualpets.server.test.annotation.DataSets;
 
@@ -26,29 +25,29 @@ public class MachineWithDrinksDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     public void testFind1() {
-        MachineWithDrinks drink = machineWithDrinksDao.findById(1);
-        assertNotNull(drink);
+        Optional<MachineWithDrinks> drink = machineWithDrinksDao.findById(1);
+        assertThat(drink).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     public void testFind2() {
-        MachineWithDrinks drink = machineWithDrinksDao.findFullById(1);
-        assertNotNull(drink);
-        assertNotNull(drink.getMachineWithDrinksCost());
+        Optional<MachineWithDrinks> drink = machineWithDrinksDao.findFullById(1);
+        
+        assertThat(drink).map(MachineWithDrinks::getMachineWithDrinksCost).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     public void testFind3() {
-        MachineWithDrinks drink = machineWithDrinksDao.findById(-1);
-        assertNull(drink);
+        Optional<MachineWithDrinks> drink = machineWithDrinksDao.findById(-1);
+        assertThat(drink).isEmpty();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     public void testFind4() {
-        MachineWithDrinks drink = machineWithDrinksDao.findFullById(-1);
-        assertNull(drink);
+        Optional<MachineWithDrinks> drink = machineWithDrinksDao.findFullById(-1);
+        assertThat(drink).isEmpty();
     }
 }

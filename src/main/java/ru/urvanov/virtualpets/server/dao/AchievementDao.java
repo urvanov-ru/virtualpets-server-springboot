@@ -1,12 +1,12 @@
 package ru.urvanov.virtualpets.server.dao;
 
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.dao.domain.Achievement;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
 
-public interface AchievementDao {
-    public Achievement findById(Integer id);
-    public Achievement findByCode(AchievementCode code);
-    public List<Achievement> findAll();
+@Transactional(readOnly = true)
+public interface AchievementDao extends CrudRepository<Achievement, Integer> {
+    Achievement findByCode(AchievementCode code);
 }

@@ -37,7 +37,7 @@ public interface PetService {
 
     public List<AchievementCode> calculateAchievements(Pet pet);
 
-    List<Pet> findLastCreatedPets(int start, int limit);
+    Iterable<Pet> findLastCreatedPets(int start, int limit);
 
     void addAchievementIfNot(Pet pet, Achievement achievement);
 

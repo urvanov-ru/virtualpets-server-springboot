@@ -1,11 +1,8 @@
 package ru.urvanov.virtualpets.server.dao;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import ru.urvanov.virtualpets.server.dao.domain.Level;
 
-public interface LevelDao {
-    Level findById(Integer id);
-    
-    List<Level> findAll();
+public interface LevelDao extends JpaRepository<Level, Integer> {
 }

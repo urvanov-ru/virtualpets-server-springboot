@@ -3,10 +3,8 @@
  */
 package ru.urvanov.virtualpets.server.controller.site;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +46,15 @@ public class RecoverPasswordController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public String changePassword(RecoverPassword recoverPassword, BindingResult bindingResult, Model model, Locale locale) {
-        User user = userService.findByRecoverPasswordKey(recoverPassword
+        Optional<User> user = userService.findByRecoverPasswordKey(recoverPassword
                 .getRecoverPasswordKey());
-        if (user != null) {
+        String result;
+        
+        if (user.isPresent()) {
+            return "passwordChanged";
+        } else {
+            return "passwordChangeFailed";
+        }
 //            MessageDigest md5;
 //            try {
 //                md5 = MessageDigest.getInstance("MD5");
@@ -70,10 +74,7 @@ public class RecoverPasswordController {
 //            user.setRecoverPasswordKey(null);
 //            userService.save(user);
             // TODO: implement password change
-            return "passwordChanged";
-        } else {
-            return "passwordChangeFailed";
-        }
+
     }
     
     @RequestMapping(value = "/passwordChanged", method=RequestMethod.GET)

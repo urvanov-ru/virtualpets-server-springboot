@@ -1,16 +1,28 @@
 package ru.urvanov.virtualpets.server.dao;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 
-public interface PetJournalEntryDao {
-    List<PetJournalEntry> findLastByPetId(Integer petId, Integer count);
+@Transactional(readOnly = true)
+public interface PetJournalEntryDao extends CrudRepository<PetJournalEntry, Integer>{
+    
+    List<PetJournalEntry> findAllByPetId(Integer petId, Pageable pageable);
+    
+    default Iterable<PetJournalEntry> findLastByPetId(Integer petId, Integer count) {
+        return this.findAllByPetId(petId, PageRequest.of(0, count, Sort.by("createdAt").descending()));
+    }
 
-    PetJournalEntry findByPetIdAndJournalEntryCode(Integer petId,
+    Optional<PetJournalEntry> findByPetIdAndJournalEntryCode(Integer petId,
             JournalEntryType code);
 
-    void save(PetJournalEntry petJournalEntry);
 
 }

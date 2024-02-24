@@ -4,7 +4,7 @@
 package ru.urvanov.virtualpets.server.service;
 
 import java.util.Date;
-import java.util.List;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -51,13 +51,13 @@ public class ChatServiceImpl implements ChatService {
         User user = (User) authentication.getPrincipal();
         Integer userId = user.getId();
         
-        user = userDao.findById(userId);
+        user = userDao.findById(userId).orElseThrow();
         user.setActiveDate(new Date());
         userDao.save(user);
         
         
         Integer id = arg.getLastChatMessageId();
-        List<Chat> messages;
+        Iterable<Chat> messages;
         if (id == null) {
             messages = chatDao.findLast(20, userId);
         } else {
@@ -67,26 +67,28 @@ public class ChatServiceImpl implements ChatService {
         RefreshChatResult result = new RefreshChatResult();
         result.setSuccess(true);
         
-        ChatMessage[] chatMessages = new ChatMessage[messages.size()];
-        int n = 0;
-        for(Chat c: messages) {
-            chatMessages[n] = new ChatMessage();
+        
+        ChatMessage[] chatMessages = StreamSupport
+                .stream(messages.spliterator(), false)
+                .map(c -> {
+            ChatMessage chatMessage = new ChatMessage();
             User addressee = c.getAddressee();
             if (addressee != null) {
-                chatMessages[n].setAddresseeId(addressee.getId());
-                chatMessages[n].setAddresseeName(addressee.getName());
+                chatMessage.setAddresseeId(addressee.getId());
+                chatMessage.setAddresseeName(addressee.getName());
             }
             User sender = c.getSender();
             if (sender != null) {
-                chatMessages[n].setSenderId(sender.getId());
-                chatMessages[n].setSenderName(sender.getName());
+                chatMessage.setSenderId(sender.getId());
+                chatMessage.setSenderName(sender.getName());
             }
-            chatMessages[n].setMessage(c.getMessage());
-            chatMessages[n].setSendTime(c.getSendTime());
-            chatMessages[n].setId(c.getId());
-            n++;
-        }
+            chatMessage.setMessage(c.getMessage());
+            chatMessage.setSendTime(c.getSendTime());
+            chatMessage.setId(c.getId());
+            return chatMessage;
+        }).toArray(ChatMessage[]::new);
         
+
         if (chatMessages.length > 0) {
             result.setLastChatMessageId(chatMessages[chatMessages.length-1].getId());
         } else {
@@ -108,10 +110,10 @@ public class ChatServiceImpl implements ChatService {
         
         Chat chat = new Chat();
         if (arg.getAddresseeId() != null) {
-            chat.setAddressee(userDao.findById(arg.getAddresseeId()));
+            chat.setAddressee(userDao.getReferenceById(arg.getAddresseeId()));
         }
         chat.setMessage(arg.getMessage());
-        chat.setSender(userDao.findById(user.getId()));
+        chat.setSender(userDao.getReferenceById(user.getId()));
         chat.setSendTime(new Date());
         chatDao.save(chat);
         

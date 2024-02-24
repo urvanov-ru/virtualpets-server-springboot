@@ -3,14 +3,18 @@
  */
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.Optional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 
 /**
  * @author fedya
  *
  */
-public interface RefrigeratorDao {
-    Refrigerator findById(Integer id);
-
-    Refrigerator findFullById(Integer id);
+@Transactional(readOnly = true)
+public interface RefrigeratorDao extends CrudRepository<Refrigerator, Integer> {
+    Optional<Refrigerator> findFullById(Integer id);
 }

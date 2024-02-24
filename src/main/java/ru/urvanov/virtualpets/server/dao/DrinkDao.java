@@ -1,10 +1,15 @@
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.Optional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import ru.urvanov.virtualpets.server.dao.domain.Drink;
 import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
+import ru.urvanov.virtualpets.server.dao.domain.Room;
 
-public interface DrinkDao {
-    public Drink findById(Integer id);
-    public Drink getReference(Integer id);
-    public Drink findByCode(DrinkType code);
+@Transactional(readOnly = true)
+public interface DrinkDao extends CrudRepository<Drink, Integer> {
+    Optional<Drink> findByDrinkType(DrinkType code);
 }

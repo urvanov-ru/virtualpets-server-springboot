@@ -5,13 +5,13 @@ package ru.urvanov.virtualpets.server.controller.site;
 
 import java.util.Locale;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author fedya

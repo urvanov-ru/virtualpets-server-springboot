@@ -3,13 +3,18 @@
  */
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.Optional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 
 /**
  * @author fedya
  *
  */
-public interface BookcaseDao {
-    Bookcase findById(Integer id);
-    Bookcase findFullById(Integer id);
+@Transactional(readOnly = true)
+public interface BookcaseDao extends CrudRepository<Bookcase, Integer> {
+    Optional<Bookcase> findFullById(Integer id);
 }

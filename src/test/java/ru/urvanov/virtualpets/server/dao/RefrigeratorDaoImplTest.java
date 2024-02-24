@@ -3,14 +3,13 @@
  */
 package ru.urvanov.virtualpets.server.dao;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import ru.urvanov.virtualpets.server.dao.RefrigeratorDao;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.test.annotation.DataSets;
 
@@ -26,29 +25,28 @@ public class RefrigeratorDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/RefrigeratorServiceImplTest.xls")
     @Test
     public void testFind1() {
-        Refrigerator refrigerator = refrigeratorDao.findById(1);
-        assertNotNull(refrigerator);
+        Optional<Refrigerator> refrigerator = refrigeratorDao.findById(1);
+        assertThat(refrigerator).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/RefrigeratorServiceImplTest.xls")
     @Test
     public void testFind2() {
-        Refrigerator refrigerator = refrigeratorDao.findFullById(2);
-        assertNotNull(refrigerator);
-        assertNotNull(refrigerator.getRefrigeratorCost());
+        Optional<Refrigerator> refrigerator = refrigeratorDao.findFullById(2);
+        assertThat(refrigerator).map(Refrigerator::getRefrigeratorCost).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/RefrigeratorServiceImplTest.xls")
     @Test
     public void testFind3() {
-        Refrigerator refrigerator = refrigeratorDao.findById(-1);
-        assertNull(refrigerator);
+        Optional<Refrigerator> refrigerator = refrigeratorDao.findById(-1);
+        assertThat(refrigerator).isEmpty();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/RefrigeratorServiceImplTest.xls")
     @Test
     public void testFind4() {
-        Refrigerator refrigerator = refrigeratorDao.findFullById(-1);
-        assertNull(refrigerator);
+        Optional<Refrigerator> refrigerator = refrigeratorDao.findFullById(-1);
+        assertThat(refrigerator).isEmpty();
     }
 }

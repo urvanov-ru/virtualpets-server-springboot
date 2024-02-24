@@ -3,24 +3,60 @@
  */
 package ru.urvanov.virtualpets.server.dao;
 
-import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Window;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.MapJoin;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
+import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
+import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry_;
+import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 
 /**
  * @author fedya
  *
  */
-public interface PetDao {
+@Transactional(readOnly = true)
+public interface PetDao
+        extends JpaRepository<Pet, Integer>, JpaSpecificationExecutor<Pet> {
+
+    Optional<Pet> findFullById(Integer id);
+
+    Iterable<Pet> findByUserId(Integer userId);
     
-    public Pet findById(Integer id);
-    public Pet findFullById(Integer id);
-    public void save(Pet pet);
-    public void delete(Integer id);
+    long countByUserId(Integer userId);
     
-    public List<Pet> findByUserId(Integer userId);
-    public Pet getReference(Integer id);
-    public void updatePetsTask();
-    public Long getPetNewJournalEntriesCount(Integer petId);
-    public List<Pet> findLastCreatedPets(int start, int limit);
+    default long getPetNewJournalEntriesCount(Integer petId) {
+        return this.count(PetDao.getPetNewJournalEntriesSpecification(petId));
+    }
+    
+    private static Specification<Pet> getPetNewJournalEntriesSpecification(Integer petId) {
+        return (rootPet,
+                    criteriaQuery,
+                    criteriaBuilder) -> {
+                MapJoin<Pet, JournalEntry, PetJournalEntry> joinPetJournalEntries = rootPet
+                        .join(Pet_.journalEntries, JoinType.LEFT);
+                return criteriaBuilder.and(
+                        criteriaBuilder
+                                .and(criteriaBuilder.equal(
+                                        joinPetJournalEntries
+                                                .get(PetJournalEntry_.readed),
+                                        false)),
+                        criteriaBuilder.equal(rootPet.get(Pet_.id), petId));
+                    };
+    }
+
+    default Iterable<Pet> findLastCreatedPets(int page, int pageSize) {
+        return this.findAll(PageRequest.of(page, pageSize, Sort.by("createdDate").descending()));
+    }
 }

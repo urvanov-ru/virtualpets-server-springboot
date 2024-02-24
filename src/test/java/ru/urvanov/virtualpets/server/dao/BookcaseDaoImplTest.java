@@ -4,12 +4,12 @@
 package ru.urvanov.virtualpets.server.dao;
 
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 import ru.urvanov.virtualpets.server.test.annotation.DataSets;
@@ -26,29 +26,29 @@ public class BookcaseDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     void testFind1() {
-        Bookcase bookcase = bookcaseDao.findById(1);
-        assertNotNull(bookcase);
+        Optional<Bookcase> bookcase = bookcaseDao.findById(1);
+        assertThat(bookcase).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     void testFind2() {
-        Bookcase bookcase = bookcaseDao.findFullById(1);
-        assertNotNull(bookcase);
-        assertNotNull(bookcase.getBookcaseCost());
+        Optional<Bookcase> bookcase = bookcaseDao.findFullById(1);
+        assertThat(bookcase).isPresent();
+        assertThat(bookcase).map(Bookcase::getBookcaseCost).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     void testFind3() {
-        Bookcase bookcase = bookcaseDao.findById(-1);
-        assertNull(bookcase);
+        Optional<Bookcase> bookcase = bookcaseDao.findById(-1);
+        assertThat(bookcase).isEmpty();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")
     @Test
     void testFind4() {
-        Bookcase bookcase = bookcaseDao.findFullById(-1);
-        assertNull(bookcase);
+        Optional<Bookcase> bookcase = bookcaseDao.findFullById(-1);
+        assertThat(bookcase).isEmpty();
     }
 }

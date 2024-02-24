@@ -51,8 +51,8 @@ public class StatisticsController {
             @Valid @ModelAttribute StatisticsParams statisticsParams,
             BindingResult statisticsParamsBindingResult) {
 
-        List<User> users = new ArrayList<User>();
-        List<Pet> pets = new ArrayList<Pet>();
+        Iterable<User> users = new ArrayList<User>();
+        Iterable<Pet> pets = new ArrayList<Pet>();
         if (!statisticsParamsBindingResult.hasErrors()) {
             switch (statisticsParams.getType()) {
             case LAST_REGISTERED_USERS:

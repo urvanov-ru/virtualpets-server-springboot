@@ -10,9 +10,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
-@Entity(name = "pet_food")
+@Entity
+@Table(name = "pet_food")
 public class PetFood implements Serializable {
 
     /**

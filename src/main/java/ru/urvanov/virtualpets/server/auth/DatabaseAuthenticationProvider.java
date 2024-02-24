@@ -12,8 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import ru.urvanov.virtualpets.server.dao.domain.User;
-
 /**
  * @author fedya
  * 

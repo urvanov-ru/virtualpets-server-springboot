@@ -3,7 +3,6 @@
  */
 package ru.urvanov.virtualpets.server.service;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -17,9 +16,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -42,7 +38,6 @@ import ru.urvanov.virtualpets.shared.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.IncompatibleVersionException;
 import ru.urvanov.virtualpets.shared.exception.NameIsBusyException;
-import ru.urvanov.virtualpets.shared.exception.SendMailException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 import ru.urvanov.virtualpets.shared.service.PublicService;
 
@@ -94,7 +89,7 @@ public class PublicServiceImpl implements PublicService {
                 throw new IncompatibleVersionException("", version,
                         clientVersion);
             }
-            User user = userDao.findByLogin(arg.getLogin());
+            User user = userDao.findByLogin(arg.getLogin()).orElseThrow();
             if (user != null) {
                 throw new NameIsBusyException();
             }
@@ -141,7 +136,7 @@ public class PublicServiceImpl implements PublicService {
         String key = sb.toString();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
-        User user = userDao.findByLoginAndEmail(login, email);
+        User user = userDao.findByLoginAndEmail(login, email).orElseThrow();
         user.setRecoverPasswordKey(key);
         user.setRecoverPasswordValid(calendar.getTime());
         userDao.save(user);
@@ -203,7 +198,7 @@ public class PublicServiceImpl implements PublicService {
         }
         SecurityContext securityContext = SecurityContextHolder.getContext();
         String unid = arg.getUnid();
-        User user = userDao.findByUnid(unid);
+        User user = userDao.findByUnid(unid).orElseThrow();
         if (user != null) {
 
             Set<GrantedAuthority> granted = new HashSet<GrantedAuthority>();

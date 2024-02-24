@@ -13,7 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,14 +21,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
 import jakarta.validation.constraints.Size;
 
 
@@ -39,11 +36,11 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name = "user")
-@NamedQueries({@NamedQuery(name = "findByLogin", query = "from User u where u.login=:login"),
-    @NamedQuery(name="list", query="from User"),
-    @NamedQuery(name="findByLoginAndPassword", query="from User u where u.login=:login and u.password=:password"),
-    @NamedQuery(name="findOnline", query="from User u where u.activeDate > :date"),
-    @NamedQuery(name="findByLoginAndEmail", query="from User u where u.login=:login and u.email=:email")})
+@NamedQueries({@NamedQuery(name = "User.findByLogin", query = "from User u where u.login=:login"),
+    @NamedQuery(name="User.list", query="from User"),
+    @NamedQuery(name="User.findByLoginAndPassword", query="from User u where u.login=:login and u.password=:password"),
+    @NamedQuery(name="User.findOnline", query="from User u where u.activeDate > :date"),
+    @NamedQuery(name="User.findByLoginAndEmail", query="from User u where u.login=:login and u.email=:email")})
 public class User implements UserDetails, Serializable{
 
     /**

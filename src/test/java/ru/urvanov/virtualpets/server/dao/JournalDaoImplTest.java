@@ -4,13 +4,14 @@
 package ru.urvanov.virtualpets.server.dao;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import ru.urvanov.virtualpets.server.dao.JournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
 
@@ -26,22 +27,22 @@ public class JournalDaoImplTest extends AbstractDaoImplTest {
 
     @Test
     public void testFind1() {
-        JournalEntry journalEntry = journalEntryDao.findById(1);
-        assertNotNull(journalEntry);
+        Optional<JournalEntry> journalEntry = journalEntryDao.findById(1);
+        assertThat(journalEntry).isPresent();
     }
     
     
     @Test
     public void testFind2() {
-        JournalEntry journalEntry = journalEntryDao.findByCode(JournalEntryType.WELCOME);
-        assertNotNull(journalEntry);
+        Optional<JournalEntry> journalEntry = journalEntryDao.findByCode(JournalEntryType.WELCOME);
+        assertThat(journalEntry).isPresent();
     }
     
     
     @Test
     public void testFind3() {
-        JournalEntry journalEntry = journalEntryDao.getReference(1);
-        assertNotNull(journalEntry);;
+        JournalEntry journalEntry = journalEntryDao.getReferenceById(1);
+        assertNotNull(journalEntry);
     }
     
 

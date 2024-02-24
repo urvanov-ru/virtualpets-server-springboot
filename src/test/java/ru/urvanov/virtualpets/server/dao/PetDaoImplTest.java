@@ -8,18 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.urvanov.virtualpets.server.dao.FoodDao;
-import ru.urvanov.virtualpets.server.dao.JournalEntryDao;
-import ru.urvanov.virtualpets.server.dao.LevelDao;
-import ru.urvanov.virtualpets.server.dao.PetDao;
-import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.Food;
 import ru.urvanov.virtualpets.server.dao.domain.FoodType;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
@@ -54,33 +48,32 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testSave() {
-        List<Pet> pets = petDao.findByUserId(1);
-        int lastSize = pets.size();
+        long lastSize =  petDao.countByUserId(1);
         Pet pet = new Pet();
         pet.setName("test4y84hg4");
         pet.setCreatedDate(new Date());
         pet.setLoginDate(new Date());
         pet.setPetType(PetType.CAT);
-        pet.setUser(userDao.findByLogin("Clarence"));
-        pet.setLevel(levelDao.findById(1));
+        pet.setUser(userDao.findByLogin("Clarence").orElseThrow());
+        pet.setLevel(levelDao.getReferenceById(1));
         petDao.save(pet);
-        int newSize = petDao.findByUserId(1).size();
+        long newSize = petDao.countByUserId(1);
         assertEquals(lastSize + 1, newSize);
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testGetNewJournalEntriesCount() {
-        Pet pet = petDao.findById(1);
-        Long newJournalEntriesCount = petDao.getPetNewJournalEntriesCount(pet.getId());
+        Optional<Pet> pet = petDao.findById(1);
+        Long newJournalEntriesCount = petDao.getPetNewJournalEntriesCount(pet.map(Pet::getId).orElseThrow());
         assertEquals(Long.valueOf(0L), newJournalEntriesCount);
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testAddJournalEntry() {
-        Pet pet = petDao.findById(1);
-        JournalEntry journalEntry = journalEntryDao.findByCode(JournalEntryType.EAT_SOMETHING);
+        Pet pet = petDao.findById(1).orElseThrow();
+        JournalEntry journalEntry = journalEntryDao.findByCode(JournalEntryType.EAT_SOMETHING).orElseThrow();
         PetJournalEntry petJournalEntry = new PetJournalEntry();
         petJournalEntry.setJournalEntry(journalEntry);
         petJournalEntry.setReaded(true);
@@ -89,7 +82,7 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
         //petJournalEntry.setPet(pet);
         petDao.save(pet);
         
-        pet = petDao.findFullById(1);
+        pet = petDao.findFullById(1).orElseThrow();
         assertTrue(pet.getJournalEntries().get(journalEntry).getReaded());
     }
     
@@ -98,8 +91,8 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
     @Test
     @Transactional
     public void testAddFood() {
-        Pet pet = petDao.findById(1);
-        Food food = foodDao.findByCode(FoodType.CARROT);
+        Pet pet = petDao.findById(1).orElseThrow();
+        Food food = foodDao.findByCode(FoodType.CARROT).orElseThrow();
         PetFood petFood = new PetFood();
         petFood.setPet(pet);
         petFood.setFood(food);
@@ -107,7 +100,7 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
         pet.getFoods().put(food,  petFood);
         petDao.save(pet);
         
-        pet = petDao.findFullById(1);
+        pet = petDao.findFullById(1).orElseThrow();
         assertEquals(10, pet.getFoods().get(food).getFoodCount());
     }
 

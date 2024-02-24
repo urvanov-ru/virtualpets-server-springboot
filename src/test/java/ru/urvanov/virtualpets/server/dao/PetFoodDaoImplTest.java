@@ -4,19 +4,17 @@
 package ru.urvanov.virtualpets.server.dao;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import ru.urvanov.virtualpets.server.dao.FoodDao;
-import ru.urvanov.virtualpets.server.dao.PetDao;
-import ru.urvanov.virtualpets.server.dao.PetFoodDao;
 import ru.urvanov.virtualpets.server.dao.domain.Food;
 import ru.urvanov.virtualpets.server.dao.domain.FoodType;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
@@ -41,23 +39,23 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPetId() {
-        List<PetFood> foods = petFoodDao.findByPetId(1);
-        assertEquals(foods.size(), 4);
+        Iterable<PetFood> foods = petFoodDao.findByPetId(1);
+        assertEquals(IterableUtils.size(foods), 4);
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPet() {
-        Pet pet = petDao.findById(1);
+        Pet pet = petDao.findById(1).orElseThrow();
         assertNotNull(pet);
-        List<PetFood> foods = petFoodDao.findByPet(pet);
-        assertEquals(foods.size(), 4);
+        Iterable<PetFood> foods = petFoodDao.findByPet(pet);
+        assertEquals(IterableUtils.size(foods), 4);
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindById() {
-        PetFood food = petFoodDao.findById(10);
+        PetFood food = petFoodDao.findById(10).orElseThrow();
         assertNotNull(food);
         assertEquals(food.getId(), Integer.valueOf(10));
     }
@@ -65,9 +63,9 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testSave() {
-        Food foodCarrot = foodDao.findByCode(FoodType.CARROT);
+        Food foodCarrot = foodDao.findByCode(FoodType.CARROT).orElseThrow();
         PetFood petFood = new PetFood();
-        Pet pet = petDao.getReference(1);
+        Pet pet = petDao.getReferenceById(1);
         petFood.setFood(foodCarrot);
         petFood.setFoodCount(100);
         petFood.setPet(pet);
@@ -78,14 +76,14 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPetIdAndFoodType() {
-        PetFood food = petFoodDao.findByPetIdAndFoodType(1, FoodType.DRY_FOOD);
-        assertNotNull(food);
+        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(1, FoodType.DRY_FOOD);
+        assertThat(food).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPetIdAndFoodType2() {
-        PetFood food = petFoodDao.findByPetIdAndFoodType(13463456, FoodType.CHOCOLATE);
-        assertNull(food);
+        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(13463456, FoodType.CHOCOLATE);
+        assertThat(food).isEmpty();
     }
 }

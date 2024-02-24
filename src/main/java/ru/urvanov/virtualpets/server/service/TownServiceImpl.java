@@ -55,12 +55,12 @@ public class TownServiceImpl implements ru.urvanov.virtualpets.shared.service.To
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId());
+        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
 
         Map<JournalEntry, PetJournalEntry> mapJournalEntries = pet
                 .getJournalEntries();
         JournalEntry playHiddenObjectGames = journalEntryDao
-                .findByCode(JournalEntryType.PLAY_HIDDEN_OBJECT_GAMES);
+                .findByCode(JournalEntryType.PLAY_HIDDEN_OBJECT_GAMES).orElseThrow();
         if (!mapJournalEntries.containsKey(playHiddenObjectGames)) {
             PetJournalEntry petJournalEntry = new PetJournalEntry();
             petJournalEntry.setCreatedAt(new Date());
@@ -73,7 +73,7 @@ public class TownServiceImpl implements ru.urvanov.virtualpets.shared.service.To
                 .findByCode(AchievementCode.LEAVE_ROOM);
         petService.addAchievementIfNot(pet, leaveTownAchievement);
         
-        petService.addExperience(petDao.findFullById(pet.getId()), 1);
+        petService.addExperience(petDao.findFullById(pet.getId()).orElseThrow(), 1);
         
         GetTownInfoResult result = new GetTownInfoResult();
 
@@ -82,7 +82,7 @@ public class TownServiceImpl implements ru.urvanov.virtualpets.shared.service.To
         levelInfo.setLevel(pet.getLevel().getId());
         levelInfo.setExperience(pet.getExperience());
         Level nextLevelLeague = levelDao
-                .findById(pet.getLevel().getId() + 1);
+                .findById(pet.getLevel().getId() + 1).orElseThrow();
         levelInfo.setMaxExperience(nextLevelLeague == null ? Integer.MAX_VALUE
                 : nextLevelLeague.getExperience());
         levelInfo.setMinExperience(pet.getLevel().getExperience());
