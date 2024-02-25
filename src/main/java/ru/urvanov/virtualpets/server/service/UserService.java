@@ -1,6 +1,5 @@
 package ru.urvanov.virtualpets.server.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import ru.urvanov.virtualpets.server.dao.domain.User;

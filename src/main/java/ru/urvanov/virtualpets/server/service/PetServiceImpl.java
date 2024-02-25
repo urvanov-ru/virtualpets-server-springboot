@@ -543,7 +543,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         DrinkType drinkType =  conversionService.convert(drinkArg.getDrinkType(), DrinkType.class);
         Map<Drink, PetDrink> drinks = pet.getDrinks();
-        PetDrink petDrink = drinks.get(drinkDao.findByDrinkType(drinkType));
+        PetDrink petDrink = drinks.get(drinkDao.findByDrinkType(drinkType).orElseThrow());
         petDrink.setDrinkCount(petDrink.getDrinkCount() - 1);
         pet.setDrink(100);
         JournalEntry buildRefrigeratorJournalEntry = journalEntryDao.findByCode(JournalEntryType.BUILD_REFRIGERATOR).orElseThrow();
