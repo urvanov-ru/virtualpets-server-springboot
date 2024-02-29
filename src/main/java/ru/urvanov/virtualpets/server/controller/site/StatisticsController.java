@@ -4,7 +4,6 @@
 package ru.urvanov.virtualpets.server.controller.site;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jakarta.validation.Valid;
 import ru.urvanov.virtualpets.server.controller.site.domain.StatisticsParams;
 import ru.urvanov.virtualpets.server.controller.site.domain.StatisticsParams.StatisticsType;
+import ru.urvanov.virtualpets.server.dao.JdbcReportDao;
+import ru.urvanov.virtualpets.server.dao.domain.LastRegisteredUser;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.server.service.PetService;
-import ru.urvanov.virtualpets.server.service.UserService;
 
 /**
  * @author fedya
@@ -32,7 +32,7 @@ import ru.urvanov.virtualpets.server.service.UserService;
 public class StatisticsController {
 
     @Autowired
-    private UserService userService;
+    private JdbcReportDao jdbcReportDao;
 
     @Autowired
     private PetService petService;
@@ -51,12 +51,12 @@ public class StatisticsController {
             @Valid @ModelAttribute StatisticsParams statisticsParams,
             BindingResult statisticsParamsBindingResult) {
 
-        Iterable<User> users = new ArrayList<User>();
+        Iterable<LastRegisteredUser> users = new ArrayList<>();
         Iterable<Pet> pets = new ArrayList<Pet>();
         if (!statisticsParamsBindingResult.hasErrors()) {
             switch (statisticsParams.getType()) {
             case LAST_REGISTERED_USERS:
-                users = userService.findLastRegisteredUsers(0,
+                users = jdbcReportDao.findLastRegisteredUsers(0,
                         statisticsParams.getMaxRecordsCount());
                 break;
             case LAST_CREATED_PETS:

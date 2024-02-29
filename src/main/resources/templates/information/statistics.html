@@ -44,10 +44,21 @@
                 </div>
             </form>
             <table th:if="${not #lists.isEmpty(users)}">
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.registrationDate}"></td>
-                    <td th:text="${user.name}"></td>
-                </tr>
+                <caption th:text="#{last_registered_users}"></caption>
+                <thead>
+                    <tr>
+                        <th th:text="#{registration_date}"></th>
+                        <th th:text="#{name}"></th>
+                        <th th:text="#{pets_count}"></th>
+                    </tr>
+                </thead>
+                <tbody>
+	                <tr th:each="user : ${users}">
+	                    <td th:text="${user.registrationDate}"></td>
+	                    <td th:text="${user.name}"></td>
+	                    <td th:text="${user.petsCount}"></td>
+	                </tr>
+                </tbody>
             </table>
             <table th:if="${not #lists.isEmpty(pets)}">
                 <tr th:each="pet : ${pets}">
