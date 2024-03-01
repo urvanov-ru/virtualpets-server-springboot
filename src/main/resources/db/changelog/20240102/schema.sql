@@ -614,9 +614,18 @@ create table pet_journal_entry(
                                   created_at timestamp with time zone NOT NULL,
                                   pet_id INT NOT NULL,
                                   journal_entry_id INT NOT NULL,
+                                  readed boolean NOT NULL default false,
                                   version INT NOT NULL DEFAULT 0,
                                   PRIMARY KEY(id)
 );
+
+alter table pet_journal_entry add constraint fk_pet_journal_entry_pet_id foreign key (pet_id)
+    references pet(id) on update no action on delete no action;
+
+alter table pet_journal_entry add constraint fk_pet_journal_entry_journal_entry_id foreign key (journal_entry_id)
+    references journal_entry(id) on update no action on delete no action;
+
+
 
 insert into journal_entry(id, code) values(1, 'WELCOME');
 insert into journal_entry(id, code) values(2, 'OPEN_NEWBIE_BOXES');
@@ -626,10 +635,6 @@ insert into journal_entry(id, code) values(5, 'BUILD_REFRIGERATOR');
 insert into journal_entry(id, code) values(6, 'EAT_SOMETHING');
 insert into journal_entry(id, code) values(7, 'BUILD_BOOKCASE');
 insert into journal_entry(id, code) values(8, 'READ_SOMETHING');
-
-
-alter table pet_journal_entry add column readed boolean NOT NULL default false;
-
 insert into journal_entry(id, code) values(9, 'LEAVE_ROOM');
 
 
