@@ -1,7 +1,5 @@
 package ru.urvanov.virtualpets.server.dao;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,15 +10,11 @@ import ru.urvanov.virtualpets.server.dao.mapper.LastRegisteredUserMapper;
 
 @Repository
 public class JdbcReportDaoImpl implements JdbcReportDao {
-    
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
     
     private LastRegisteredUserMapper lastRegisteredUsersMapper = new LastRegisteredUserMapper();
-    
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
 
     @Override
     @Transactional(readOnly = true)
