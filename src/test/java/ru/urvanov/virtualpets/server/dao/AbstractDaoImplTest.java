@@ -32,23 +32,15 @@ import ru.urvanov.virtualpets.server.test.listener.DaoTestExecutionListener;
 @DataJpaTest
 @TestPropertySource(properties = {
         "spring.test.database.replace=none",
-        "spring.liquibase.default-schema=virtualpets"
+        "spring.liquibase.default-schema=virtualpets_springboot"
     })
 @DirtiesContext // dirtiesContext нужен из-за dynamicPropertySource
 public class AbstractDaoImplTest {
 
+
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1")
-            .withReuse(true)
-            .withCopyFileToContainer(MountableFile.forClasspathResource("init.sql"), "/docker-entrypoint-initdb.d/init.sql")
-            .withDatabaseName("virtualpets");
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1");
     
-//    @DynamicPropertySource
-//    static void configureProperties(DynamicPropertyRegistry registry) {
-//        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-//        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-//        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-//    }
     
     @PersistenceContext
     protected EntityManager em;
