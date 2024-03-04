@@ -14,7 +14,8 @@ public class JdbcReportDaoImpl implements JdbcReportDao {
     @Autowired
     private JdbcClient jdbcClient;
     
-    private LastRegisteredUserMapper lastRegisteredUsersMapper = new LastRegisteredUserMapper();
+    private LastRegisteredUserMapper lastRegisteredUsersMapper
+            = new LastRegisteredUserMapper();
 
     @Override
     @Transactional(readOnly = true)
@@ -32,8 +33,8 @@ public class JdbcReportDaoImpl implements JdbcReportDao {
                   u.name
                 order by registration_date desc offset ? limit ?
                 """)
-                .param(0, start)
                 .param(1, start)
+                .param(2, limit)
                 .query(lastRegisteredUsersMapper)
                 .list();
     }
