@@ -1,7 +1,7 @@
 package ru.urvanov.virtualpets.server.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +12,7 @@ import ru.urvanov.virtualpets.server.dao.mapper.LastRegisteredUserMapper;
 public class JdbcReportDaoImpl implements JdbcReportDao {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcClient jdbcClient;
     
     private LastRegisteredUserMapper lastRegisteredUsersMapper = new LastRegisteredUserMapper();
 
@@ -20,7 +20,7 @@ public class JdbcReportDaoImpl implements JdbcReportDao {
     @Transactional(readOnly = true)
     public Iterable<LastRegisteredUser> findLastRegisteredUsers(int start,
             int limit) {
-        return jdbcTemplate.query("""
+        return jdbcClient.sql("""
                 select
                   u.registration_date as registration_date,
                   u.name as name,
@@ -31,10 +31,11 @@ public class JdbcReportDaoImpl implements JdbcReportDao {
                   u.registration_date,
                   u.name
                 order by registration_date desc offset ? limit ?
-                """,
-                lastRegisteredUsersMapper,
-                start,
-                limit);
+                """)
+                .param(0, start)
+                .param(1, start)
+                .query(lastRegisteredUsersMapper)
+                .list();
     }
 
 }
