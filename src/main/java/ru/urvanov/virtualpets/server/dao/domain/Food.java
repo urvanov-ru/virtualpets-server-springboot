@@ -25,34 +25,53 @@ public class Food implements Serializable {
      * ни в Java-коде.
      */
     @Id
-    private Integer id;
+    @Enumerated(EnumType.STRING)
+    private FoodType id;
     
-    /**
-     * Натуральный ключ. Код еды.
-     */
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "code")
-    private FoodType code;
+    @Column(name = "refrigerator_id")
+    private int refrigeratorLevel;
+    
+    @Column(name = "refrigerator_order")
+    private int refrigeratorOrder;
+    
+    @Column(name = "hidden_objects_game_drop_rate")
+    private double hiddenObjectsGameDropRate;
 
-    public Integer getId() {
+    public FoodType getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(FoodType id) {
         this.id = id;
     }
 
-    public FoodType getCode() {
-        return code;
+    public int getRefrigeratorLevel() {
+        return refrigeratorLevel;
     }
 
-    public void setCode(FoodType code) {
-        this.code = code;
+    public void setRefrigeratorLevel(int refrigeratorLevel) {
+        this.refrigeratorLevel = refrigeratorLevel;
+    }
+
+    public int getRefrigeratorOrder() {
+        return refrigeratorOrder;
+    }
+
+    public void setRefrigeratorOrder(int refrigeratorOrder) {
+        this.refrigeratorOrder = refrigeratorOrder;
+    }
+
+    public double getHiddenObjectsGameDropRate() {
+        return hiddenObjectsGameDropRate;
+    }
+
+    public void setHiddenObjectsGameDropRate(double hiddenObjectsGameDropRate) {
+        this.hiddenObjectsGameDropRate = hiddenObjectsGameDropRate;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code);
+        return Objects.hash(id);
     }
 
     @Override
@@ -64,12 +83,16 @@ public class Food implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         Food other = (Food) obj;
-        return code == other.code;
+        return id == other.id;
     }
 
     @Override
     public String toString() {
-        return "Food [id=" + id + ", code=" + code + "]";
+        return "Food [id=" + id + ", refrigeratorLevel=" + refrigeratorLevel
+                + ", refrigeratorOrder=" + refrigeratorOrder
+                + ", hiddenObjectsGameDropRate=" + hiddenObjectsGameDropRate
+                + "]";
     }
+
 
 }

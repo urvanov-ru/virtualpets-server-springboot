@@ -7,7 +7,6 @@ package ru.urvanov.virtualpets.server.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Optional;
 
@@ -63,7 +62,7 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testSave() {
-        Food foodCarrot = foodDao.findByCode(FoodType.CARROT).orElseThrow();
+        Food foodCarrot = foodDao.findById(FoodType.CARROT).orElseThrow();
         PetFood petFood = new PetFood();
         Pet pet = petDao.getReferenceById(1);
         petFood.setFood(foodCarrot);

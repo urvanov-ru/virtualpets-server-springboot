@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
 import java.util.ArrayList;
@@ -11,8 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import ru.urvanov.virtualpets.server.dao.AchievementDao;
 import ru.urvanov.virtualpets.server.dao.BookDao;
 import ru.urvanov.virtualpets.server.dao.BookcaseDao;
 import ru.urvanov.virtualpets.server.dao.BuildingMaterialDao;
 import ru.urvanov.virtualpets.server.dao.DrinkDao;
 import ru.urvanov.virtualpets.server.dao.FoodDao;
-import ru.urvanov.virtualpets.server.dao.JournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.LevelDao;
 import ru.urvanov.virtualpets.server.dao.MachineWithDrinksDao;
 import ru.urvanov.virtualpets.server.dao.PetDao;
@@ -40,14 +34,10 @@ import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
 import ru.urvanov.virtualpets.server.dao.domain.Book;
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 import ru.urvanov.virtualpets.server.dao.domain.BookcaseCost;
-import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterial;
 import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialType;
 import ru.urvanov.virtualpets.server.dao.domain.Cloth;
-import ru.urvanov.virtualpets.server.dao.domain.Drink;
 import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
-import ru.urvanov.virtualpets.server.dao.domain.Food;
 import ru.urvanov.virtualpets.server.dao.domain.FoodType;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
 import ru.urvanov.virtualpets.server.dao.domain.Level;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
@@ -71,10 +61,6 @@ import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 import ru.urvanov.virtualpets.shared.service.RoomService;
 
-/**
- * @author fedya
- *
- */
 @Service
 public class RoomServiceImpl implements RoomService {
     
@@ -102,9 +88,6 @@ public class RoomServiceImpl implements RoomService {
     private MachineWithDrinksDao machineWithDrinksDao;
 
     @Autowired
-    private JournalEntryDao journalEntryDao;
-
-    @Autowired
     private PetJournalEntryDao petJournalEntryDao;
     
     @Autowired
@@ -119,9 +102,6 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private LevelDao levelDao;
     
-    @Autowired
-    private AchievementDao achievementDao;
-
     @Autowired
     private ConversionService conversionService;
 
@@ -151,6 +131,7 @@ public class RoomServiceImpl implements RoomService {
                 return r;
             });
     }
+
 
     @Override
     public GetRoomInfoResult getRoomInfo() throws DaoException,
@@ -191,20 +172,16 @@ public class RoomServiceImpl implements RoomService {
         
         
         result.setHaveJournal(pet.getJournalEntries().get(
-                journalEntryDao.findByCode(JournalEntryType.WELCOME).orElseThrow()) != null);
+                JournalEntryType.WELCOME) != null);
         result.setHaveHammer(pet
                 .getJournalEntries()
-                .get(journalEntryDao
-                        .findByCode(JournalEntryType.BUILD_MACHINE_WITH_DRINKS).orElseThrow()) != null);
+                .get(JournalEntryType.BUILD_MACHINE_WITH_DRINKS) != null);
         result.setHaveRucksack(pet.getJournalEntries().get(
-                journalEntryDao
-                        .findByCode(JournalEntryType.OPEN_NEWBIE_BOXES).orElseThrow()) != null);
+                JournalEntryType.OPEN_NEWBIE_BOXES) != null);
         result.setHaveIndicators(pet.getJournalEntries().get(
-                journalEntryDao
-                        .findByCode(JournalEntryType.DRINK_SOMETHING).orElseThrow()) != null);
+                JournalEntryType.DRINK_SOMETHING) != null);
         result.setHaveToTownArrow(pet.getJournalEntries()
-                .get(journalEntryDao
-                        .findByCode(JournalEntryType.LEAVE_ROOM).orElseThrow()) != null);
+                .get(JournalEntryType.LEAVE_ROOM) != null);
 
         Room room = findOrCreateByPet(pet);
         Refrigerator refrigerator = room.getRefrigerator();
@@ -233,12 +210,10 @@ public class RoomServiceImpl implements RoomService {
         }
         
         List<AchievementCode> listServerAchievements = petService.calculateAchievements(pet);
-        ru.urvanov.virtualpets.shared.domain.AchievementCode[] listSharedAchievements = new ru.urvanov.virtualpets.shared.domain.AchievementCode[listServerAchievements.size()];
-        int n = 0;
-        for (AchievementCode ac : listServerAchievements) {
-            listSharedAchievements[n] = conversionService.convert(ac, ru.urvanov.virtualpets.shared.domain.AchievementCode.class);
-            n++;
-        }
+        
+        List<ru.urvanov.virtualpets.shared.domain.AchievementCode> listSharedAchievements = listServerAchievements.stream()
+                .map(ac -> conversionService.convert(ac, ru.urvanov.virtualpets.shared.domain.AchievementCode.class))
+                .collect(Collectors.toList());
         result.setAchievements(listSharedAchievements);
         petDao.save(pet);
         logger.info("getRoomInfo finished.");
@@ -247,6 +222,7 @@ public class RoomServiceImpl implements RoomService {
     
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public OpenBoxNewbieResult openBoxNewbie(int index) throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -276,23 +252,21 @@ public class RoomServiceImpl implements RoomService {
         }
         if (boxNewbie) {
             Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-            Map<BuildingMaterial, PetBuildingMaterial> petBuildingMaterials = pet
+            Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = pet
                     .getBuildingMaterials();
             for (Entry<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> entry : map
                     .entrySet()) {
                 BuildingMaterialType buildingMaterialType = conversionService
                         .convert(entry.getKey(), BuildingMaterialType.class);
-                BuildingMaterial buildingMaterial = buildingMaterialDao
-                        .findByCode(buildingMaterialType).orElseThrow();
                 PetBuildingMaterial petBuildingMaterial = petBuildingMaterials
-                        .get(buildingMaterial);
+                        .get(buildingMaterialType);
                 if (petBuildingMaterial == null) {
                     petBuildingMaterial = new PetBuildingMaterial();
-                    petBuildingMaterial.setBuildingMaterial(buildingMaterial);
+                    petBuildingMaterial.setBuildingMaterial(buildingMaterialDao.getReferenceById(buildingMaterialType));
                     petBuildingMaterial.setBuildingMaterialCount(entry
                             .getValue());
                     petBuildingMaterial.setPet(pet);
-                    petBuildingMaterials.put(buildingMaterial,
+                    petBuildingMaterials.put(buildingMaterialType,
                             petBuildingMaterial);
                 } else {
                     petBuildingMaterial
@@ -322,10 +296,8 @@ public class RoomServiceImpl implements RoomService {
                 PetJournalEntry newPetJournalEntry = new PetJournalEntry();
                 newPetJournalEntry.setCreatedAt(new Date());
                 newPetJournalEntry.setPet(pet);
-                JournalEntry buildMachineWithDrinksJournalEntry = journalEntryDao
-                        .findByCode(JournalEntryType.BUILD_MACHINE_WITH_DRINKS).orElseThrow();
                 newPetJournalEntry
-                        .setJournalEntry(buildMachineWithDrinksJournalEntry);
+                        .setJournalEntry(JournalEntryType.BUILD_MACHINE_WITH_DRINKS);
                 newPetJournalEntry.setReaded(false);
                 pet.getJournalEntries().put(
                         newPetJournalEntry.getJournalEntry(),
@@ -340,6 +312,7 @@ public class RoomServiceImpl implements RoomService {
     }
     
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void buildRefrigerator(
             ru.urvanov.virtualpets.shared.domain.Point arg)
             throws DaoException, ServiceException {
@@ -349,21 +322,18 @@ public class RoomServiceImpl implements RoomService {
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
-        if (pet.getJournalEntries().get(
-                journalEntryDao
-                        .findByCode(JournalEntryType.BUILD_REFRIGERATOR).orElseThrow()) == null) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryType.BUILD_REFRIGERATOR)) {
             throw new ServiceException("No now.");
         }
         
         final int DRY_FOOD_ADD_COUNT = 10;
-        Food dryFood = foodDao.findByCode(FoodType.DRY_FOOD).orElseThrow();
-        PetFood petDryFood = pet.getFoods().get(dryFood);
+        PetFood petDryFood = pet.getFoods().get(FoodType.DRY_FOOD);
         if (petDryFood == null) {
             petDryFood = new PetFood();
-            petDryFood.setFood(dryFood);
+            petDryFood.setFood(foodDao.getReferenceById(FoodType.DRY_FOOD));
             petDryFood.setPet(pet);
             petDryFood.setFoodCount(DRY_FOOD_ADD_COUNT);
-            pet.getFoods().put(dryFood, petDryFood);
+            pet.getFoods().put(FoodType.DRY_FOOD, petDryFood);
         } else {
             petDryFood.setFoodCount(petDryFood.getFoodCount() + DRY_FOOD_ADD_COUNT);
         }
@@ -379,13 +349,11 @@ public class RoomServiceImpl implements RoomService {
         room.setRefrigeratorX(arg.getX());
         room.setRefrigeratorY(arg.getY());
         roomDao.save(room);
-        JournalEntry eatSomethingJournalEntry = journalEntryDao
-                .findByCode(JournalEntryType.EAT_SOMETHING).orElseThrow();
-        if (pet.getJournalEntries().get(eatSomethingJournalEntry) == null) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryType.EAT_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(eatSomethingJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.EAT_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
@@ -398,6 +366,7 @@ public class RoomServiceImpl implements RoomService {
 
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void moveRefrigerator(Point arg) throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -414,6 +383,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void upgradeRefrigerator() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -442,6 +412,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void buildBookcase(Point arg) throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -449,14 +420,13 @@ public class RoomServiceImpl implements RoomService {
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
-        if (pet.getJournalEntries()
-                .get(journalEntryDao
-                        .findByCode(JournalEntryType.BUILD_BOOKCASE).orElseThrow()) == null) {
+        if (!pet.getJournalEntries()
+                .containsKey(JournalEntryType.BUILD_BOOKCASE)) {
             throw new ServiceException("Not now.");
         }
         
         
-        Book book = bookDao.findById(1).orElseThrow();
+        Book book = bookDao.findById("DESTINY").orElseThrow();
         
         if (!pet.getBooks().contains(book)) {
             pet.getBooks().add(book);
@@ -472,13 +442,11 @@ public class RoomServiceImpl implements RoomService {
         room.setBookcaseX(arg.getX());
         room.setBookcaseY(arg.getY());
         roomDao.save(room);
-        JournalEntry readSomethingJournalEntry = journalEntryDao
-                .findByCode(JournalEntryType.READ_SOMETHING).orElseThrow();
-        if (pet.getJournalEntries().get(readSomethingJournalEntry) == null) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryType.READ_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(readSomethingJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.READ_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
@@ -490,6 +458,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void upgradeBookcase() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -517,6 +486,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void moveBookcase(Point arg) throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -532,6 +502,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void buildMachineWithDrinks(Point arg) throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -540,24 +511,20 @@ public class RoomServiceImpl implements RoomService {
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
-        if (pet.getJournalEntries()
-                .get(journalEntryDao
-                        .findByCode(JournalEntryType.BUILD_MACHINE_WITH_DRINKS)
-                        .orElseThrow()) == null) {
+        if (!pet.getJournalEntries()
+                .containsKey(JournalEntryType.BUILD_MACHINE_WITH_DRINKS)) {
             throw new ServiceException("Not now.");
         }
         
         final int WATER_ADD_COUNT = 10;
         
-        Drink water = drinkDao.findByDrinkType(DrinkType.WATER).orElseThrow();
-        
-        PetDrink petDrink = pet.getDrinks().get(water);
+        PetDrink petDrink = pet.getDrinks().get(DrinkType.WATER);
         if (petDrink == null) {
             petDrink = new PetDrink();
-            petDrink.setDrink(water);
+            petDrink.setDrink(drinkDao.getReferenceById(DrinkType.WATER));
             petDrink.setPet(pet);
             petDrink.setDrinkCount(WATER_ADD_COUNT);
-            pet.getDrinks().put(water, petDrink);
+            pet.getDrinks().put(DrinkType.WATER, petDrink);
         } else {
             petDrink.setDrinkCount(petDrink.getDrinkCount() + WATER_ADD_COUNT);
         }
@@ -574,24 +541,23 @@ public class RoomServiceImpl implements RoomService {
         room.setMachineWithDrinksX(arg.getX());
         room.setMachineWithDrinksY(arg.getY());
         roomDao.save(room);
-        JournalEntry drinkSomethingJournalEntry = journalEntryDao
-                .findByCode(JournalEntryType.DRINK_SOMETHING).orElseThrow();
-        if (pet.getJournalEntries().get(drinkSomethingJournalEntry) == null) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryType.DRINK_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(drinkSomethingJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.DRINK_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
             petService.addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
-            petService.addAchievementIfNot(pet, achievementDao.findByCode(AchievementCode.BUILD_1));
+            petService.addAchievementIfNot(pet, AchievementCode.BUILD_1);
             
         }
         petDao.save(pet);
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void moveMachineWithDrinks(Point arg) throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -617,11 +583,11 @@ public class RoomServiceImpl implements RoomService {
         while ((refrigerator = refrigeratorDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterial, RefrigeratorCost> entry : refrigerator
+            for (Entry<BuildingMaterialType, RefrigeratorCost> entry : refrigerator
                     .map(Refrigerator::getRefrigeratorCost).map(Map::entrySet).orElseThrow()) {
                 map.put(conversionService
                         .convert(
-                                entry.getKey().getCode(),
+                                entry.getKey(),
                                 ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class),
                         entry.getValue().getCost());
             }
@@ -635,12 +601,12 @@ public class RoomServiceImpl implements RoomService {
         while ((bookcase = bookcaseDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterial, BookcaseCost> entry : bookcase
+            for (Entry<BuildingMaterialType, BookcaseCost> entry : bookcase
                     .map(Bookcase::getBookcaseCost).map(Map::entrySet)
                     .orElseThrow()) {
                 map.put(conversionService
                         .convert(
-                                entry.getKey().getCode(),
+                                entry.getKey(),
                                 ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class),
                         entry.getValue().getCost());
             }
@@ -654,12 +620,12 @@ public class RoomServiceImpl implements RoomService {
         while ((drink = machineWithDrinksDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterial, MachineWithDrinksCost> entry : drink
+            for (Entry<BuildingMaterialType, MachineWithDrinksCost> entry : drink
                     .map(MachineWithDrinks::getMachineWithDrinksCost)
                     .map(Map::entrySet).orElseThrow()) {
                 map.put(conversionService
                         .convert(
-                                entry.getKey().getCode(),
+                                entry.getKey(),
                                 ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class),
                         entry.getValue().getCost());
             }
@@ -671,6 +637,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void upgradeMachineWithDrinks() throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -699,7 +666,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void pickJournalOnFloor() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -711,17 +678,15 @@ public class RoomServiceImpl implements RoomService {
         room.setJournalOnFloor(false);
         roomDao.save(room);
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
-        Map<JournalEntry, PetJournalEntry> petJournalEntries = pet
+        Map<JournalEntryType, PetJournalEntry> petJournalEntries = pet
                 .getJournalEntries();
-        JournalEntry journalEntry = journalEntryDao
-                .findByCode(JournalEntryType.WELCOME).orElseThrow();
-        if (pet.getJournalEntries().get(journalEntry) == null) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryType.WELCOME)) {
             PetJournalEntry petJournalEntry = new PetJournalEntry();
             petJournalEntry.setCreatedAt(new Date());
-            petJournalEntry.setJournalEntry(journalEntry);
+            petJournalEntry.setJournalEntry(JournalEntryType.WELCOME);
             petJournalEntry.setReaded(false);
             petJournalEntry.setPet(pet);
-            petJournalEntries.put(journalEntry, petJournalEntry);
+            petJournalEntries.put(JournalEntryType.WELCOME, petJournalEntry);
             
         }
         petService.addExperience(pet, 1);
@@ -729,21 +694,21 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void journalClosed() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
         SelectedPet pet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
         Optional<PetJournalEntry> petJournalEntry = petJournalEntryDao
-                .findByPetIdAndJournalEntryCode(pet.getId(),
+                .findByPetIdAndJournalEntry(pet.getId(),
                         JournalEntryType.OPEN_NEWBIE_BOXES);
         if (petJournalEntry.isEmpty()) {
             Pet fullPet = petDao.findFullById(pet.getId()).orElseThrow();
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(fullPet);
-            newPetJournalEntry.setJournalEntry(journalEntryDao
-                    .findByCode(JournalEntryType.OPEN_NEWBIE_BOXES).orElseThrow());
+            newPetJournalEntry.setJournalEntry(JournalEntryType.OPEN_NEWBIE_BOXES);
             newPetJournalEntry.setReaded(false);
             fullPet.getJournalEntries().put(
                     newPetJournalEntry.getJournalEntry(), newPetJournalEntry);

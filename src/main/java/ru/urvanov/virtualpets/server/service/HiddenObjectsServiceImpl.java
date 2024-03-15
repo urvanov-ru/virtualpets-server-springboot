@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
 import java.util.ArrayList;
@@ -8,8 +5,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import ru.urvanov.virtualpets.server.dao.AchievementDao;
+import jakarta.annotation.PostConstruct;
 import ru.urvanov.virtualpets.server.dao.BookDao;
 import ru.urvanov.virtualpets.server.dao.BuildingMaterialDao;
 import ru.urvanov.virtualpets.server.dao.ClothDao;
@@ -31,7 +30,6 @@ import ru.urvanov.virtualpets.server.dao.PetDao;
 import ru.urvanov.virtualpets.server.dao.PetFoodDao;
 import ru.urvanov.virtualpets.server.dao.RoomDao;
 import ru.urvanov.virtualpets.server.dao.UserDao;
-import ru.urvanov.virtualpets.server.dao.domain.Achievement;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
 import ru.urvanov.virtualpets.server.dao.domain.Book;
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
@@ -40,6 +38,7 @@ import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialType;
 import ru.urvanov.virtualpets.server.dao.domain.Cloth;
 import ru.urvanov.virtualpets.server.dao.domain.Drink;
 import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
+import ru.urvanov.virtualpets.server.dao.domain.Food;
 import ru.urvanov.virtualpets.server.dao.domain.FoodType;
 import ru.urvanov.virtualpets.server.dao.domain.HiddenObjectsCollected;
 import ru.urvanov.virtualpets.server.dao.domain.HiddenObjectsGame;
@@ -61,10 +60,6 @@ import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 import ru.urvanov.virtualpets.shared.service.HiddenObjectsService;
 
-/**
- * @author fedya
- * 
- */
 @Service
 public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     private static final String HIDDEN_OBJECTS_GAME_ID = "hiddenObjectsGameId";
@@ -79,6 +74,21 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     private static final int RUBBISH_HIDDEN_OBJECTS_COUNT = 52;
     private static final int AFTERNOONTEA_HIDDEN_OBJECTS_COUNT = 56;
 
+    private TreeMap<Double, Cloth> clothDrop = new TreeMap<>();
+    private double clothMaxDropRate;
+    
+    private TreeMap<Double, Book> bookDrop = new TreeMap<>();
+    private Map<Integer, Double> bookMaxDropRate = new HashMap<>();
+    
+    private TreeMap<Double, BuildingMaterial> buildingMaterialDrop = new TreeMap<>();
+    private double buildingMaterialMaxDropRate;
+    
+    private TreeMap<Double, Drink> drinkDrop = new TreeMap<>();
+    private Map<Integer, Double> drinkMaxDropRate = new HashMap<>();
+    
+    private TreeMap<Double, Food> foodDrop = new TreeMap<>();
+    private Map<Integer, Double> foodMaxDropRate = new HashMap<>();
+    
     @Autowired
     private ConversionService conversionService;
 
@@ -114,9 +124,6 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     @Autowired
     private BuildingMaterialDao buildingMaterialDao;
-
-    @Autowired
-    private AchievementDao achievementDao;
 
     private Map<Integer, HiddenObjectsGame> games = new HashMap<Integer, HiddenObjectsGame>();
     private Map<Integer, HiddenObjectsGame> finishedGames = new HashMap<Integer, HiddenObjectsGame>();
@@ -410,9 +417,9 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
             if (player != null) {
                 int score = player.getScore();
                 FoodType foodType = FoodType.DRY_FOOD;
-                Integer clothId = null;
+                String clothId = null;
                 BuildingMaterialType buildingMaterialType = null;
-                Integer bookId = null;
+                String bookId = null;
                 DrinkType drinkType = null;
                 if (score > MAX_OBJECTS_FOR_SEARCH
                         / HiddenObjectsGame.MAX_PLAYERS_COUNT) {
@@ -425,36 +432,19 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                                 .getMachineWithDrinks();
                         Bookcase bookcase = room.getBookcase();
                         if (refrigerator != null) {
-                            foodType = FoodType.values()[random
-                                    .nextInt(refrigerator.getMaxFoodType() + 1)];
+                            foodType = calculateFoodDrop(random, refrigerator.getId()).getId();
                         }
-                        if (random.nextInt(100) < 10) {
-                            clothId = random.nextInt((int)clothDao.count()) + 1;
+                        if (random.nextInt(100) < 100) {
+                            clothId = calculateClothDrop(random).getId();
                         }
-                        if (random.nextInt(100) < 10) {
-                            int buildingMaterialRandom = random.nextInt(100);
-                            if (buildingMaterialRandom < 60) {
-                                buildingMaterialType = BuildingMaterialType
-                                        .values()[random
-                                        .nextInt(BuildingMaterialType.STONE
-                                                .ordinal() + 1)];
-                            } else if (buildingMaterialRandom < 90) {
-                                buildingMaterialType = BuildingMaterialType
-                                        .values()[random
-                                        .nextInt(BuildingMaterialType.IRON
-                                                .ordinal() + 1)];
-                            } else {
-                                buildingMaterialType = BuildingMaterialType
-                                        .values()[random
-                                        .nextInt(BuildingMaterialType.values().length + 1)];
-                            }
+                        if (random.nextInt(100) < 300) {
+                            buildingMaterialType = calculateBuildingMaterialDrop(random).getId();
                         }
                         if (machineWithDrinks != null) {
-                            drinkType = DrinkType.values()[random
-                                    .nextInt(machineWithDrinks.getId())];
+                            drinkType = calculateDrinkDrop(random, machineWithDrinks.getId()).getId();
                         }
-                        if (bookcase != null && random.nextInt(100) < 10) {
-                            bookId = random.nextInt(3 * bookcase.getId());
+                        if (bookcase != null && random.nextInt(100) < 100) {
+                            bookId = calculateBookDrop(random, bookcase.getId()).getId();
                         }
                     }
                 }
@@ -472,7 +462,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 if (food == null) {
                     food = new PetFood();
                     food.setPet(petDao.getReferenceById(player.getPetId()));
-                    food.setFood(foodDao.findByCode(foodType).orElseThrow());
+                    food.setFood(foodDao.findById(foodType).orElseThrow());
                     food.setFoodCount(0);
                 }
                 food.setFoodCount(food.getFoodCount() + 1);
@@ -491,19 +481,17 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                     reward.setClothId(clothId);
                 }
                 if (buildingMaterialType != null) {
-                    Map<BuildingMaterial, PetBuildingMaterial> mapBuildingMaterials = fullPet
+                    Map<BuildingMaterialType, PetBuildingMaterial> mapBuildingMaterials = fullPet
                             .getBuildingMaterials();
-                    BuildingMaterial buildingMaterial = buildingMaterialDao
-                            .findByCode(buildingMaterialType).orElseThrow();
                     PetBuildingMaterial petBuildingMaterial = mapBuildingMaterials
-                            .get(buildingMaterial);
+                            .get(buildingMaterialType);
                     if (petBuildingMaterial == null) {
                         petBuildingMaterial = new PetBuildingMaterial();
                         petBuildingMaterial
-                                .setBuildingMaterial(buildingMaterial);
+                                .setBuildingMaterial(buildingMaterialDao.findById(buildingMaterialType).orElseThrow());
                         petBuildingMaterial.setPet(fullPet);
                         petBuildingMaterial.setBuildingMaterialCount(0);
-                        fullPet.getBuildingMaterials().put(buildingMaterial,
+                        fullPet.getBuildingMaterials().put(buildingMaterialType,
                                 petBuildingMaterial);
                     }
                     petBuildingMaterial
@@ -511,15 +499,14 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                                     .getBuildingMaterialCount() + 1);
                 }
                 if (drinkType != null) {
-                    Map<Drink, PetDrink> mapDrinks = fullPet.getDrinks();
-                    Drink drink = drinkDao.findByDrinkType(drinkType).orElseThrow();
-                    PetDrink petDrink = mapDrinks.get(drink);
+                    Map<DrinkType, PetDrink> mapDrinks = fullPet.getDrinks();
+                    PetDrink petDrink = mapDrinks.get(drinkType);
                     if (petDrink == null) {
                         petDrink = new PetDrink();
-                        petDrink.setDrink(drink);
+                        petDrink.setDrink(drinkDao.findById(drinkType).orElseThrow());
                         petDrink.setPet(fullPet);
                         petDrink.setDrinkCount(0);
-                        fullPet.getDrinks().put(drink, petDrink);
+                        fullPet.getDrinks().put(drinkType, petDrink);
                     }
                     petDrink.setDrinkCount(petDrink.getDrinkCount() + 1);
                 }
@@ -539,24 +526,18 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 if (fullPet.getHiddenObjectsGameCount() < Integer.MAX_VALUE)
                     fullPet.setHiddenObjectsGameCount(fullPet
                             .getHiddenObjectsGameCount() + 1);
-                Achievement achievementHiddenObjectsGame1 = achievementDao
-                        .findByCode(AchievementCode.HIDDEN_OBJECTS_GAME_1);
-                Achievement achievementHiddenObjectsGame10 = achievementDao
-                        .findByCode(AchievementCode.HIDDEN_OBJECTS_GAME_10);
-                Achievement achievementHiddenObjectsGame100 = achievementDao
-                        .findByCode(AchievementCode.HIDDEN_OBJECTS_GAME_100);
                 if (fullPet.getHiddenObjectsGameCount().equals(
                         Integer.valueOf(1)))
                     petService.addAchievementIfNot(fullPet,
-                            achievementHiddenObjectsGame1);
+                            AchievementCode.HIDDEN_OBJECTS_GAME_1);
                 if (fullPet.getHiddenObjectsGameCount().equals(
                         Integer.valueOf(10)))
                     petService.addAchievementIfNot(fullPet,
-                            achievementHiddenObjectsGame10);
+                            AchievementCode.HIDDEN_OBJECTS_GAME_10);
                 if (fullPet.getHiddenObjectsGameCount().equals(
                         Integer.valueOf(100)))
                     petService.addAchievementIfNot(fullPet,
-                            achievementHiddenObjectsGame100);
+                            AchievementCode.HIDDEN_OBJECTS_GAME_100);
 
                 
                 int experienceReward = 1;
@@ -576,8 +557,8 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 reward.setExperience(experienceReward);
                 reward.setLevelInfo(levelInfo);
 
-                ru.urvanov.virtualpets.server.dao.domain.AchievementCode[] achievements
-                        = petService.calculateAchievements(fullPet)
+                ru.urvanov.virtualpets.server.dao.domain.AchievementCode[] achievements = petService
+                        .calculateAchievements(fullPet)
                         .toArray(
                                 new ru.urvanov.virtualpets.server.dao.domain.AchievementCode[0]);
 
@@ -585,6 +566,36 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 petDao.save(fullPet);
             }
         }
+    }
+
+    private Food calculateFoodDrop(Random random, Integer refrigeratorLevel) {
+        double randomNumber = random.nextDouble(this.foodMaxDropRate.get(refrigeratorLevel));
+        Entry<Double, Food> entry = foodDrop.floorEntry(randomNumber);
+        return entry.getValue();
+    }
+
+    private Drink calculateDrinkDrop(Random random, int machineWithDrinksLevel) {
+        double randomNumber = random.nextDouble(this.drinkMaxDropRate.get(machineWithDrinksLevel));
+        Entry<Double, Drink> entry = drinkDrop.floorEntry(randomNumber);
+        return entry.getValue();
+    }
+
+    private BuildingMaterial calculateBuildingMaterialDrop(Random random) {
+        double randomNumber = random.nextDouble(buildingMaterialMaxDropRate);
+        Entry<Double, BuildingMaterial> entry = buildingMaterialDrop.floorEntry(randomNumber);
+        return entry.getValue();
+    }
+
+    private Book calculateBookDrop(Random random, int bookcaseLevel) {
+        double randomNumber = random.nextDouble(bookMaxDropRate.get(bookcaseLevel));
+        Entry<Double, Book> entry = bookDrop.floorEntry(randomNumber);
+        return entry.getValue();
+    }
+
+    private Cloth calculateClothDrop(Random random) {
+        double randomNumber = random.nextDouble(clothMaxDropRate);
+        Entry<Double, Cloth> entry = clothDrop.floorEntry(randomNumber);
+        return entry.getValue();
     }
 
     @Override
@@ -604,17 +615,10 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         games.remove(gameId);
     }
 
-    /**
-     * @return the conversionService
-     */
     public ConversionService getConversionService() {
         return conversionService;
     }
 
-    /**
-     * @param conversionService
-     *            the conversionService to set
-     */
     public void setConversionService(ConversionService conversionService) {
         this.conversionService = conversionService;
     }
@@ -689,6 +693,76 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         sra.setAttribute(HIDDEN_OBJECTS_GAME_STARTED, true,
                 ServletRequestAttributes.SCOPE_SESSION);
         return getResult(game);
+    }
+    
+    @PostConstruct
+    public void init() {
+        initClothDrop();
+        initBookDrop();
+        initBuildingMaterialDrop();
+        initDrinkDrop();
+        initFoodDrop();
+    }
+
+    private void initFoodDrop() {
+        Iterable<Food> foods = foodDao.findByOrderByRefrigeratorLevelAscRefrigeratorOrderAsc();
+        double rate = 0.0;
+        for (Food food: foods) {
+            foodDrop.put(rate,  food);
+            foodMaxDropRate.compute(
+                    food.getRefrigeratorLevel(),
+                    (k, f) -> f == null ? food.getHiddenObjectsGameDropRate()
+                            : f + food.getHiddenObjectsGameDropRate());
+            rate += food.getHiddenObjectsGameDropRate();
+        }
+    }
+
+    private void initDrinkDrop() {
+        Iterable<Drink> drinks = drinkDao.findByOrderByMachineWithDrinksLevelAscMachineWithDrinksOrderAsc();
+        double rate = 0.0;
+        for (Drink drink : drinks) {
+            drinkDrop.put(rate, drink);
+            drinkMaxDropRate.compute(
+                    drink.getMachineWithDrinksLevel(),
+                    (k, d) -> d == null ? drink.getHiddenObjectsGameDropRate()
+                            : d + drink.getHiddenObjectsGameDropRate());
+            
+            rate += drink.getHiddenObjectsGameDropRate();
+        }
+    }
+
+    private void initBuildingMaterialDrop() {
+        Iterable<BuildingMaterial> buildingMaterials = buildingMaterialDao.findAll();
+        double rate = 0.0;
+        for (BuildingMaterial buildingMaterial : buildingMaterials) {
+            buildingMaterialDrop.put(rate, buildingMaterial);
+            rate += buildingMaterial.getHiddenObjectsGameDropRate();
+        }
+        buildingMaterialMaxDropRate = rate;
+    }
+
+    private void initBookDrop() {
+        Iterable<Book> books = bookDao.findByOrderByBookcaseLevelAscBookcaseOrderAsc();
+        double rate = 0.0;
+        for (Book book : books) {
+            bookDrop.put(rate,  book);
+            bookMaxDropRate.compute(
+                    book.getBookcaseLevel(),
+                    (k, b) -> b == null ? book.getHiddenObjectsGameDropRate()
+                            : b + book.getHiddenObjectsGameDropRate());
+            
+            rate += book.getHiddenObjectsGameDropRate();
+        }
+    }
+
+    private void initClothDrop() {
+        List<Cloth> cloths = clothDao.findAll();
+        double rate = 0.0;
+        for (Cloth cloth : cloths) {
+            clothDrop.put(rate, cloth);
+            rate += cloth.getHiddenObjectsGameDropRate();
+        }
+        clothMaxDropRate = rate;
     }
 
     public PetFoodDao getPetFoodDao() {
@@ -777,14 +851,6 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     public void setBuildingMaterialDao(BuildingMaterialDao buildingMaterialDao) {
         this.buildingMaterialDao = buildingMaterialDao;
-    }
-
-    public AchievementDao getAchievementDao() {
-        return achievementDao;
-    }
-
-    public void setAchievementDao(AchievementDao achievementDao) {
-        this.achievementDao = achievementDao;
     }
 
     public Map<Integer, HiddenObjectsGame> getGames() {

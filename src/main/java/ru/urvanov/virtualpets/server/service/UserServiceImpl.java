@@ -1,12 +1,12 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.StreamSupport;
 
-//import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -35,12 +35,8 @@ import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.IncompatibleVersionException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 
-/**
- * @author fedya
- * 
- */
 @Service("userService")
-public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shared.service.UserService, UserDetailsService {
+public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shared.service.UserService, UserDetailsService  {
 
     @Autowired
     private UserDao userDao;
@@ -68,18 +64,18 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
         User user = (User)authentication.getPrincipal();
         user = userDao.findById(user.getId()).orElseThrow();
         
-//        byte[] b = new byte[256];
-//        Random r = new Random();
-//        r.nextBytes(b);
-//        String uniqueIdentifier = Base64.encodeBase64String(b);
-//        Date d = new Date();
-//        SimpleDateFormat f = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-//        uniqueIdentifier = uniqueIdentifier + f.format(d);
-//        user.setUnid(uniqueIdentifier);
-//        userDao.save(user);
+        byte[] b = new byte[256];
+        Random r = new Random();
+        r.nextBytes(b);
+        String uniqueIdentifier = Base64.encodeBase64String(b);
+        Date d = new Date();
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        uniqueIdentifier = uniqueIdentifier + f.format(d);
+        user.setUnid(uniqueIdentifier);
+        userDao.save(user);
         
         LoginResult loginResult = new LoginResult();
-        //loginResult.setUnid(uniqueIdentifier);
+        loginResult.setUnid(uniqueIdentifier);
         loginResult.setUserId(user.getId());
         loginResult.setSuccess(true);
         return loginResult;
@@ -224,7 +220,6 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     public Optional<User> findByRecoverPasswordKey(String recoverPasswordKey) {
         return userDao.findByRecoverPasswordKey(recoverPasswordKey);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username)

@@ -21,7 +21,7 @@ public interface PetJournalEntryDao extends CrudRepository<PetJournalEntry, Inte
         return this.findAllByPetId(petId, PageRequest.of(0, count, Sort.by("createdAt").descending()));
     }
 
-    Optional<PetJournalEntry> findByPetIdAndJournalEntryCode(Integer petId,
+    Optional<PetJournalEntry> findByPetIdAndJournalEntry(Integer petId,
             JournalEntryType code);
 
 

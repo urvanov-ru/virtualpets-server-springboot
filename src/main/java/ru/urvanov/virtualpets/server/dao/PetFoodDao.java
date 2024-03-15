@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.dao;
 
 import java.util.Optional;
@@ -19,10 +16,6 @@ import ru.urvanov.virtualpets.server.dao.domain.PetFood;
 import ru.urvanov.virtualpets.server.dao.domain.PetFood_;
 import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 
-/**
- * @author fedya
- *
- */
 @Transactional(readOnly = true)
 public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecificationExecutor<PetFood> {
     Iterable<PetFood> findByPetId(Integer petId);
@@ -37,7 +30,7 @@ public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecifi
         return (root, query, builder) -> {
             
             Predicate predicatePetId = builder.equal(root.get(PetFood_.pet).get(Pet_.id), petId);
-            Predicate predicateFoodType = builder.equal(root.get(PetFood_.food).get(Food_.code), foodType);
+            Predicate predicateFoodType = builder.equal(root.get(PetFood_.food).get(Food_.id), foodType);
             Predicate predicate = builder.and(predicatePetId, predicateFoodType);
             return predicate;
         };

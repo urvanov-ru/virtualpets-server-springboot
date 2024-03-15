@@ -1,14 +1,9 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.dao;
 
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,16 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.MapJoin;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry_;
 import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 
-/**
- * @author fedya
- *
- */
 @Transactional(readOnly = true)
 public interface PetDao
         extends JpaRepository<Pet, Integer>, JpaSpecificationExecutor<Pet> {
@@ -44,7 +35,7 @@ public interface PetDao
         return (rootPet,
                     criteriaQuery,
                     criteriaBuilder) -> {
-                MapJoin<Pet, JournalEntry, PetJournalEntry> joinPetJournalEntries = rootPet
+                MapJoin<Pet, JournalEntryType, PetJournalEntry> joinPetJournalEntries = rootPet
                         .join(Pet_.journalEntries, JoinType.LEFT);
                 return criteriaBuilder.and(
                         criteriaBuilder

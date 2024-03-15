@@ -1,17 +1,14 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -25,26 +22,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import ru.urvanov.virtualpets.server.dao.AchievementDao;
 import ru.urvanov.virtualpets.server.dao.ClothDao;
-import ru.urvanov.virtualpets.server.dao.DrinkDao;
-import ru.urvanov.virtualpets.server.dao.JournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.LevelDao;
 import ru.urvanov.virtualpets.server.dao.PetDao;
 import ru.urvanov.virtualpets.server.dao.PetFoodDao;
 import ru.urvanov.virtualpets.server.dao.PetJournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.UserDao;
-import ru.urvanov.virtualpets.server.dao.domain.Achievement;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
 import ru.urvanov.virtualpets.server.dao.domain.Book;
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 import ru.urvanov.virtualpets.server.dao.domain.BookcaseCost;
-import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterial;
+import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialType;
 import ru.urvanov.virtualpets.server.dao.domain.Cloth;
-import ru.urvanov.virtualpets.server.dao.domain.Drink;
 import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
 import ru.urvanov.virtualpets.server.dao.domain.FoodType;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
 import ru.urvanov.virtualpets.server.dao.domain.Level;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
@@ -79,10 +70,7 @@ import ru.urvanov.virtualpets.shared.domain.SelectPetArg;
 import ru.urvanov.virtualpets.shared.domain.SelectPetResult;
 import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
-/**
- * @author fedya
- *
- */
+
 @Service("petService")
 public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared.service.PetService {
 
@@ -105,15 +93,6 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     private PetJournalEntryDao petJournalEntryDao;
     
     @Autowired
-    private AchievementDao achievementDao;
-    
-    @Autowired
-    private JournalEntryDao journalEntryDao;
-    
-    @Autowired
-    private DrinkDao drinkDao;
-    
-    @Autowired
     private ConversionService conversionService;
 
     
@@ -132,16 +111,10 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         });
     }
 
-    /**
-     * @return the petDao
-     */
     public PetDao getPetDao() {
         return petDao;
     }
 
-    /**
-     * @param petDao the petDao to set
-     */
     public void setPetDao(PetDao petDao) {
         this.petDao = petDao;
     }
@@ -205,12 +178,12 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, Refrigerator refrigerator) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterial, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterial, RefrigeratorCost> resourceCosts =  refrigerator.getRefrigeratorCost();
-        for (Entry<BuildingMaterial, RefrigeratorCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterial buildingMaterial = entry.getKey();
+        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialType, RefrigeratorCost> resourceCosts =  refrigerator.getRefrigeratorCost();
+        for (Entry<BuildingMaterialType, RefrigeratorCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialType buildingMaterialType = entry.getKey();
             RefrigeratorCost resourceCost = entry.getValue();
-            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterial);
+            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
                 throw new NotEnoughPetResourcesException();
             } else {
@@ -225,12 +198,12 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, Bookcase bookcase) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterial, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterial, BookcaseCost> resourceCosts =  bookcase.getBookcaseCost();
-        for (Entry<BuildingMaterial, BookcaseCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterial buildingMaterial = entry.getKey();
+        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialType, BookcaseCost> resourceCosts =  bookcase.getBookcaseCost();
+        for (Entry<BuildingMaterialType, BookcaseCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialType buildingMaterialType = entry.getKey();
             BookcaseCost resourceCost = entry.getValue();
-            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterial);
+            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
                 throw new NotEnoughPetResourcesException();
             } else {
@@ -245,12 +218,12 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, MachineWithDrinks drink) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterial, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterial, MachineWithDrinksCost> resourceCosts =  drink.getMachineWithDrinksCost();
-        for (Entry<BuildingMaterial, MachineWithDrinksCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterial buildingMaterial = entry.getKey();
+        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialType, MachineWithDrinksCost> resourceCosts =  drink.getMachineWithDrinksCost();
+        for (Entry<BuildingMaterialType, MachineWithDrinksCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialType buildingMaterialType = entry.getKey();
             MachineWithDrinksCost resourceCost = entry.getValue();
-            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterial);
+            PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
                 throw new NotEnoughPetResourcesException();
             } else {
@@ -271,11 +244,11 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     @Override
     public List<AchievementCode> calculateAchievements(Pet fullPet) {
         List<AchievementCode> result = new ArrayList<AchievementCode>();
-        Map<Achievement, PetAchievement> map = fullPet.getAchievements();
+        Map<AchievementCode, PetAchievement> map = fullPet.getAchievements();
         for (PetAchievement pa : map.values()) {
             if (!pa.getWasShown()) {
                 pa.setWasShown(true);
-                result.add(pa.getAchievement().getCode());
+                result.add(pa.getAchievement());
             }
         }
         return result;
@@ -294,8 +267,10 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Set<Book> books = pet.getBooks();
         
-        boolean[] resultBooks = new boolean[Book.MAX_ID];
-        books.stream().forEach((b)->{resultBooks[b.getId() - 1] = true;});
+        List<ru.urvanov.virtualpets.shared.domain.Book> resultBooks = books.stream()
+                .map(b -> new ru.urvanov.virtualpets.shared.domain.Book(b.getId(), b.getBookcaseLevel(), b.getBookcaseOrder()))
+                .collect(Collectors.toList());
+        
         GetPetBooksResult result = new GetPetBooksResult();
         result.setBooks(resultBooks);
         return result;
@@ -308,19 +283,17 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Set<Cloth> cloths = pet.getCloths();
-        ru.urvanov.virtualpets.shared.domain.Cloth[] sharedCloths = new ru.urvanov.virtualpets.shared.domain.Cloth[cloths.size()];
         
-        int n = 0;
-        for (Cloth cloth : cloths) {
-            ru.urvanov.virtualpets.shared.domain.Cloth sharedCloth = new ru.urvanov.virtualpets.shared.domain.Cloth();
-            sharedCloth.setId(cloth.getId());
-            sharedCloth.setClothType(conversionService.convert(cloth.getClothType(), ru.urvanov.virtualpets.shared.domain.ClothType.class));
-            sharedCloths[n] = sharedCloth;
-            n++;
-        }
+        List<ru.urvanov.virtualpets.shared.domain.Cloth> resultCloths = cloths.stream()
+                .map(c -> new ru.urvanov.virtualpets.shared.domain.Cloth(
+                        c.getId(),
+                        conversionService.convert(c.getClothType(), ru.urvanov.virtualpets.shared.domain.ClothType.class),
+                        c.getWardrobeOrder()
+                        ))
+                .collect(Collectors.toList());
 
         ru.urvanov.virtualpets.shared.domain.GetPetClothsResult result = new ru.urvanov.virtualpets.shared.domain.GetPetClothsResult();
-        result.setCloths(sharedCloths);
+        result.setCloths(resultCloths);
         Cloth hat = pet.getHat();
         Cloth cloth = pet.getCloth();
         Cloth bow = pet.getBow();
@@ -337,7 +310,8 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     }
     
     @Override
-    public void savePetCloths(SavePetCloths saveClothArg) {
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
+    public void savePetCloths(SavePetCloths saveClothArg) throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
@@ -360,38 +334,48 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     }
     
     @Override
-    public GetPetDrinksResult getPetDrinks() {
+    public GetPetDrinksResult getPetDrinks() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Pet fullPet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-        Map<Drink, PetDrink> drinks = fullPet.getDrinks();
-        Map<ru.urvanov.virtualpets.shared.domain.DrinkType, Integer> drinkCounts = new HashMap<ru.urvanov.virtualpets.shared.domain.DrinkType, Integer>();
-        for (PetDrink petDrink : drinks.values()) {
-            ru.urvanov.virtualpets.shared.domain.DrinkType sharedDrinkType = conversionService.convert(petDrink.getDrink().getDrinkType(), ru.urvanov.virtualpets.shared.domain.DrinkType.class);
-            drinkCounts.put(sharedDrinkType, petDrink.getDrinkCount());
-        }
+        Map<DrinkType, PetDrink> drinks = fullPet.getDrinks();
+        List<ru.urvanov.virtualpets.shared.domain.Drink> resultDrinks = drinks.values().stream()
+                .map(d -> new ru.urvanov.virtualpets.shared.domain.Drink(
+                        conversionService.convert(
+                                d.getDrink().getId(),
+                                ru.urvanov.virtualpets.shared.domain.DrinkType.class),
+                        d.getDrink().getMachineWithDrinksLevel(),
+                        d.getDrink().getMachineWithDrinksOrder(),
+                        d.getDrinkCount()))
+                .collect(Collectors.toList());
+        
         ru.urvanov.virtualpets.shared.domain.GetPetDrinksResult result = new ru.urvanov.virtualpets.shared.domain.GetPetDrinksResult();
-        result.setDrinkCounts(drinkCounts);
+        result.setDrinks(resultDrinks);
         return result;
     }
 
     @Override
-    public GetPetFoodsResult getPetFoods() {
+    public GetPetFoodsResult getPetFoods() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Iterable<PetFood> petFoods = petFoodDao.findByPetId(selectedPet.getId());
-        Map<ru.urvanov.virtualpets.shared.domain.FoodType, Integer> foodCounts = new HashMap<ru.urvanov.virtualpets.shared.domain.FoodType, Integer>();
-        for (PetFood petFood : petFoods) {
-            ru.urvanov.virtualpets.shared.domain.FoodType sharedFoodType = conversionService.convert(petFood.getFood().getCode(), ru.urvanov.virtualpets.shared.domain.FoodType.class);
-            foodCounts.put(sharedFoodType, petFood.getFoodCount());
-        }
+        List<ru.urvanov.virtualpets.shared.domain.Food> resultFoods = StreamSupport.stream(petFoods.spliterator(), false)
+                .map(f -> new ru.urvanov.virtualpets.shared.domain.Food(
+                        conversionService.convert(
+                                f.getFood().getId(),
+                                ru.urvanov.virtualpets.shared.domain.FoodType.class),
+                        f.getFood().getRefrigeratorLevel(),
+                        f.getFood().getRefrigeratorOrder(),
+                        f.getFoodCount()
+                        ))
+                .collect(Collectors.toList());
         ru.urvanov.virtualpets.shared.domain.GetPetFoodsResult result = new ru.urvanov.virtualpets.shared.domain.GetPetFoodsResult();
-        result.setFoodCounts(foodCounts);
+        result.setFoods(resultFoods);
         return result;
     }
 
     @Override
-    public GetPetJournalEntriesResult getPetJournalEntries(int count) {
+    public GetPetJournalEntriesResult getPetJournalEntries(int count) throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Iterable<PetJournalEntry> serverPetIterator = petJournalEntryDao.findLastByPetId(
@@ -407,7 +391,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
             petJournalEntryDao.save(serverPetJournalEntry);
             int sharedIndex = serverPetJournalEntries.size() - 1 - n;
             sharedEntries[sharedIndex] = new ru.urvanov.virtualpets.shared.domain.PetJournalEntry();
-            sharedEntries[sharedIndex].setCode(conversionService.convert(serverPetJournalEntry.getJournalEntry().getCode(), ru.urvanov.virtualpets.shared.domain.JournalEntryType.class));
+            sharedEntries[sharedIndex].setCode(conversionService.convert(serverPetJournalEntry.getJournalEntry(), ru.urvanov.virtualpets.shared.domain.JournalEntryType.class));
             sharedEntries[sharedIndex].setCreatedAt(serverPetJournalEntry.getCreatedAt());
         }
         
@@ -417,24 +401,6 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         return result;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
     /*
      * (non-Javadoc)
      * 
@@ -482,7 +448,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
      * .virtualpets.shared.domain.CreatePetArg)
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {ServiceException.class, DaoException.class})
     public CreatePetResult create(CreatePetArg arg) throws DaoException,
             ServiceException {
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -534,7 +500,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void drink(DrinkArg drinkArg) throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -542,34 +508,30 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         DrinkType drinkType =  conversionService.convert(drinkArg.getDrinkType(), DrinkType.class);
-        Map<Drink, PetDrink> drinks = pet.getDrinks();
-        PetDrink petDrink = drinks.get(drinkDao.findByDrinkType(drinkType).orElseThrow());
+        Map<DrinkType, PetDrink> drinks = pet.getDrinks();
+        PetDrink petDrink = drinks.get(drinkType);
         petDrink.setDrinkCount(petDrink.getDrinkCount() - 1);
         pet.setDrink(100);
-        JournalEntry buildRefrigeratorJournalEntry = journalEntryDao.findByCode(JournalEntryType.BUILD_REFRIGERATOR).orElseThrow();
-        if (pet.getJournalEntries().get(buildRefrigeratorJournalEntry) == null) {
+        if (pet.getJournalEntries().get(JournalEntryType.BUILD_REFRIGERATOR) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(buildRefrigeratorJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_REFRIGERATOR);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getDrinkCount() < Integer.MAX_VALUE) pet.setDrinkCount(pet.getDrinkCount() + 1);
-        Achievement achievementDrink1 = achievementDao.findByCode(AchievementCode.DRINK_1);
-        Achievement achievementDrink10 = achievementDao.findByCode(AchievementCode.DRINK_10);
-        Achievement achievementDrink100 = achievementDao.findByCode(AchievementCode.DRINK_100);
-        if (pet.getDrinkCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, achievementDrink1);
-        if (pet.getDrinkCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, achievementDrink10);
-        if (pet.getDrinkCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, achievementDrink100);
+        if (pet.getDrinkCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.DRINK_1);
+        if (pet.getDrinkCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.DRINK_10);
+        if (pet.getDrinkCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.DRINK_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
         
     }
 
-    public void addAchievementIfNot(Pet pet, Achievement achievement) {
+    public void addAchievementIfNot(Pet pet, AchievementCode achievement) {
         if (!pet.getAchievements().containsKey(achievement)) {
             PetAchievement petAchievement = new PetAchievement();
             petAchievement.setPet(pet);
@@ -579,7 +541,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void satiety(SatietyArg satietyArg) throws DaoException,
             ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
@@ -594,37 +556,33 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         if (food == null) {
             throw new ServiceException("Food count = 0.");
         } else {
-            if (food.getFoodCount().equals(0)) {
+            if (food.getFoodCount() == 0) {
                 throw new ServiceException("Food count = 0.");
             }
             food.setFoodCount(food.getFoodCount() - 1);
             petFoodDao.save(food);
         }
         pet.setSatiety(100);
-        JournalEntry buildBookcaseJournalEntry = journalEntryDao.findByCode(JournalEntryType.BUILD_BOOKCASE).orElseThrow();
-        if (pet.getJournalEntries().get(buildBookcaseJournalEntry) == null) {
+        if (pet.getJournalEntries().get(JournalEntryType.BUILD_BOOKCASE) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(buildBookcaseJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_BOOKCASE);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getEatCount() < Integer.MAX_VALUE) pet.setEatCount(pet.getEatCount() + 1);
-        Achievement achievementEat1 = achievementDao.findByCode(AchievementCode.FEED_1);
-        Achievement achievementEat10 = achievementDao.findByCode(AchievementCode.FEED_10);
-        Achievement achievementEat100 = achievementDao.findByCode(AchievementCode.FEED_100);
-        if (pet.getEatCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, achievementEat1);
-        if (pet.getEatCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, achievementEat10);
-        if (pet.getEatCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, achievementEat100);
+        if (pet.getEatCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.FEED_1);
+        if (pet.getEatCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.FEED_10);
+        if (pet.getEatCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.FEED_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void education() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -633,30 +591,27 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
         pet.setEducation(100);
         
-        JournalEntry leaveRoomJournalEntry = journalEntryDao.findByCode(JournalEntryType.LEAVE_ROOM).orElseThrow();
-        if (pet.getJournalEntries().get(leaveRoomJournalEntry) == null) {
+        if (pet.getJournalEntries().get(JournalEntryType.LEAVE_ROOM) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(new Date());
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(leaveRoomJournalEntry);
+            newPetJournalEntry.setJournalEntry(JournalEntryType.LEAVE_ROOM);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getTeachCount() < Integer.MAX_VALUE) pet.setTeachCount(pet.getTeachCount() + 1);
-        Achievement achievementTeach1 = achievementDao.findByCode(AchievementCode.TEACH_1);
-        Achievement achievementTeach10 = achievementDao.findByCode(AchievementCode.TEACH_10);
-        Achievement achievementTeach100 = achievementDao.findByCode(AchievementCode.TEACH_100);
-        if (pet.getTeachCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, achievementTeach1);
-        if (pet.getTeachCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, achievementTeach10);
-        if (pet.getTeachCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, achievementTeach100);
+        if (pet.getTeachCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.TEACH_1);
+        if (pet.getTeachCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.TEACH_10);
+        if (pet.getTeachCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.TEACH_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
     }
 
     @Override
+    @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void mood() throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
@@ -675,32 +630,32 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
             throws DaoException, ServiceException {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
-        Pet fullPet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-        Map<BuildingMaterial, PetBuildingMaterial> buildingMaterials = fullPet.getBuildingMaterials();
-        Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> buildMaterialCounts = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-        for (PetBuildingMaterial bm : buildingMaterials.values()) {
-            ru.urvanov.virtualpets.shared.domain.BuildingMaterialType sharedBuildMaterialType = conversionService.convert(bm.getBuildingMaterial().getCode(), ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class);
-            buildMaterialCounts.put(sharedBuildMaterialType, bm.getBuildingMaterialCount());
-        }
+        Pet fullPet = petDao.findFullById(selectedPet.getId()).orElseThrow();;
+        Map<BuildingMaterialType, PetBuildingMaterial> buildingMaterials = fullPet.getBuildingMaterials();
+        
+        Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> buildingMaterialCounts = buildingMaterials.entrySet().stream()
+                .<Entry<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>>map(e -> Map.entry(
+                        conversionService.convert(e.getKey(), ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class),
+                        e.getValue().getBuildingMaterialCount()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        
         ru.urvanov.virtualpets.shared.domain.GetPetRucksackInnerResult result = new ru.urvanov.virtualpets.shared.domain.GetPetRucksackInnerResult();
-        result.setBuildingMaterialCounts(buildMaterialCounts);
+        result.setBuildingMaterialCounts(buildingMaterialCounts);
         return result;
     }
 
     @Override
     public PetDetails petInformationPage(Integer id) {
-        Pet fullPet = petDao.findFullById(id).orElseThrow();
-        Iterable<Achievement> allAchievements = achievementDao.findAll();
+        Pet fullPet = petDao.findFullById(id).orElseThrow();;
         PetDetails result = new PetDetails();
         result.setId(fullPet.getId());
         result.setName(fullPet.getName());
         result.setLevel(fullPet.getLevel().getId());
-        result.setExperience(fullPet.getExperience());
         List<PetInformationPageAchievement> achievements = new ArrayList<>();
         result.setAchievements(achievements);
-        for (Achievement achievement : allAchievements) {
+        for (AchievementCode achievement : AchievementCode.values()) {
             PetInformationPageAchievement petInformationPageAchievement = new PetInformationPageAchievement();
-            petInformationPageAchievement.setCode(achievement.getCode().name());
+            petInformationPageAchievement.setCode(achievement.name());
             petInformationPageAchievement.setUnlocked(fullPet.getAchievements().containsKey(achievement));
             achievements.add(petInformationPageAchievement);
         }
