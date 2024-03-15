@@ -80,7 +80,8 @@ public class PublicServiceImpl implements PublicService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void register(RegisterArgument arg) throws ServiceException {
+    public void register(RegisterArgument arg)
+            throws ServiceException, DaoException {
         try {
             String clientVersion = arg.getVersion();
             if (!version.equals(clientVersion)) {
@@ -110,7 +111,7 @@ public class PublicServiceImpl implements PublicService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public RecoverPasswordResult recoverPassword(RecoverPasswordArg argument)
-            throws ServiceException {
+            throws ServiceException, DaoException {
         String clientVersion = argument.getVersion();
         if (!version.equals(clientVersion)) {
             throw new IncompatibleVersionException("", version, clientVersion);
