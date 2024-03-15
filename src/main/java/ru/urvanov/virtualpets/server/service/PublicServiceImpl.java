@@ -1,12 +1,9 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,10 +39,6 @@ import ru.urvanov.virtualpets.shared.exception.NameIsBusyException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 import ru.urvanov.virtualpets.shared.service.PublicService;
 
-/**
- * @author fedya
- * 
- */
 @Service
 public class PublicServiceImpl implements PublicService {
 
@@ -66,6 +59,9 @@ public class PublicServiceImpl implements PublicService {
 
     @Autowired
     private BCryptPasswordEncoder bcryptEncoder;
+    
+    @Autowired
+    private Clock clock;
 
     @Override
     public ServerInfo[] getServers(GetServersArg arg) throws ServiceException,
@@ -104,7 +100,7 @@ public class PublicServiceImpl implements PublicService {
             user.setName(arg.getLogin());
             user.setPassword(bcryptEncoder.encode(arg.getPassword()));
             user.setEmail(arg.getEmail());
-            user.setRegistrationDate(new Date());
+            user.setRegistrationDate(OffsetDateTime.now(clock));
             user.setRole(ru.urvanov.virtualpets.server.dao.domain.Role.USER);
             userDao.save(user);
         }
@@ -137,11 +133,11 @@ public class PublicServiceImpl implements PublicService {
             sb.append(String.format("%02x", b & 0xff));
         }
         String key = sb.toString();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        OffsetDateTime recoverPasswordValid = OffsetDateTime.now(clock);
+        recoverPasswordValid = recoverPasswordValid.minusMonths(1);
         User user = userDao.findByLoginAndEmail(login, email).orElseThrow();
         user.setRecoverPasswordKey(key);
-        user.setRecoverPasswordValid(calendar.getTime());
+        user.setRecoverPasswordValid(recoverPasswordValid);
         userDao.save(user);
 
         // Create a thread safe "copy" of the template message and customize it

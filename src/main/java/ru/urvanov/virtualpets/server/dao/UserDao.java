@@ -1,5 +1,6 @@
 package ru.urvanov.virtualpets.server.dao;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,7 @@ import ru.urvanov.virtualpets.server.dao.domain.User;
 public interface UserDao extends JpaRepository<User, Integer> {
     Optional<User> findByLogin(String login);
     Optional<User> findByLoginAndPassword(String login, String password);
-    Iterable<User> findOnline();
+    Iterable<User> findActiveAfter(OffsetDateTime offsetDateTime);
     Optional<User> findByLoginAndEmail(String name, String email);
     Optional<User> findByUnid(String unid);
     Optional<User> findByRecoverPasswordKey(String recoverKey);

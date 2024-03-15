@@ -37,7 +37,7 @@ import jakarta.validation.constraints.Size;
 @NamedQueries({@NamedQuery(name = "User.findByLogin", query = "from User u where u.login=:login"),
     @NamedQuery(name="User.list", query="from User"),
     @NamedQuery(name="User.findByLoginAndPassword", query="from User u where u.login=:login and u.password=:password"),
-    @NamedQuery(name="User.findOnline", query="from User u where u.activeDate > :date"),
+    @NamedQuery(name="User.findActiveAfter", query="from User u where u.activeDate > :date"),
     @NamedQuery(name="User.findByLoginAndEmail", query="from User u where u.login=:login and u.email=:email")})
 public class User implements UserDetails, Serializable{
 

@@ -1,9 +1,7 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.service;
 
-import java.util.Date;
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +23,6 @@ import ru.urvanov.virtualpets.shared.exception.DaoException;
 import ru.urvanov.virtualpets.shared.exception.ServiceException;
 import ru.urvanov.virtualpets.shared.service.ChatService;
 
-/**
- * @author fedya
- *
- */
 @Service
 public class ChatServiceImpl implements ChatService {
 
@@ -37,6 +31,9 @@ public class ChatServiceImpl implements ChatService {
     
     @Autowired
     private UserDao userDao;
+    
+    @Autowired
+    private Clock clock;
 
 
     /* (non-Javadoc)
@@ -52,7 +49,7 @@ public class ChatServiceImpl implements ChatService {
         Integer userId = user.getId();
         
         user = userDao.findById(userId).orElseThrow();
-        user.setActiveDate(new Date());
+        user.setActiveDate(OffsetDateTime.now(clock));
         userDao.save(user);
         
         
@@ -114,7 +111,7 @@ public class ChatServiceImpl implements ChatService {
         }
         chat.setMessage(arg.getMessage());
         chat.setSender(userDao.getReferenceById(user.getId()));
-        chat.setSendTime(new Date());
+        chat.setSendTime(OffsetDateTime.now(clock));
         chatDao.save(chat);
         
         SendChatMessageResult result = new SendChatMessageResult();

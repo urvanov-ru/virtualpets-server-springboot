@@ -1,7 +1,8 @@
 package ru.urvanov.virtualpets.server.service;
 
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,6 +95,9 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Autowired
     private ConversionService conversionService;
+    
+    @Autowired
+    private Clock clock;
 
     
     @Override
@@ -456,7 +460,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         User user = (User) authentication.getPrincipal();
         Pet pet = new Pet();
         pet.setName(arg.getName());
-        pet.setCreatedDate(new Date());
+        pet.setCreatedDate(OffsetDateTime.now(clock));
         pet.setUser(userDao.getReferenceById(user.getId()));
         pet.setComment(arg.getComment());
         pet.setPetType(conversionService.convert(arg.getPetType(),
@@ -514,7 +518,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         pet.setDrink(100);
         if (pet.getJournalEntries().get(JournalEntryType.BUILD_REFRIGERATOR) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
-            newPetJournalEntry.setCreatedAt(new Date());
+            newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
             newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_REFRIGERATOR);
             newPetJournalEntry.setReaded(false);
@@ -565,7 +569,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         pet.setSatiety(100);
         if (pet.getJournalEntries().get(JournalEntryType.BUILD_BOOKCASE) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
-            newPetJournalEntry.setCreatedAt(new Date());
+            newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
             newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_BOOKCASE);
             newPetJournalEntry.setReaded(false);
@@ -593,7 +597,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         
         if (pet.getJournalEntries().get(JournalEntryType.LEAVE_ROOM) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
-            newPetJournalEntry.setCreatedAt(new Date());
+            newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
             newPetJournalEntry.setJournalEntry(JournalEntryType.LEAVE_ROOM);
             newPetJournalEntry.setReaded(false);

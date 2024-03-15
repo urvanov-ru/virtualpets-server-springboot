@@ -7,11 +7,19 @@ package ru.urvanov.virtualpets.server.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.dao.domain.Food;
@@ -40,15 +48,18 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
     
     @Autowired
     private FoodDao foodDao;
-        
+
+    @Autowired
+    private Clock clock;
+    
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testSave() {
         long lastSize =  petDao.countByUserId(1);
         Pet pet = new Pet();
         pet.setName("test4y84hg4");
-        pet.setCreatedDate(new Date());
-        pet.setLoginDate(new Date());
+        pet.setCreatedDate(OffsetDateTime.now(clock));
+        pet.setLoginDate(OffsetDateTime.now(clock));
         pet.setPetType(PetType.CAT);
         pet.setUser(userDao.findByLogin("Clarence").orElseThrow());
         pet.setLevel(levelDao.getReferenceById(1));

@@ -1,9 +1,11 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.test.config;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 
 import javax.sql.DataSource;
 
@@ -17,10 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author fedya
- * 
- */
 @Configuration
 @ComponentScan(basePackages = {"ru.urvanov.virtualpets.server.dao"})
 public class DaoTestConfig {
@@ -70,5 +68,13 @@ public class DaoTestConfig {
     @Bean(name = "xlsDataFileLoader")
     public XlsDataFileLoader xlsDataFileLoader() {
         return new XlsDataFileLoader();
+    }
+    
+    @Bean
+    public Clock clock() {
+        ZoneId zoneId = ZoneId.of("Europe/Moscow");
+        TemporalAccessor offsetDateTime = ZonedDateTime.of(2024, 3, 15, 18, 52, 0, 0, zoneId);
+        Instant instant = Instant.from(offsetDateTime );
+        return Clock.fixed(instant, zoneId);
     }
 }
