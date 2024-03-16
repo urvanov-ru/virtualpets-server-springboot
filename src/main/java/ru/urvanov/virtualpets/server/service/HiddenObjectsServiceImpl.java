@@ -74,20 +74,20 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     private static final int RUBBISH_HIDDEN_OBJECTS_COUNT = 52;
     private static final int AFTERNOONTEA_HIDDEN_OBJECTS_COUNT = 56;
 
-    private TreeMap<Double, Cloth> clothDrop = new TreeMap<>();
-    private double clothMaxDropRate;
+    private TreeMap<Float, Cloth> clothDrop = new TreeMap<>();
+    private float clothMaxDropRate;
     
-    private TreeMap<Double, Book> bookDrop = new TreeMap<>();
-    private Map<Integer, Double> bookMaxDropRate = new HashMap<>();
+    private TreeMap<Float, Book> bookDrop = new TreeMap<>();
+    private Map<Integer, Float> bookMaxDropRate = new HashMap<>();
     
-    private TreeMap<Double, BuildingMaterial> buildingMaterialDrop = new TreeMap<>();
-    private double buildingMaterialMaxDropRate;
+    private TreeMap<Float, BuildingMaterial> buildingMaterialDrop = new TreeMap<>();
+    private float buildingMaterialMaxDropRate;
     
-    private TreeMap<Double, Drink> drinkDrop = new TreeMap<>();
-    private Map<Integer, Double> drinkMaxDropRate = new HashMap<>();
+    private TreeMap<Float, Drink> drinkDrop = new TreeMap<>();
+    private Map<Integer, Float> drinkMaxDropRate = new HashMap<>();
     
-    private TreeMap<Double, Food> foodDrop = new TreeMap<>();
-    private Map<Integer, Double> foodMaxDropRate = new HashMap<>();
+    private TreeMap<Float, Food> foodDrop = new TreeMap<>();
+    private Map<Integer, Float> foodMaxDropRate = new HashMap<>();
     
     @Autowired
     private ConversionService conversionService;
@@ -570,32 +570,32 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     }
 
     private Food calculateFoodDrop(Random random, Integer refrigeratorLevel) {
-        double randomNumber = random.nextDouble(this.foodMaxDropRate.get(refrigeratorLevel));
-        Entry<Double, Food> entry = foodDrop.floorEntry(randomNumber);
+        float randomNumber = random.nextFloat(this.foodMaxDropRate.get(refrigeratorLevel));
+        Entry<Float, Food> entry = foodDrop.floorEntry(randomNumber);
         return entry.getValue();
     }
 
     private Drink calculateDrinkDrop(Random random, int machineWithDrinksLevel) {
-        double randomNumber = random.nextDouble(this.drinkMaxDropRate.get(machineWithDrinksLevel));
-        Entry<Double, Drink> entry = drinkDrop.floorEntry(randomNumber);
+        float randomNumber = random.nextFloat(this.drinkMaxDropRate.get(machineWithDrinksLevel));
+        Entry<Float, Drink> entry = drinkDrop.floorEntry(randomNumber);
         return entry.getValue();
     }
 
     private BuildingMaterial calculateBuildingMaterialDrop(Random random) {
-        double randomNumber = random.nextDouble(buildingMaterialMaxDropRate);
-        Entry<Double, BuildingMaterial> entry = buildingMaterialDrop.floorEntry(randomNumber);
+        float randomNumber = random.nextFloat(buildingMaterialMaxDropRate);
+        Entry<Float, BuildingMaterial> entry = buildingMaterialDrop.floorEntry(randomNumber);
         return entry.getValue();
     }
 
     private Book calculateBookDrop(Random random, int bookcaseLevel) {
-        double randomNumber = random.nextDouble(bookMaxDropRate.get(bookcaseLevel));
-        Entry<Double, Book> entry = bookDrop.floorEntry(randomNumber);
+        float randomNumber = random.nextFloat(bookMaxDropRate.get(bookcaseLevel));
+        Entry<Float, Book> entry = bookDrop.floorEntry(randomNumber);
         return entry.getValue();
     }
 
     private Cloth calculateClothDrop(Random random) {
-        double randomNumber = random.nextDouble(clothMaxDropRate);
-        Entry<Double, Cloth> entry = clothDrop.floorEntry(randomNumber);
+        float randomNumber = random.nextFloat(clothMaxDropRate);
+        Entry<Float, Cloth> entry = clothDrop.floorEntry(randomNumber);
         return entry.getValue();
     }
 
@@ -707,7 +707,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     private void initFoodDrop() {
         Iterable<Food> foods = foodDao.findByOrderByRefrigeratorLevelAscRefrigeratorOrderAsc();
-        double rate = 0.0;
+        float rate = 0.0f;
         for (Food food: foods) {
             foodDrop.put(rate,  food);
             foodMaxDropRate.compute(
@@ -720,7 +720,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     private void initDrinkDrop() {
         Iterable<Drink> drinks = drinkDao.findByOrderByMachineWithDrinksLevelAscMachineWithDrinksOrderAsc();
-        double rate = 0.0;
+        float rate = 0.0f;
         for (Drink drink : drinks) {
             drinkDrop.put(rate, drink);
             drinkMaxDropRate.compute(
@@ -734,7 +734,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     private void initBuildingMaterialDrop() {
         Iterable<BuildingMaterial> buildingMaterials = buildingMaterialDao.findAll();
-        double rate = 0.0;
+        float rate = 0.0f;
         for (BuildingMaterial buildingMaterial : buildingMaterials) {
             buildingMaterialDrop.put(rate, buildingMaterial);
             rate += buildingMaterial.getHiddenObjectsGameDropRate();
@@ -744,7 +744,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     private void initBookDrop() {
         Iterable<Book> books = bookDao.findByOrderByBookcaseLevelAscBookcaseOrderAsc();
-        double rate = 0.0;
+        float rate = 0.0f;
         for (Book book : books) {
             bookDrop.put(rate,  book);
             bookMaxDropRate.compute(
@@ -758,7 +758,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
     private void initClothDrop() {
         List<Cloth> cloths = clothDao.findAll();
-        double rate = 0.0;
+        float rate = 0.0f;
         for (Cloth cloth : cloths) {
             clothDrop.put(rate, cloth);
             rate += cloth.getHiddenObjectsGameDropRate();
