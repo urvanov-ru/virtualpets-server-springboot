@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 
 @Transactional(readOnly = true)
@@ -22,7 +22,7 @@ public interface PetJournalEntryDao extends CrudRepository<PetJournalEntry, Inte
     }
 
     Optional<PetJournalEntry> findByPetIdAndJournalEntry(Integer petId,
-            JournalEntryType code);
+            JournalEntryId code);
 
 
 }

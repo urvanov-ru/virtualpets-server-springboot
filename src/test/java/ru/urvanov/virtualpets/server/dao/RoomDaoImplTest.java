@@ -60,7 +60,7 @@ public class RoomDaoImplTest extends AbstractDaoImplTest {
         room.setBoxNewbie1(false);
         roomDao.save(room);
         room = roomDao.findByPetId(1).orElseThrow();
-        assertEquals(room.getBoxNewbie1(), false);
+        assertEquals(room.isBoxNewbie1(), false);
     }
 
 }

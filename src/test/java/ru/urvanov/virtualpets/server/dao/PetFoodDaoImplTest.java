@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ru.urvanov.virtualpets.server.dao.domain.Food;
-import ru.urvanov.virtualpets.server.dao.domain.FoodType;
+import ru.urvanov.virtualpets.server.dao.domain.FoodId;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.PetFood;
 import ru.urvanov.virtualpets.server.test.annotation.DataSets;
@@ -62,7 +62,7 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testSave() {
-        Food foodCarrot = foodDao.findById(FoodType.CARROT).orElseThrow();
+        Food foodCarrot = foodDao.findById(FoodId.CARROT).orElseThrow();
         PetFood petFood = new PetFood();
         Pet pet = petDao.getReferenceById(1);
         petFood.setFood(foodCarrot);
@@ -75,14 +75,14 @@ public class PetFoodDaoImplTest extends AbstractDaoImplTest {
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPetIdAndFoodType() {
-        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(1, FoodType.DRY_FOOD);
+        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(1, FoodId.DRY_FOOD);
         assertThat(food).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetFoodServiceImplTest.xls")
     @Test
     public void testFindByPetIdAndFoodType2() {
-        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(13463456, FoodType.CHOCOLATE);
+        Optional<PetFood> food = petFoodDao.findByPetIdAndFoodType(13463456, FoodId.CHOCOLATE);
         assertThat(food).isEmpty();
     }
 }

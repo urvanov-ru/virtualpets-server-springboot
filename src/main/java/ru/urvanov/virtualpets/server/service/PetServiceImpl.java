@@ -29,15 +29,15 @@ import ru.urvanov.virtualpets.server.dao.PetDao;
 import ru.urvanov.virtualpets.server.dao.PetFoodDao;
 import ru.urvanov.virtualpets.server.dao.PetJournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.UserDao;
-import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
+import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
 import ru.urvanov.virtualpets.server.dao.domain.Book;
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 import ru.urvanov.virtualpets.server.dao.domain.BookcaseCost;
-import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialType;
+import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
 import ru.urvanov.virtualpets.server.dao.domain.Cloth;
-import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
-import ru.urvanov.virtualpets.server.dao.domain.FoodType;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
+import ru.urvanov.virtualpets.server.dao.domain.DrinkId;
+import ru.urvanov.virtualpets.server.dao.domain.FoodId;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.Level;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinksCost;
@@ -182,10 +182,10 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, Refrigerator refrigerator) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterialType, RefrigeratorCost> resourceCosts =  refrigerator.getRefrigeratorCost();
-        for (Entry<BuildingMaterialType, RefrigeratorCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterialType buildingMaterialType = entry.getKey();
+        Map<BuildingMaterialId, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialId, RefrigeratorCost> resourceCosts =  refrigerator.getRefrigeratorCost();
+        for (Entry<BuildingMaterialId, RefrigeratorCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialId buildingMaterialType = entry.getKey();
             RefrigeratorCost resourceCost = entry.getValue();
             PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
@@ -202,10 +202,10 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, Bookcase bookcase) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterialType, BookcaseCost> resourceCosts =  bookcase.getBookcaseCost();
-        for (Entry<BuildingMaterialType, BookcaseCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterialType buildingMaterialType = entry.getKey();
+        Map<BuildingMaterialId, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialId, BookcaseCost> resourceCosts =  bookcase.getBookcaseCost();
+        for (Entry<BuildingMaterialId, BookcaseCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialId buildingMaterialType = entry.getKey();
             BookcaseCost resourceCost = entry.getValue();
             PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
@@ -222,10 +222,10 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     
     @Override
     public void substractPetResources(Pet fullPet, MachineWithDrinks drink) throws NotEnoughPetResourcesException {
-        Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
-        Map<BuildingMaterialType, MachineWithDrinksCost> resourceCosts =  drink.getMachineWithDrinksCost();
-        for (Entry<BuildingMaterialType, MachineWithDrinksCost> entry : resourceCosts.entrySet()) {
-            BuildingMaterialType buildingMaterialType = entry.getKey();
+        Map<BuildingMaterialId, PetBuildingMaterial> petBuildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialId, MachineWithDrinksCost> resourceCosts =  drink.getMachineWithDrinksCost();
+        for (Entry<BuildingMaterialId, MachineWithDrinksCost> entry : resourceCosts.entrySet()) {
+            BuildingMaterialId buildingMaterialType = entry.getKey();
             MachineWithDrinksCost resourceCost = entry.getValue();
             PetBuildingMaterial petBuildingMaterial = petBuildingMaterials.get(buildingMaterialType);
             if (petBuildingMaterial == null) {
@@ -246,9 +246,9 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     }
 
     @Override
-    public List<AchievementCode> calculateAchievements(Pet fullPet) {
-        List<AchievementCode> result = new ArrayList<AchievementCode>();
-        Map<AchievementCode, PetAchievement> map = fullPet.getAchievements();
+    public List<AchievementId> calculateAchievements(Pet fullPet) {
+        List<AchievementId> result = new ArrayList<AchievementId>();
+        Map<AchievementId, PetAchievement> map = fullPet.getAchievements();
         for (PetAchievement pa : map.values()) {
             if (!pa.getWasShown()) {
                 pa.setWasShown(true);
@@ -342,7 +342,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Pet fullPet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-        Map<DrinkType, PetDrink> drinks = fullPet.getDrinks();
+        Map<DrinkId, PetDrink> drinks = fullPet.getDrinks();
         List<ru.urvanov.virtualpets.shared.domain.Drink> resultDrinks = drinks.values().stream()
                 .map(d -> new ru.urvanov.virtualpets.shared.domain.Drink(
                         conversionService.convert(
@@ -492,7 +492,28 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
                 .getRequestAttributes();
 
         int id = arg.getPetId();
-        Pet pet = petDao.findById(id).orElseThrow();
+        Pet pet = petDao.findFullById(id).orElseThrow();
+        OffsetDateTime currentDateTime = OffsetDateTime.now(clock);
+        boolean fireAchievement = false;
+        if (pet.getEveryDayLoginLast() == null) {
+            fireAchievement = true;
+        } else if (pet.getEveryDayLoginLast().plusDays(1).minusHours(6).compareTo(currentDateTime) < 0) {
+            if (pet.getEveryDayLoginLast().plusDays(2).compareTo(currentDateTime) > 0) {
+                fireAchievement = true;
+            } else {
+                pet.setEveryDayLoginCount(0);
+                pet.setEveryDayLoginLast(currentDateTime);
+            }
+        }
+        
+        if (fireAchievement) {
+            pet.setEveryDayLoginCount(pet.getEveryDayLoginCount() + 1);
+            pet.setEveryDayLoginLast(currentDateTime);
+            this.addAchievementIfNot(pet,
+                    AchievementId.valueOf("EVERY_DAY_LOGIN_" + pet.getEveryDayLoginCount()));
+        }
+        
+        pet.setLoginDate(currentDateTime);
         if (pet.getUser().getId().equals(userId)) {
             sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
             SelectPetResult result = new SelectPetResult();
@@ -511,31 +532,31 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-        DrinkType drinkType =  conversionService.convert(drinkArg.getDrinkType(), DrinkType.class);
-        Map<DrinkType, PetDrink> drinks = pet.getDrinks();
+        DrinkId drinkType =  conversionService.convert(drinkArg.getDrinkType(), DrinkId.class);
+        Map<DrinkId, PetDrink> drinks = pet.getDrinks();
         PetDrink petDrink = drinks.get(drinkType);
         petDrink.setDrinkCount(petDrink.getDrinkCount() - 1);
         pet.setDrink(100);
-        if (pet.getJournalEntries().get(JournalEntryType.BUILD_REFRIGERATOR) == null) {
+        if (pet.getJournalEntries().get(JournalEntryId.BUILD_REFRIGERATOR) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_REFRIGERATOR);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.BUILD_REFRIGERATOR);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getDrinkCount() < Integer.MAX_VALUE) pet.setDrinkCount(pet.getDrinkCount() + 1);
-        if (pet.getDrinkCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.DRINK_1);
-        if (pet.getDrinkCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.DRINK_10);
-        if (pet.getDrinkCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.DRINK_100);
+        if (pet.getDrinkCount() == 1) addAchievementIfNot(pet, AchievementId.DRINK_1);
+        if (pet.getDrinkCount() == 10) addAchievementIfNot(pet, AchievementId.DRINK_10);
+        if (pet.getDrinkCount() == 100) addAchievementIfNot(pet, AchievementId.DRINK_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
         
     }
 
-    public void addAchievementIfNot(Pet pet, AchievementCode achievement) {
+    public void addAchievementIfNot(Pet pet, AchievementId achievement) {
         if (!pet.getAchievements().containsKey(achievement)) {
             PetAchievement petAchievement = new PetAchievement();
             petAchievement.setPet(pet);
@@ -553,8 +574,8 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
 
-        FoodType foodType = conversionService.convert(satietyArg.getFoodType(),
-                ru.urvanov.virtualpets.server.dao.domain.FoodType.class);
+        FoodId foodType = conversionService.convert(satietyArg.getFoodType(),
+                ru.urvanov.virtualpets.server.dao.domain.FoodId.class);
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
         PetFood food = petFoodDao.findByPetIdAndFoodType(pet.getId(), foodType).orElseThrow();
         if (food == null) {
@@ -567,19 +588,19 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
             petFoodDao.save(food);
         }
         pet.setSatiety(100);
-        if (pet.getJournalEntries().get(JournalEntryType.BUILD_BOOKCASE) == null) {
+        if (pet.getJournalEntries().get(JournalEntryId.BUILD_BOOKCASE) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.BUILD_BOOKCASE);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.BUILD_BOOKCASE);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getEatCount() < Integer.MAX_VALUE) pet.setEatCount(pet.getEatCount() + 1);
-        if (pet.getEatCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.FEED_1);
-        if (pet.getEatCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.FEED_10);
-        if (pet.getEatCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.FEED_100);
+        if (pet.getEatCount() == 1) addAchievementIfNot(pet, AchievementId.FEED_1);
+        if (pet.getEatCount() == 10) addAchievementIfNot(pet, AchievementId.FEED_10);
+        if (pet.getEatCount() == 100) addAchievementIfNot(pet, AchievementId.FEED_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
@@ -595,20 +616,20 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
         pet.setEducation(100);
         
-        if (pet.getJournalEntries().get(JournalEntryType.LEAVE_ROOM) == null) {
+        if (pet.getJournalEntries().get(JournalEntryId.LEAVE_ROOM) == null) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.LEAVE_ROOM);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.LEAVE_ROOM);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(), newPetJournalEntry);
         }
         
         sra.setAttribute("pet", new SelectedPet(pet), ServletRequestAttributes.SCOPE_SESSION);
         if (pet.getTeachCount() < Integer.MAX_VALUE) pet.setTeachCount(pet.getTeachCount() + 1);
-        if (pet.getTeachCount().equals(Integer.valueOf(1))) addAchievementIfNot(pet, AchievementCode.TEACH_1);
-        if (pet.getTeachCount().equals(Integer.valueOf(10))) addAchievementIfNot(pet, AchievementCode.TEACH_10);
-        if (pet.getTeachCount().equals(Integer.valueOf(100))) addAchievementIfNot(pet, AchievementCode.TEACH_100);
+        if (pet.getTeachCount() == 1) addAchievementIfNot(pet, AchievementId.TEACH_1);
+        if (pet.getTeachCount() == 10) addAchievementIfNot(pet, AchievementId.TEACH_10);
+        if (pet.getTeachCount() == 100) addAchievementIfNot(pet, AchievementId.TEACH_100);
         addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
         petDao.save(pet);
         
@@ -635,7 +656,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet", ServletRequestAttributes.SCOPE_SESSION);
         Pet fullPet = petDao.findFullById(selectedPet.getId()).orElseThrow();;
-        Map<BuildingMaterialType, PetBuildingMaterial> buildingMaterials = fullPet.getBuildingMaterials();
+        Map<BuildingMaterialId, PetBuildingMaterial> buildingMaterials = fullPet.getBuildingMaterials();
         
         Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> buildingMaterialCounts = buildingMaterials.entrySet().stream()
                 .<Entry<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>>map(e -> Map.entry(
@@ -657,7 +678,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         result.setLevel(fullPet.getLevel().getId());
         List<PetInformationPageAchievement> achievements = new ArrayList<>();
         result.setAchievements(achievements);
-        for (AchievementCode achievement : AchievementCode.values()) {
+        for (AchievementId achievement : AchievementId.values()) {
             PetInformationPageAchievement petInformationPageAchievement = new PetInformationPageAchievement();
             petInformationPageAchievement.setCode(achievement.name());
             petInformationPageAchievement.setUnlocked(fullPet.getAchievements().containsKey(achievement));

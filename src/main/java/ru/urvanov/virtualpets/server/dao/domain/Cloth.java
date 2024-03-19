@@ -32,7 +32,7 @@ public class Cloth implements Serializable {
      */
     @Enumerated(EnumType.STRING)
     @Column(name="cloth_type")
-    private ClothType clothType;
+    private ClothId clothType;
 
     @Column(name = "wardrobe_order")
     private int wardrobeOrder;
@@ -48,11 +48,11 @@ public class Cloth implements Serializable {
         this.id = id;
     }
 
-    public ClothType getClothType() {
+    public ClothId getClothType() {
         return clothType;
     }
 
-    public void setClothType(ClothType clothType) {
+    public void setClothType(ClothId clothType) {
         this.clothType = clothType;
     }
     

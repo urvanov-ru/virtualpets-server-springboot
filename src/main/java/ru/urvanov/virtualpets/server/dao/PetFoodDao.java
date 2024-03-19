@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
-import ru.urvanov.virtualpets.server.dao.domain.FoodType;
+import ru.urvanov.virtualpets.server.dao.domain.FoodId;
 import ru.urvanov.virtualpets.server.dao.domain.Food_;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.PetFood;
@@ -22,11 +22,11 @@ public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecifi
     Iterable<PetFood> findByPet(Pet pet);
     
     
-    default Optional<PetFood> findByPetIdAndFoodType(Integer petId, FoodType foodType) {
+    default Optional<PetFood> findByPetIdAndFoodType(Integer petId, FoodId foodType) {
         return this.findAll(PetFoodDao.findByPetIdAndFoodTypeSpecification(petId, foodType), PageRequest.of(0, 1)).stream().findFirst();
     }
     static Specification<PetFood> findByPetIdAndFoodTypeSpecification(Integer petId,
-            FoodType foodType) {
+            FoodId foodType) {
         return (root, query, builder) -> {
             
             Predicate predicatePetId = builder.equal(root.get(PetFood_.pet).get(Pet_.id), petId);

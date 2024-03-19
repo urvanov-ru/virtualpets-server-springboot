@@ -31,15 +31,15 @@ import ru.urvanov.virtualpets.server.dao.PetDao;
 import ru.urvanov.virtualpets.server.dao.PetJournalEntryDao;
 import ru.urvanov.virtualpets.server.dao.RefrigeratorDao;
 import ru.urvanov.virtualpets.server.dao.RoomDao;
-import ru.urvanov.virtualpets.server.dao.domain.AchievementCode;
+import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
 import ru.urvanov.virtualpets.server.dao.domain.Book;
 import ru.urvanov.virtualpets.server.dao.domain.Bookcase;
 import ru.urvanov.virtualpets.server.dao.domain.BookcaseCost;
-import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialType;
+import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
 import ru.urvanov.virtualpets.server.dao.domain.Cloth;
-import ru.urvanov.virtualpets.server.dao.domain.DrinkType;
-import ru.urvanov.virtualpets.server.dao.domain.FoodType;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
+import ru.urvanov.virtualpets.server.dao.domain.DrinkId;
+import ru.urvanov.virtualpets.server.dao.domain.FoodId;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.Level;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinksCost;
@@ -176,16 +176,16 @@ public class RoomServiceImpl implements RoomService {
         
         
         result.setHaveJournal(pet.getJournalEntries().get(
-                JournalEntryType.WELCOME) != null);
+                JournalEntryId.WELCOME) != null);
         result.setHaveHammer(pet
                 .getJournalEntries()
-                .get(JournalEntryType.BUILD_MACHINE_WITH_DRINKS) != null);
+                .get(JournalEntryId.BUILD_MACHINE_WITH_DRINKS) != null);
         result.setHaveRucksack(pet.getJournalEntries().get(
-                JournalEntryType.OPEN_NEWBIE_BOXES) != null);
+                JournalEntryId.OPEN_NEWBIE_BOXES) != null);
         result.setHaveIndicators(pet.getJournalEntries().get(
-                JournalEntryType.DRINK_SOMETHING) != null);
+                JournalEntryId.DRINK_SOMETHING) != null);
         result.setHaveToTownArrow(pet.getJournalEntries()
-                .get(JournalEntryType.LEAVE_ROOM) != null);
+                .get(JournalEntryId.LEAVE_ROOM) != null);
 
         Room room = findOrCreateByPet(pet);
         Refrigerator refrigerator = room.getRefrigerator();
@@ -195,11 +195,11 @@ public class RoomServiceImpl implements RoomService {
             result.setRefrigeratorY(room.getRefrigeratorY());
         }
         boolean[] boxesNewbie = new boolean[3];
-        boxesNewbie[0] = room.getBoxNewbie1();
-        boxesNewbie[1] = room.getBoxNewbie2();
-        boxesNewbie[2] = room.getBoxNewbie3();
+        boxesNewbie[0] = room.isBoxNewbie1();
+        boxesNewbie[1] = room.isBoxNewbie2();
+        boxesNewbie[2] = room.isBoxNewbie3();
         result.setBoxesNewbie(boxesNewbie);
-        result.setJournalOnFloor(room.getJournalOnFloor());
+        result.setJournalOnFloor(room.isJournalOnFloor());
         Bookcase bookcase = room.getBookcase();
         if (bookcase != null) {
             result.setBookcaseId(bookcase.getId());
@@ -213,7 +213,7 @@ public class RoomServiceImpl implements RoomService {
             result.setMachineWithDrinksY(room.getMachineWithDrinksY());
         }
         
-        List<AchievementCode> listServerAchievements = petService.calculateAchievements(pet);
+        List<AchievementId> listServerAchievements = petService.calculateAchievements(pet);
         
         List<ru.urvanov.virtualpets.shared.domain.AchievementCode> listSharedAchievements = listServerAchievements.stream()
                 .map(ac -> conversionService.convert(ac, ru.urvanov.virtualpets.shared.domain.AchievementCode.class))
@@ -245,23 +245,23 @@ public class RoomServiceImpl implements RoomService {
         boolean boxNewbie = false;
         switch (index) {
         case 0:
-            boxNewbie = room.getBoxNewbie1();
+            boxNewbie = room.isBoxNewbie1();
             break;
         case 1:
-            boxNewbie = room.getBoxNewbie2();
+            boxNewbie = room.isBoxNewbie2();
             break;
         case 2:
-            boxNewbie = room.getBoxNewbie3();
+            boxNewbie = room.isBoxNewbie3();
             break;
         }
         if (boxNewbie) {
             Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
-            Map<BuildingMaterialType, PetBuildingMaterial> petBuildingMaterials = pet
+            Map<BuildingMaterialId, PetBuildingMaterial> petBuildingMaterials = pet
                     .getBuildingMaterials();
             for (Entry<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> entry : map
                     .entrySet()) {
-                BuildingMaterialType buildingMaterialType = conversionService
-                        .convert(entry.getKey(), BuildingMaterialType.class);
+                BuildingMaterialId buildingMaterialType = conversionService
+                        .convert(entry.getKey(), BuildingMaterialId.class);
                 PetBuildingMaterial petBuildingMaterial = petBuildingMaterials
                         .get(buildingMaterialType);
                 if (petBuildingMaterial == null) {
@@ -295,13 +295,13 @@ public class RoomServiceImpl implements RoomService {
             roomDao.save(room);
             petService.addExperience(pet, 1);
             
-            if (!room.getBoxNewbie1() && !room.getBoxNewbie2()
-                    && !room.getBoxNewbie3()) {
+            if (!room.isBoxNewbie1() && !room.isBoxNewbie2()
+                    && !room.isBoxNewbie3()) {
                 PetJournalEntry newPetJournalEntry = new PetJournalEntry();
                 newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
                 newPetJournalEntry.setPet(pet);
                 newPetJournalEntry
-                        .setJournalEntry(JournalEntryType.BUILD_MACHINE_WITH_DRINKS);
+                        .setJournalEntry(JournalEntryId.BUILD_MACHINE_WITH_DRINKS);
                 newPetJournalEntry.setReaded(false);
                 pet.getJournalEntries().put(
                         newPetJournalEntry.getJournalEntry(),
@@ -326,18 +326,18 @@ public class RoomServiceImpl implements RoomService {
                 ServletRequestAttributes.SCOPE_SESSION);
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
-        if (!pet.getJournalEntries().containsKey(JournalEntryType.BUILD_REFRIGERATOR)) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryId.BUILD_REFRIGERATOR)) {
             throw new ServiceException("No now.");
         }
         
         final int DRY_FOOD_ADD_COUNT = 10;
-        PetFood petDryFood = pet.getFoods().get(FoodType.DRY_FOOD);
+        PetFood petDryFood = pet.getFoods().get(FoodId.DRY_FOOD);
         if (petDryFood == null) {
             petDryFood = new PetFood();
-            petDryFood.setFood(foodDao.getReferenceById(FoodType.DRY_FOOD));
+            petDryFood.setFood(foodDao.getReferenceById(FoodId.DRY_FOOD));
             petDryFood.setPet(pet);
             petDryFood.setFoodCount(DRY_FOOD_ADD_COUNT);
-            pet.getFoods().put(FoodType.DRY_FOOD, petDryFood);
+            pet.getFoods().put(FoodId.DRY_FOOD, petDryFood);
         } else {
             petDryFood.setFoodCount(petDryFood.getFoodCount() + DRY_FOOD_ADD_COUNT);
         }
@@ -353,11 +353,11 @@ public class RoomServiceImpl implements RoomService {
         room.setRefrigeratorX(arg.getX());
         room.setRefrigeratorY(arg.getY());
         roomDao.save(room);
-        if (!pet.getJournalEntries().containsKey(JournalEntryType.EAT_SOMETHING)) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryId.EAT_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.EAT_SOMETHING);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.EAT_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
@@ -425,7 +425,7 @@ public class RoomServiceImpl implements RoomService {
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
         if (!pet.getJournalEntries()
-                .containsKey(JournalEntryType.BUILD_BOOKCASE)) {
+                .containsKey(JournalEntryId.BUILD_BOOKCASE)) {
             throw new ServiceException("Not now.");
         }
         
@@ -446,11 +446,11 @@ public class RoomServiceImpl implements RoomService {
         room.setBookcaseX(arg.getX());
         room.setBookcaseY(arg.getY());
         roomDao.save(room);
-        if (!pet.getJournalEntries().containsKey(JournalEntryType.READ_SOMETHING)) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryId.READ_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.READ_SOMETHING);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.READ_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
@@ -516,19 +516,19 @@ public class RoomServiceImpl implements RoomService {
         Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
         if (!pet.getJournalEntries()
-                .containsKey(JournalEntryType.BUILD_MACHINE_WITH_DRINKS)) {
+                .containsKey(JournalEntryId.BUILD_MACHINE_WITH_DRINKS)) {
             throw new ServiceException("Not now.");
         }
         
         final int WATER_ADD_COUNT = 10;
         
-        PetDrink petDrink = pet.getDrinks().get(DrinkType.WATER);
+        PetDrink petDrink = pet.getDrinks().get(DrinkId.WATER);
         if (petDrink == null) {
             petDrink = new PetDrink();
-            petDrink.setDrink(drinkDao.getReferenceById(DrinkType.WATER));
+            petDrink.setDrink(drinkDao.getReferenceById(DrinkId.WATER));
             petDrink.setPet(pet);
             petDrink.setDrinkCount(WATER_ADD_COUNT);
-            pet.getDrinks().put(DrinkType.WATER, petDrink);
+            pet.getDrinks().put(DrinkId.WATER, petDrink);
         } else {
             petDrink.setDrinkCount(petDrink.getDrinkCount() + WATER_ADD_COUNT);
         }
@@ -545,16 +545,16 @@ public class RoomServiceImpl implements RoomService {
         room.setMachineWithDrinksX(arg.getX());
         room.setMachineWithDrinksY(arg.getY());
         roomDao.save(room);
-        if (!pet.getJournalEntries().containsKey(JournalEntryType.DRINK_SOMETHING)) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryId.DRINK_SOMETHING)) {
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(pet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.DRINK_SOMETHING);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.DRINK_SOMETHING);
             newPetJournalEntry.setReaded(false);
             pet.getJournalEntries().put(newPetJournalEntry.getJournalEntry(),
                     newPetJournalEntry);
             petService.addExperience(petDao.findById(pet.getId()).orElseThrow(), 1);
-            petService.addAchievementIfNot(pet, AchievementCode.BUILD_1);
+            petService.addAchievementIfNot(pet, AchievementId.BUILD_1);
             
         }
         petDao.save(pet);
@@ -587,7 +587,7 @@ public class RoomServiceImpl implements RoomService {
         while ((refrigerator = refrigeratorDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterialType, RefrigeratorCost> entry : refrigerator
+            for (Entry<BuildingMaterialId, RefrigeratorCost> entry : refrigerator
                     .map(Refrigerator::getRefrigeratorCost).map(Map::entrySet).orElseThrow()) {
                 map.put(conversionService
                         .convert(
@@ -605,7 +605,7 @@ public class RoomServiceImpl implements RoomService {
         while ((bookcase = bookcaseDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterialType, BookcaseCost> entry : bookcase
+            for (Entry<BuildingMaterialId, BookcaseCost> entry : bookcase
                     .map(Bookcase::getBookcaseCost).map(Map::entrySet)
                     .orElseThrow()) {
                 map.put(conversionService
@@ -624,7 +624,7 @@ public class RoomServiceImpl implements RoomService {
         while ((drink = machineWithDrinksDao.findFullById(index)).isPresent()) {
             index++;
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterialType, MachineWithDrinksCost> entry : drink
+            for (Entry<BuildingMaterialId, MachineWithDrinksCost> entry : drink
                     .map(MachineWithDrinks::getMachineWithDrinksCost)
                     .map(Map::entrySet).orElseThrow()) {
                 map.put(conversionService
@@ -677,20 +677,20 @@ public class RoomServiceImpl implements RoomService {
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
         Room room = roomDao.findByPetId(selectedPet.getId()).orElseThrow();
-        if (room.getJournalOnFloor() == false)
+        if (room.isJournalOnFloor() == false)
             throw new ServiceException("There isn't any journal in your room.");
         room.setJournalOnFloor(false);
         roomDao.save(room);
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
-        Map<JournalEntryType, PetJournalEntry> petJournalEntries = pet
+        Map<JournalEntryId, PetJournalEntry> petJournalEntries = pet
                 .getJournalEntries();
-        if (!pet.getJournalEntries().containsKey(JournalEntryType.WELCOME)) {
+        if (!pet.getJournalEntries().containsKey(JournalEntryId.WELCOME)) {
             PetJournalEntry petJournalEntry = new PetJournalEntry();
             petJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
-            petJournalEntry.setJournalEntry(JournalEntryType.WELCOME);
+            petJournalEntry.setJournalEntry(JournalEntryId.WELCOME);
             petJournalEntry.setReaded(false);
             petJournalEntry.setPet(pet);
-            petJournalEntries.put(JournalEntryType.WELCOME, petJournalEntry);
+            petJournalEntries.put(JournalEntryId.WELCOME, petJournalEntry);
             
         }
         petService.addExperience(pet, 1);
@@ -706,13 +706,13 @@ public class RoomServiceImpl implements RoomService {
                 ServletRequestAttributes.SCOPE_SESSION);
         Optional<PetJournalEntry> petJournalEntry = petJournalEntryDao
                 .findByPetIdAndJournalEntry(pet.getId(),
-                        JournalEntryType.OPEN_NEWBIE_BOXES);
+                        JournalEntryId.OPEN_NEWBIE_BOXES);
         if (petJournalEntry.isEmpty()) {
             Pet fullPet = petDao.findFullById(pet.getId()).orElseThrow();
             PetJournalEntry newPetJournalEntry = new PetJournalEntry();
             newPetJournalEntry.setCreatedAt(OffsetDateTime.now(clock));
             newPetJournalEntry.setPet(fullPet);
-            newPetJournalEntry.setJournalEntry(JournalEntryType.OPEN_NEWBIE_BOXES);
+            newPetJournalEntry.setJournalEntry(JournalEntryId.OPEN_NEWBIE_BOXES);
             newPetJournalEntry.setReaded(false);
             fullPet.getJournalEntries().put(
                     newPetJournalEntry.getJournalEntry(), newPetJournalEntry);

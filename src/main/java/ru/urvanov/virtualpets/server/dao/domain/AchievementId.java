@@ -3,7 +3,7 @@ package ru.urvanov.virtualpets.server.dao.domain;
 /**
  * Код записи из системы достижений.
  */
-public enum AchievementCode {
+public enum AchievementId {
     BUILD_1,
     FEED_1,
     FEED_10,

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.MapJoin;
-import ru.urvanov.virtualpets.server.dao.domain.JournalEntryType;
+import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry_;
@@ -35,7 +35,7 @@ public interface PetDao
         return (rootPet,
                     criteriaQuery,
                     criteriaBuilder) -> {
-                MapJoin<Pet, JournalEntryType, PetJournalEntry> joinPetJournalEntries = rootPet
+                MapJoin<Pet, JournalEntryId, PetJournalEntry> joinPetJournalEntries = rootPet
                         .join(Pet_.journalEntries, JoinType.LEFT);
                 return criteriaBuilder.and(
                         criteriaBuilder
