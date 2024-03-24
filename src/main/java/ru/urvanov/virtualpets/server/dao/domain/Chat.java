@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -32,11 +31,9 @@ import jakarta.validation.constraints.Size;
     private Integer id;
     
     @ManyToOne
-    @JoinColumn(name="addressee")
     private User addressee;
     
     @ManyToOne
-    @JoinColumn(name="sender")
     private User sender;
     
     @Column(name="send_time")

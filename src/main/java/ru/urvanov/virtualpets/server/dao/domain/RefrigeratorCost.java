@@ -27,7 +27,6 @@ public class RefrigeratorCost implements Serializable {
     private int id;
     
     @ManyToOne
-    @JoinColumn(name="refrigerator_id")
     private Refrigerator refrigerator;
     
     @ManyToOne
