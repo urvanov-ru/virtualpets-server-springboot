@@ -3,7 +3,6 @@ package ru.urvanov.virtualpets.server.dao.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -31,10 +30,9 @@ public class RefrigeratorCost implements Serializable {
     private Refrigerator refrigerator;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="building_material_id")
+    @JoinColumn(name = "building_material_id")
     private BuildingMaterial buildingMaterial;
     
-    @Column(name="cost")
     private int cost;
     
     
