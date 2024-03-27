@@ -93,9 +93,6 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     private ConversionService conversionService;
 
     @Autowired
-    private PetFoodDao petFoodDao;
-
-    @Autowired
     private FoodDao foodDao;
 
     @Autowired
@@ -761,14 +758,6 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
             rate += cloth.getHiddenObjectsGameDropRate();
         }
         clothMaxDropRate = rate;
-    }
-
-    public PetFoodDao getPetFoodDao() {
-        return petFoodDao;
-    }
-
-    public void setPetFoodDao(PetFoodDao petFoodDao) {
-        this.petFoodDao = petFoodDao;
     }
 
     public FoodDao getFoodDao() {
