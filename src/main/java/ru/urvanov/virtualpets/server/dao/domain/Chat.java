@@ -21,7 +21,8 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name="chat")
 @NamedQueries({@NamedQuery(name="Chat.findLast", query="from Chat c where (c.addressee is null or c.addressee.id = :userId or c.sender.id = :userId) order by c.sendTime desc, c.id desc"),
-    @NamedQuery(name="Chat.findFromId", query="from Chat c where c.id > :fromId and (c.addressee is null or c.addressee.id = :userId or c.sender.id = :userId) order by c.sendTime asc")})public class Chat implements Serializable{
+    @NamedQuery(name="Chat.findFromId", query="from Chat c where c.id > :fromId and (c.addressee is null or c.addressee.id = :userId or c.sender.id = :userId) order by c.sendTime asc")})
+public class Chat implements Serializable{
     
     private static final long serialVersionUID = 6614311694772485588L;
 
