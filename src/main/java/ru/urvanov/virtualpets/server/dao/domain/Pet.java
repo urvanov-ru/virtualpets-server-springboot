@@ -41,9 +41,10 @@ public class Pet implements Serializable {
     private static final long serialVersionUID = 2699175148933987413L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="pet_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator="pet_seq")
     @SequenceGenerator(name="pet_seq",
-        sequenceName="pet_id_seq", allocationSize=1)
+            sequenceName="pet_id_seq", allocationSize=1)
     private Integer id;
 
     @Size(max = 50)
@@ -103,35 +104,43 @@ public class Pet implements Serializable {
     @Version
     private int version;
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name="food_id")
     private Map<FoodId, PetFood> foods;
 
     @ManyToMany
-    @JoinTable(name = "pet_cloth", joinColumns = @JoinColumn(name = "pet_id"), inverseJoinColumns = @JoinColumn(name = "cloth_id"))
+    @JoinTable(name = "pet_cloth",
+            joinColumns = @JoinColumn(name = "pet_id"),
+            inverseJoinColumns = @JoinColumn(name = "cloth_id"))
     private Set<Cloth> cloths;
     
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name = "building_material_id")
     private Map<BuildingMaterialId, PetBuildingMaterial> buildingMaterials;
     
     @ManyToMany
-    @JoinTable(name="pet_book", joinColumns = @JoinColumn(name="pet_id"), inverseJoinColumns = @JoinColumn(name="book_id"))
+    @JoinTable(
+            inverseJoinColumns = @JoinColumn(name="book_id"))
     private Set<Book> books;
     
-    @OneToMany(mappedBy= "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy= "pet", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name = "drink_id")
     private Map<DrinkId, PetDrink> drinks;
     
-    @OneToMany(mappedBy="pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="pet", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name = "journal_entry_id")
     private Map<JournalEntryId, PetJournalEntry> journalEntries;
     
-    @OneToMany(mappedBy="pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="pet", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name = "achievement_id")
     private Map<AchievementId, PetAchievement> achievements;
