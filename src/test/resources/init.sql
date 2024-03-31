@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS virtualpets_springboot;
+CREATE SCHEMA IF NOT EXISTS virtualpets_server_springboot;

@@ -24,7 +24,7 @@ import ru.urvanov.virtualpets.server.test.listener.DaoTestExecutionListener;
 @DataJpaTest
 @TestPropertySource(properties = {
         "spring.test.database.replace=none",
-        "spring.liquibase.default-schema=virtualpets_springboot"
+        "spring.liquibase.default-schema=virtualpets_server_springboot"
     })
 @DirtiesContext // dirtiesContext нужен из-за dynamicPropertySource
 public class AbstractDaoImplTest {
