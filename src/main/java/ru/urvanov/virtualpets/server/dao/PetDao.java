@@ -5,10 +5,13 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.MapJoin;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
@@ -50,4 +53,22 @@ public interface PetDao
     default Iterable<Pet> findLastCreatedPets(int page, int pageSize) {
         return this.findAll(PageRequest.of(page, pageSize, Sort.by("createdDate").descending()));
     }
+    
+    @Query("from pet p left outer join p.buildingMaterials bm where p.id = ?1")
+    Optional<Pet> findByIdWithBuildingMaterials(Integer id);
+    
+    @EntityGraph("pet.buildingMaterials")
+    Optional<Pet> findByIdWithFullBuildingMaterials(Integer id);
+    
+    @EntityGraph("pet.foods")
+    Optional<Pet> findByIdWithFullFoods(Integer id);
+    
+    @EntityGraph("pet.drinks")
+    Optional<Pet> findByIdWithFullDrinks(Integer id);
+    
+    @EntityGraph("pet.cloths")
+    Optional<Pet> findByIdWithFullCloths(Integer id);
+    
+    @EntityGraph("pet.books")
+    Optional<Pet> findByIdWithFullBooks(Integer id);
 }
