@@ -22,7 +22,6 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.MapKeyEnumerated;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
-import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
@@ -36,9 +35,7 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name = "pet")
-@NamedQueries({
-        @NamedQuery(name = "findByUserId", query = "from Pet p where p.user.id = :userId")
-})
+@NamedQuery(name = "Pet.findByUserId", query = "from Pet p where p.user.id = :userId")
 @NamedEntityGraph(name = "pet.foods",
         attributeNodes = @NamedAttributeNode(
                 value = "foods",

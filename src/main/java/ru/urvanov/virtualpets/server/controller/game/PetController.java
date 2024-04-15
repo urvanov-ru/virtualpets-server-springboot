@@ -3,6 +3,7 @@ package ru.urvanov.virtualpets.server.controller.game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +54,14 @@ public class PetController {
             ServiceException {
         return petService.select(selectPetArg);
     }
+    
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "delete/{petId}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable Integer petId) throws DaoException,
+            ServiceException {
+        petService.delete(petId);
+    }
+    
     
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "drink", method = RequestMethod.POST)
