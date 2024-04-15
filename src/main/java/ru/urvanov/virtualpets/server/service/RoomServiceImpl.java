@@ -146,7 +146,7 @@ public class RoomServiceImpl implements RoomService {
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findByIdWithJournalEntriesAndAchievements(selectedPet.getId()).orElseThrow();
         ru.urvanov.virtualpets.shared.domain.GetRoomInfoResult result = new ru.urvanov.virtualpets.shared.domain.GetRoomInfoResult();
         result.setMood(pet.getMood());
         result.setEducation(pet.getEducation());

@@ -71,4 +71,7 @@ public interface PetDao
     
     @EntityGraph("pet.books")
     Optional<Pet> findByIdWithFullBooks(Integer id);
+    
+    @EntityGraph("pet.journalEntriesAndAchievements")
+    public Optional<Pet> findByIdWithJournalEntriesAndAchievements(Integer id);
 }
