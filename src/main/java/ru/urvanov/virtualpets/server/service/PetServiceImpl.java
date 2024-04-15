@@ -666,10 +666,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
     @Override
     @Transactional(rollbackFor = {DaoException.class, ServiceException.class})
     public void delete(Integer petId) {
-        Room room = roomDao.findByPetId(petId);
-        if (room != null) {
-            roomDao.delete(room);
-        }
-        petDao.delete(petId);
+        roomDao.findByPetId(petId).ifPresent(roomDao::delete);
+        petDao.deleteById(petId);
     }
 }

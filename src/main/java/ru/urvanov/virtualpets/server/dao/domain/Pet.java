@@ -35,6 +35,7 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name = "pet")
+@NamedQuery(name = "Pet.findById", query = "from Pet p where p.id = :id")
 @NamedQuery(name = "Pet.findByUserId", query = "from Pet p where p.user.id = :userId")
 @NamedEntityGraph(name = "pet.foods",
         attributeNodes = @NamedAttributeNode(

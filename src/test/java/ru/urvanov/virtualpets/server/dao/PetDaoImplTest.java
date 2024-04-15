@@ -8,21 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.urvanov.virtualpets.server.dao.domain.Food;
 import ru.urvanov.virtualpets.server.dao.domain.FoodId;
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
@@ -107,6 +99,15 @@ public class PetDaoImplTest extends AbstractDaoImplTest {
         
         pet = petDao.findFullById(1).orElseThrow();
         assertEquals(10, pet.getFoods().get(FoodId.CARROT).getFoodCount());
+    }
+    
+    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
+    @Test
+    @Transactional
+    public void testFetchBooks() {
+        Pet pet = petDao.findById(1).orElseThrow();
+        int booksSize = pet.getBooks().size();
+        assertEquals(0, booksSize);
     }
 
 }
