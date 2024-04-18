@@ -713,7 +713,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     }
 
     private void initDrinkDrop() {
-        Iterable<Drink> drinks = drinkDao.findByOrderByMachineWithDrinksLevelAscMachineWithDrinksOrderAsc();
+        Iterable<Drink> drinks = drinkDao.findAllOrderByMachineWithDrinksLevelAscMachineWithDrinksOrderAsc();
         float rate = 0.0f;
         for (Drink drink : drinks) {
             drinkDrop.put(rate, drink);

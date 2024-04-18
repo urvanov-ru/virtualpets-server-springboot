@@ -322,7 +322,7 @@ public class RoomServiceImpl implements RoomService {
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findByIdWithFoodsAndJournalEntriesAndBuildingMaterials(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
         if (!pet.getJournalEntries().containsKey(JournalEntryId.BUILD_REFRIGERATOR)) {
             throw new ServiceException("No now.");
@@ -415,7 +415,7 @@ public class RoomServiceImpl implements RoomService {
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findByIdWithBooksAndJournalEntriesAndBuildingMaterials(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
         if (!pet.getJournalEntries()
                 .containsKey(JournalEntryId.BUILD_BOOKCASE)) {
@@ -501,7 +501,7 @@ public class RoomServiceImpl implements RoomService {
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findByIdWithDrinksAndJournalEntriesAndBuildingMaterialsAndAchievements(selectedPet.getId()).orElseThrow();
         Room room = roomDao.findByPetId(pet.getId()).orElseThrow();
         if (!pet.getJournalEntries()
                 .containsKey(JournalEntryId.BUILD_MACHINE_WITH_DRINKS)) {

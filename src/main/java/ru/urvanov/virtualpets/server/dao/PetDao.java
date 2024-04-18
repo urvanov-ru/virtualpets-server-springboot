@@ -79,4 +79,17 @@ public interface PetDao
     @EntityGraph("pet.journalEntriesAndAchievements")
     @Query(name = "Pet.findById")
     Optional<Pet> findByIdWithJournalEntriesAndAchievements(Integer id);
+    
+    @EntityGraph("pet.booksAndJournalEntriesAndBuildingMaterials")
+    @Query(name = "Pet.findById")
+    Optional<Pet> findByIdWithBooksAndJournalEntriesAndBuildingMaterials(Integer id);
+    
+    @EntityGraph("pet.foodsAndJournalEntriesAndBuildingMaterials")
+    @Query(name = "Pet.findById")
+    Optional<Pet> findByIdWithFoodsAndJournalEntriesAndBuildingMaterials(Integer id);
+    
+    @EntityGraph("pet.drinksAndJournalEntriesAndBuildingMaterialsAndAchievements")
+    @Query(name = "Pet.findById")
+    Optional<Pet> findByIdWithDrinksAndJournalEntriesAndBuildingMaterialsAndAchievements(
+            Integer id);
 }
