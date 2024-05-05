@@ -326,14 +326,20 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
         Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
         Cloth hat = null;
         if (saveClothArg.getHatId() != null) {
+            // Получаем прокси сущности Cloth
+            // без лишнего обращения к базе данных.
             hat = clothDao.getReferenceById(saveClothArg.getHatId());
         }
         Cloth cloth = null;
         if (saveClothArg.getClothId() != null) {
+            // Получаем прокси сущности Cloth
+            // без лишнего обращения к базе данных.
             cloth = clothDao.getReferenceById(saveClothArg.getClothId());
         }
         Cloth bow = null;
         if (saveClothArg.getBowId() != null) {
+            // Получаем прокси сущности Cloth
+            // без лишнего обращения к базе данных.
             bow = clothDao.getReferenceById(saveClothArg.getBowId());
         }
         pet.setHat(hat);
