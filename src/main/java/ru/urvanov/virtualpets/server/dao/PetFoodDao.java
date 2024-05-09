@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
@@ -18,7 +18,7 @@ import ru.urvanov.virtualpets.server.dao.domain.PetFood_;
 import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 
 @Transactional(readOnly = true)
-public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecificationExecutor<PetFood> {
+public interface PetFoodDao extends ListCrudRepository<PetFood, Integer>, JpaSpecificationExecutor<PetFood> {
     List<PetFood> findByPetId(Integer petId);
     List<PetFood> findByPet(Pet pet);
     

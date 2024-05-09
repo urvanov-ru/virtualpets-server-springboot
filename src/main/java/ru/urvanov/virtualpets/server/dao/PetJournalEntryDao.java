@@ -6,14 +6,14 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 
 @Transactional(readOnly = true)
-public interface PetJournalEntryDao extends CrudRepository<PetJournalEntry, Integer>{
+public interface PetJournalEntryDao extends ListCrudRepository<PetJournalEntry, Integer>{
     
     List<PetJournalEntry> findAllByPetId(Integer petId, Pageable pageable);
     
