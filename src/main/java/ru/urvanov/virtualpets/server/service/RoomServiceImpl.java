@@ -567,13 +567,11 @@ public class RoomServiceImpl implements RoomService {
             ServiceException {
         RoomBuildMenuCosts roomBuildMenuCosts = new RoomBuildMenuCosts();
         List<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>> refrigeratorCosts = new ArrayList<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>>();
-        Optional<Refrigerator> refrigerator = null;
-        int index = 1;
-        while ((refrigerator = refrigeratorDao.findFullById(index)).isPresent()) {
-            index++;
+        List<Refrigerator> refrigerators = refrigeratorDao.findAllFull();
+        for (Refrigerator refrigerator : refrigerators) {
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
             for (Entry<BuildingMaterialId, RefrigeratorCost> entry : refrigerator
-                    .map(Refrigerator::getRefrigeratorCost).map(Map::entrySet).orElseThrow()) {
+                    .getRefrigeratorCost().entrySet()) {
                 map.put(conversionService
                         .convert(
                                 entry.getKey(),
@@ -585,14 +583,11 @@ public class RoomServiceImpl implements RoomService {
         roomBuildMenuCosts.setRefrigeratorCosts(refrigeratorCosts);
 
         List<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>> bookcaseCosts = new ArrayList<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>>();
-        Optional<Bookcase> bookcase = null;
-        index = 1;
-        while ((bookcase = bookcaseDao.findFullById(index)).isPresent()) {
-            index++;
+        List<Bookcase> bookcases = bookcaseDao.findAllFull();
+        for (Bookcase bookcase : bookcases) {
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
             for (Entry<BuildingMaterialId, BookcaseCost> entry : bookcase
-                    .map(Bookcase::getBookcaseCost).map(Map::entrySet)
-                    .orElseThrow()) {
+                    .getBookcaseCost().entrySet()) {
                 map.put(conversionService
                         .convert(
                                 entry.getKey(),
@@ -604,14 +599,12 @@ public class RoomServiceImpl implements RoomService {
         roomBuildMenuCosts.setBookcaseCosts(bookcaseCosts);
 
         List<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>> drinkCosts = new ArrayList<Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>>();
-        Optional<MachineWithDrinks> drink = null;
-        index = 1;
-        while ((drink = machineWithDrinksDao.findFullById(index)).isPresent()) {
-            index++;
+        List<MachineWithDrinks> machineWithDrinksList = machineWithDrinksDao.findAllFull();
+        for (MachineWithDrinks machineWithDrinks : machineWithDrinksList) {
             Map<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer> map = new HashMap<ru.urvanov.virtualpets.shared.domain.BuildingMaterialType, Integer>();
-            for (Entry<BuildingMaterialId, MachineWithDrinksCost> entry : drink
-                    .map(MachineWithDrinks::getMachineWithDrinksCost)
-                    .map(Map::entrySet).orElseThrow()) {
+            for (Entry<BuildingMaterialId, MachineWithDrinksCost> entry : machineWithDrinks
+                    .getMachineWithDrinksCost().entrySet()) {
+
                 map.put(conversionService
                         .convert(
                                 entry.getKey(),

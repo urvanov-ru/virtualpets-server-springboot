@@ -10,12 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 /**
  * Запись о количестве еды у питомца.
  */
-@Entity(name = "pet_food")
+@Entity
+@Table(name = "pet_food")
 public class PetFood implements Serializable {
 
     private static final long serialVersionUID = -8225590371680345671L;
