@@ -1,8 +1,10 @@
 package ru.urvanov.virtualpets.server.dao;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,15 +16,14 @@ import ru.urvanov.virtualpets.server.dao.domain.User;
 public interface UserDao extends JpaRepository<User, Integer> {
     Optional<User> findByLogin(String login);
     Optional<User> findByLoginAndPassword(String login, String password);
-    Iterable<User> findActiveAfter(OffsetDateTime offsetDateTime);
+    List<User> findActiveAfter(OffsetDateTime offsetDateTime);
     Optional<User> findByLoginAndEmail(String name, String email);
     Optional<User> findByUnid(String unid);
     Optional<User> findByRecoverPasswordKey(String recoverKey);
     
     
-    default Iterable<User> findLastRegisteredUsers(int page, int pageSize) {
+    default Page<User> findLastRegisteredUsers(int page, int pageSize) {
         return this.findAll(PageRequest.of(page, pageSize, Sort.by("registrationDate").descending()));
     }
-    
     
 }

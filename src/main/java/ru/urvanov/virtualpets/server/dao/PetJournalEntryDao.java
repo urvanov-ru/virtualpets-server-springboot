@@ -17,7 +17,7 @@ public interface PetJournalEntryDao extends CrudRepository<PetJournalEntry, Inte
     
     List<PetJournalEntry> findAllByPetId(Integer petId, Pageable pageable);
     
-    default Iterable<PetJournalEntry> findLastByPetId(Integer petId, Integer count) {
+    default List<PetJournalEntry> findLastByPetId(Integer petId, Integer count) {
         return this.findAllByPetId(petId, PageRequest.of(0, count, Sort.by("createdAt").descending()));
     }
 

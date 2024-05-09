@@ -1,5 +1,6 @@
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +19,8 @@ import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 
 @Transactional(readOnly = true)
 public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecificationExecutor<PetFood> {
-    Iterable<PetFood> findByPetId(Integer petId);
-    Iterable<PetFood> findByPet(Pet pet);
+    List<PetFood> findByPetId(Integer petId);
+    List<PetFood> findByPet(Pet pet);
     
     
     default Optional<PetFood> findByPetIdAndFoodType(Integer petId, FoodId foodType) {
@@ -35,6 +36,5 @@ public interface PetFoodDao extends CrudRepository<PetFood, Integer>, JpaSpecifi
             return predicate;
         };
     }
-    
     
 }

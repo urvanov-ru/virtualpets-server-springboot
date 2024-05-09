@@ -1,5 +1,7 @@
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,7 @@ public class JdbcReportDaoImpl implements JdbcReportDao {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<LastRegisteredUser> findLastRegisteredUsers(int start,
+    public List<LastRegisteredUser> findLastRegisteredUsers(int start,
             int limit) {
         return jdbcClient.sql("""
                 select

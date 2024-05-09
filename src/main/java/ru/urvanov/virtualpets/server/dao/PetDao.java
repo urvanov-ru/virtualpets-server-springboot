@@ -1,7 +1,9 @@
 package ru.urvanov.virtualpets.server.dao;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,7 +27,7 @@ public interface PetDao
 
     Optional<Pet> findFullById(Integer id);
 
-    Iterable<Pet> findByUserId(Integer userId);
+    List<Pet> findByUserId(Integer userId);
     
     long countByUserId(Integer userId);
     
@@ -49,7 +51,7 @@ public interface PetDao
                     };
     }
 
-    default Iterable<Pet> findLastCreatedPets(int page, int pageSize) {
+    default Page<Pet> findLastCreatedPets(int page, int pageSize) {
         return this.findAll(PageRequest.of(page, pageSize, Sort.by("createdDate").descending()));
     }
     
