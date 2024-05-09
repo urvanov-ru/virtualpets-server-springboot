@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -50,7 +50,6 @@ import ru.urvanov.virtualpets.server.dao.domain.PetFood;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.dao.domain.RefrigeratorCost;
-import ru.urvanov.virtualpets.server.dao.domain.Room;
 import ru.urvanov.virtualpets.server.dao.domain.SelectedPet;
 import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.server.service.domain.PetDetails;
@@ -523,7 +522,7 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
                 .getRequestAttributes();
         SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
                 ServletRequestAttributes.SCOPE_SESSION);
-        Pet pet = petDao.findFullById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findByIdWithDrinksAndJournalEntriesAndAchievements(selectedPet.getId()).orElseThrow();
         DrinkId drinkType =  conversionService.convert(drinkArg.getDrinkType(), DrinkId.class);
         Map<DrinkId, PetDrink> drinks = pet.getDrinks();
         PetDrink petDrink = drinks.get(drinkType);
@@ -565,8 +564,8 @@ public class PetServiceImpl implements PetService, ru.urvanov.virtualpets.shared
 
         FoodId foodType = conversionService.convert(satietyArg.getFoodType(),
                 ru.urvanov.virtualpets.server.dao.domain.FoodId.class);
-        Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
-        PetFood food = petFoodDao.findByPetIdAndFoodType(pet.getId(), foodType).orElseThrow();
+        Pet pet = petDao.findByIdWithFoodsJournalEntriesAndAchievements(selectedPet.getId()).orElseThrow();
+        PetFood food = pet.getFoods().get(foodType);
         if (food == null) {
             throw new ServiceException("Food count = 0.");
         } else {

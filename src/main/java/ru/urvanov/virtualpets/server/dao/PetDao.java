@@ -25,6 +25,7 @@ import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 public interface PetDao
         extends JpaRepository<Pet, Integer>, JpaSpecificationExecutor<Pet> {
 
+    @Query(name = "Pet.findFullById")
     Optional<Pet> findFullById(Integer id);
 
     List<Pet> findByUserId(Integer userId);
@@ -94,4 +95,12 @@ public interface PetDao
     @Query(name = "Pet.findById")
     Optional<Pet> findByIdWithDrinksAndJournalEntriesAndBuildingMaterialsAndAchievements(
             Integer id);
+    
+    @EntityGraph("pet.drinksAndJournalEntriesAndAchievements")
+    @Query(name = "Pet.findById")
+    Optional<Pet> findByIdWithDrinksAndJournalEntriesAndAchievements(Integer id);
+    
+    @EntityGraph("pet.foodsAndJournalEntriesAndAchievements")
+    @Query(name = "Pet.findById")
+    Optional<Pet> findByIdWithFoodsJournalEntriesAndAchievements(Integer id);
 }

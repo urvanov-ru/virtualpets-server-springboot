@@ -36,7 +36,24 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "pet")
 @NamedQuery(name = "Pet.findById", query = "from Pet p where p.id = :id")
-@NamedQuery(name = "Pet.findByUserId", query = "from Pet p where p.user.id = :userId")
+@NamedQuery(name = "Pet.findByUserId",
+        query = "from Pet p where p.user.id = :userId")
+@NamedQuery(name = "Pet.findFullById", query = """
+        from Pet p
+        left outer join fetch p.level l
+        left outer join fetch p.hat h1
+        left outer join fetch p.cloth c1
+        left outer join fetch p.bow b1
+        left outer join fetch p.user u
+        left outer join fetch p.cloths c
+        left outer join fetch p.books b
+        left outer join fetch p.foods f
+        left outer join fetch p.buildingMaterials bm
+        left outer join fetch bm.buildingMaterial
+        left outer join fetch p.drinks d
+        left outer join fetch p.journalEntries je
+        left outer join fetch p.achievements ach
+        where p.id = :id""") 
 @NamedEntityGraph(name = "pet.foods",
         attributeNodes = @NamedAttributeNode(
                 value = "foods",
@@ -80,6 +97,20 @@ import jakarta.validation.constraints.Size;
 )
 @NamedEntityGraph(name = "pet.journalEntriesAndAchievements",
         attributeNodes = {
+                @NamedAttributeNode("journalEntries"),
+                @NamedAttributeNode("achievements")
+        }
+)
+@NamedEntityGraph(name = "pet.drinksAndJournalEntriesAndAchievements",
+        attributeNodes = {
+                @NamedAttributeNode("drinks"),
+                @NamedAttributeNode("journalEntries"),
+                @NamedAttributeNode("achievements")
+}
+)
+@NamedEntityGraph(name = "pet.foodsAndJournalEntriesAndAchievements",
+        attributeNodes = {
+                @NamedAttributeNode("foods"),
                 @NamedAttributeNode("journalEntries"),
                 @NamedAttributeNode("achievements")
         }
