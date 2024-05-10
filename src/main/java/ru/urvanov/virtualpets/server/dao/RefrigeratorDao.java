@@ -13,17 +13,20 @@ import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator_;
 
 @Transactional(readOnly = true)
-public interface RefrigeratorDao extends CrudRepository<Refrigerator, Integer>, JpaSpecificationExecutor<Refrigerator> {
+public interface RefrigeratorDao
+        extends CrudRepository<Refrigerator, Integer>,
+        JpaSpecificationExecutor<Refrigerator> {
     default Optional<Refrigerator> findFullById(Integer id) {
-        return this.findOne(RefrigeratorDao.findFullByIdSpecification(id));
+        return this
+                .findOne(RefrigeratorDao.findFullByIdSpecification(id));
     }
 
-    static Specification<Refrigerator> findFullByIdSpecification(Integer id) {
+    static Specification<Refrigerator> findFullByIdSpecification(
+            Integer id) {
         return (root, query, builder) -> {
             root.fetch(Refrigerator_.refrigeratorCost);
-            Predicate predicate = builder.equal(
-                    root.get(Refrigerator_.id),
-                    id);
+            Predicate predicate = builder
+                    .equal(root.get(Refrigerator_.id), id);
             return predicate;
         };
     }

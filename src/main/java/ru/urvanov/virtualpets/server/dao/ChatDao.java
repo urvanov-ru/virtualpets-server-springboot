@@ -10,5 +10,6 @@ import ru.urvanov.virtualpets.server.dao.domain.Chat;
 @Transactional(readOnly = true)
 public interface ChatDao extends ListCrudRepository<Chat, Integer> {
     List<Chat> findLast(Integer count, Integer userId);
+
     List<Chat> findFromId(Integer fromId, Integer userId);
 }

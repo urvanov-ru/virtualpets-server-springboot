@@ -13,16 +13,19 @@ import ru.urvanov.virtualpets.server.dao.domain.JournalEntryId;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 
 @Transactional(readOnly = true)
-public interface PetJournalEntryDao extends ListCrudRepository<PetJournalEntry, Integer>{
-    
-    List<PetJournalEntry> findAllByPetId(Integer petId, Pageable pageable);
-    
-    default List<PetJournalEntry> findLastByPetId(Integer petId, Integer count) {
-        return this.findAllByPetId(petId, PageRequest.of(0, count, Sort.by("createdAt").descending()));
+public interface PetJournalEntryDao
+        extends ListCrudRepository<PetJournalEntry, Integer> {
+
+    List<PetJournalEntry> findAllByPetId(Integer petId,
+            Pageable pageable);
+
+    default List<PetJournalEntry> findLastByPetId(Integer petId,
+            Integer count) {
+        return this.findAllByPetId(petId, PageRequest.of(0, count,
+                Sort.by("createdAt").descending()));
     }
 
     Optional<PetJournalEntry> findByPetIdAndJournalEntry(Integer petId,
             JournalEntryId code);
-
 
 }

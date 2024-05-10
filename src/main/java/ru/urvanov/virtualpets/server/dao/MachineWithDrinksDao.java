@@ -14,9 +14,12 @@ import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks;
 import ru.urvanov.virtualpets.server.dao.domain.MachineWithDrinks_;
 
 @Transactional(readOnly = true)
-public interface MachineWithDrinksDao extends ListCrudRepository<MachineWithDrinks, Integer>, JpaSpecificationExecutor<MachineWithDrinks> {
+public interface MachineWithDrinksDao
+        extends ListCrudRepository<MachineWithDrinks, Integer>,
+        JpaSpecificationExecutor<MachineWithDrinks> {
     default Optional<MachineWithDrinks> findFullById(Integer id) {
-        return this.findOne(MachineWithDrinksDao.findFullByIdSpecification(id));
+        return this.findOne(
+                MachineWithDrinksDao.findFullByIdSpecification(id));
     }
 
     static Specification<MachineWithDrinks> findFullByIdSpecification(
@@ -24,14 +27,15 @@ public interface MachineWithDrinksDao extends ListCrudRepository<MachineWithDrin
         return (root, query, builder) -> {
             root.fetch(MachineWithDrinks_.machineWithDrinksCost,
                     JoinType.LEFT);
-            Predicate predicate = builder.equal(
-                    root.get(MachineWithDrinks_.id), id);
+            Predicate predicate = builder
+                    .equal(root.get(MachineWithDrinks_.id), id);
             return predicate;
         };
     }
 
     default List<MachineWithDrinks> findAllFull() {
-        return this.findAll(MachineWithDrinksDao.findAllFullSpecification());
+        return this.findAll(
+                MachineWithDrinksDao.findAllFullSpecification());
     }
 
     static Specification<MachineWithDrinks> findAllFullSpecification() {

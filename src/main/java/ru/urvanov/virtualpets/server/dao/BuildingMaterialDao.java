@@ -7,5 +7,6 @@ import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterial;
 import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
 
 @Transactional(readOnly = true)
-public interface BuildingMaterialDao extends JpaRepository<BuildingMaterial, BuildingMaterialId> {
+public interface BuildingMaterialDao
+        extends JpaRepository<BuildingMaterial, BuildingMaterialId> {
 }
