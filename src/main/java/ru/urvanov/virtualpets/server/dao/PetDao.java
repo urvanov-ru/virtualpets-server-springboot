@@ -25,7 +25,6 @@ import ru.urvanov.virtualpets.server.dao.domain.Pet_;
 public interface PetDao
         extends JpaRepository<Pet, Integer>, JpaSpecificationExecutor<Pet> {
 
-    @Query(name = "Pet.findFullById")
     Optional<Pet> findFullById(Integer id);
 
     List<Pet> findByUserId(Integer userId);
