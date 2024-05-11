@@ -20,7 +20,6 @@ import ru.urvanov.virtualpets.server.controller.site.domain.StatisticsParams.Sta
 import ru.urvanov.virtualpets.server.dao.JdbcReportDao;
 import ru.urvanov.virtualpets.server.dao.domain.LastRegisteredUser;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
-import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.server.service.PetService;
 
 /**
@@ -36,6 +35,9 @@ public class StatisticsController {
 
     @Autowired
     private PetService petService;
+    
+    //@Autowired
+    //private UserService userService;
 
     @RequestMapping(value = "/information/statistics", method = RequestMethod.GET)
     public String showStatistics(Locale locale, Model model) {
@@ -56,6 +58,8 @@ public class StatisticsController {
         if (!statisticsParamsBindingResult.hasErrors()) {
             switch (statisticsParams.getType()) {
             case LAST_REGISTERED_USERS:
+                // Iterable<User> lastRegisteredUsers = userService.findLastRegisteredUsers(0,  statisticsParams.getMaxRecordsCount());
+                
                 users = jdbcReportDao.findLastRegisteredUsers(0,
                         statisticsParams.getMaxRecordsCount());
                 break;
