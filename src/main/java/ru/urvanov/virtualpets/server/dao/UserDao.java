@@ -16,8 +16,6 @@ import ru.urvanov.virtualpets.server.dao.domain.User;
 public interface UserDao extends JpaRepository<User, Integer> {
     Optional<User> findByLogin(String login);
 
-    Optional<User> findByLoginAndPassword(String login, String password);
-
     List<User> findByActiveDateAfter(OffsetDateTime offsetDateTime);
 
     Optional<User> findByLoginAndEmail(String name, String email);
