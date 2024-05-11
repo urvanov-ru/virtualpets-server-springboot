@@ -22,7 +22,7 @@ public interface BookcaseDao
         return this.findOne(BookcaseDao.findFullByIdSpecification(id));
     }
 
-    static Specification<Bookcase> findFullByIdSpecification(
+    private static Specification<Bookcase> findFullByIdSpecification(
             Integer id) {
         return (root, query, builder) -> {
             Predicate predicateId = builder.equal(root.get(Bookcase_.id),
@@ -36,7 +36,7 @@ public interface BookcaseDao
         return this.findAll(BookcaseDao.findAllFullSpecification());
     }
 
-    static Specification<Bookcase> findAllFullSpecification() {
+    private static Specification<Bookcase> findAllFullSpecification() {
         return (root, query, builder) -> {
             root.fetch(Bookcase_.bookcaseCost, JoinType.LEFT);
             return builder.and();

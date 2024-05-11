@@ -22,7 +22,7 @@ public interface MachineWithDrinksDao
                 MachineWithDrinksDao.findFullByIdSpecification(id));
     }
 
-    static Specification<MachineWithDrinks> findFullByIdSpecification(
+    private static Specification<MachineWithDrinks> findFullByIdSpecification(
             Integer id) {
         return (root, query, builder) -> {
             root.fetch(MachineWithDrinks_.machineWithDrinksCost,
@@ -38,7 +38,7 @@ public interface MachineWithDrinksDao
                 MachineWithDrinksDao.findAllFullSpecification());
     }
 
-    static Specification<MachineWithDrinks> findAllFullSpecification() {
+    private static Specification<MachineWithDrinks> findAllFullSpecification() {
         return (root, query, builder) -> {
             root.fetch(MachineWithDrinks_.machineWithDrinksCost,
                     JoinType.LEFT);

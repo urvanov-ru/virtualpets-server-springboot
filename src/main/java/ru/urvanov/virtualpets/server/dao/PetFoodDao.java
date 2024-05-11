@@ -32,7 +32,7 @@ public interface PetFoodDao extends ListCrudRepository<PetFood, Integer>,
                 .stream().findFirst();
     }
 
-    static Specification<PetFood> findByPetIdAndFoodTypeSpecification(
+    private static Specification<PetFood> findByPetIdAndFoodTypeSpecification(
             Integer petId, FoodId foodType) {
         return (root, query, builder) -> {
 

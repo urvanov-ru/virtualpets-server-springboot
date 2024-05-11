@@ -21,7 +21,7 @@ public interface RefrigeratorDao
                 .findOne(RefrigeratorDao.findFullByIdSpecification(id));
     }
 
-    static Specification<Refrigerator> findFullByIdSpecification(
+    private static Specification<Refrigerator> findFullByIdSpecification(
             Integer id) {
         return (root, query, builder) -> {
             root.fetch(Refrigerator_.refrigeratorCost);
@@ -35,7 +35,7 @@ public interface RefrigeratorDao
         return this.findAll(RefrigeratorDao.findAllFullSpecification());
     }
 
-    static Specification<Refrigerator> findAllFullSpecification() {
+    private static Specification<Refrigerator> findAllFullSpecification() {
         return (root, query, builder) -> {
             root.fetch(Refrigerator_.refrigeratorCost);
             return builder.and();
