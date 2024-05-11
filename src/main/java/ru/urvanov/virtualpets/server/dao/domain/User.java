@@ -19,8 +19,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -33,11 +31,6 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name = "user")
-@NamedQuery(name = "User.findByLogin", query = "from User u where u.login=:login")
-@NamedQuery(name="User.list", query="from User")
-@NamedQuery(name="User.findByLoginAndPassword", query="from User u where u.login=:login and u.password=:password")
-@NamedQuery(name="User.findActiveAfter", query="from User u where u.activeDate > :date")
-@NamedQuery(name="User.findByLoginAndEmail", query="from User u where u.login=:login and u.email=:email")
 public class User implements UserDetails, Serializable{
 
     private static final long serialVersionUID = 6592049980085443679L;

@@ -18,7 +18,7 @@ public interface UserDao extends JpaRepository<User, Integer> {
 
     Optional<User> findByLoginAndPassword(String login, String password);
 
-    List<User> findActiveAfter(OffsetDateTime offsetDateTime);
+    List<User> findByActiveDateAfter(OffsetDateTime offsetDateTime);
 
     Optional<User> findByLoginAndEmail(String name, String email);
 

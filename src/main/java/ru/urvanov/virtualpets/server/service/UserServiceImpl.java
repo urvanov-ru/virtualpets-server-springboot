@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     public RefreshUsersOnlineResult getUsersOnline(
             RefreshUsersOnlineArg argument) {
         OffsetDateTime offsetDateTime = OffsetDateTime.now(clock).minusMinutes(5);
-        Iterable<User> users = userDao.findActiveAfter(offsetDateTime);
+        Iterable<User> users = userDao.findByActiveDateAfter(offsetDateTime);
         UserInfo[] userInfos = StreamSupport.stream(users.spliterator(), false)
                 .map(u -> {
                     UserInfo userInfo = new UserInfo();
