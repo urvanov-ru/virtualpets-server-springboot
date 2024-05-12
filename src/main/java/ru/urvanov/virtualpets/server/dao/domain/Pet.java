@@ -54,6 +54,16 @@ import jakarta.validation.constraints.Size;
         left outer join fetch p.journalEntries je
         left outer join fetch p.achievements ach
         where p.id = :id""") 
+@NamedEntityGraph(name = "pet.buildingMaterials",
+        attributeNodes = @NamedAttributeNode(
+                value = "buildingMaterials",
+                subgraph = "pet.buildingMaterials.buildingMaterial"
+        ),
+        subgraphs = @NamedSubgraph(
+                name = "pet.buildingMaterials.buildingMaterial",
+                attributeNodes = @NamedAttributeNode("buildingMaterial")
+        )
+)
 @NamedEntityGraph(name = "pet.foods",
         attributeNodes = @NamedAttributeNode(
                 value = "foods",
@@ -68,16 +78,6 @@ import jakarta.validation.constraints.Size;
         subgraphs = @NamedSubgraph(
                 name = "pet.drinks.drink",
                 attributeNodes = @NamedAttributeNode("drink")))
-@NamedEntityGraph(name = "pet.buildingMaterials",
-        attributeNodes = @NamedAttributeNode(
-                value = "buildingMaterials",
-                subgraph = "pet.buildingMaterials.buildingMaterial"
-        ),
-        subgraphs = @NamedSubgraph(
-                name = "pet.buildingMaterials.buildingMaterial",
-                attributeNodes = @NamedAttributeNode("buildingMaterial")
-        )
-)
 @NamedEntityGraph(name = "pet.cloths",
         attributeNodes = @NamedAttributeNode("cloths"))
 @NamedEntityGraph(name = "pet.books",
