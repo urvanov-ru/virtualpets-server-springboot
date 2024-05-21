@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    hikari:
+      schema: virtualpets_server_springboot
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: 'true'
+        default_schema: virtualpets_server_springboot
+        show_sql: 'true'
+        max_fetch_depth: 3
+        jdbc:
+          fetch_size: 50
+          batch_size: 10
+        use_nationalized_character_data: 'true'
+        connection:
+          CharSet: utf8
+          characterEncoding: utf8
+          useUnicode: 'true'
+        implicit_naming_strategy: default
+
+  liquibase:
+    default-schema: virtualpets_server_springboot
+#spring.mail.host=localhost
+#spring.mail.port=8888
+#spring.mail.username=test
+#spring.mail.password=test
+  mail:
+    from: noemail@nowhere.com
+    subject: Recover password
+    
+application:
+  version: 0.21
+  url: http://localhost:8080
+
+
+
+
+
