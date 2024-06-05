@@ -29,19 +29,20 @@ spring:
 #spring.mail.port=8888
 #spring.mail.username=test
 #spring.mail.password=test
-  mail:
-    from: noemail@nowhere.com
-    subject: Recover password
     
 virtualpets-server-springboot:
   version: 0.21
   servers:
-   - url: http://localhost:8080
-     name: Русскоязычный основной (ru)
+   - address: http://localhost:8080
+     name: Русскоязычный основной
      locale: ru
-   - url: broken_test
+   - address: broken_test
      name: broken_test
      locale: broken_test
+  mail:
+    from: noemail@nowhere.com
+    subject: Recover password
+
 
 
 

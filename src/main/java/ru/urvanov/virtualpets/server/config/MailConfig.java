@@ -10,8 +10,10 @@ public class MailConfig {
     
     @Bean
     public SimpleMailMessage templateMessage(
-            @Value("${mail.from}") String mailFrom,
-            @Value("${mail.subject}") String mailSubject) {
+            @Value("${virtualpets-server-springboot.mail.from}")
+            String mailFrom,
+            @Value("${virtualpets-server-springboot.mail.subject}")
+            String mailSubject) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(null);
         simpleMailMessage.setSubject(mailSubject);

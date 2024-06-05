@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.urvanov.virtualpets.server.config.VirtualpetsServerSpringBootProperties;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.shared.domain.GetServersArg;
@@ -51,11 +52,11 @@ public class PublicServiceImpl implements PublicService {
     //@Autowired
     //private SimpleMailMessage templateMessage;
 
-    @Value("${application.version}")
+    @Value("${virtualpets-server-springboot.version}")
     private String version;
 
-    @Value("${application.url}")
-    private String[] applicationUrl;
+    @Autowired
+    private VirtualpetsServerSpringBootProperties properties;
 
     @Autowired
     private BCryptPasswordEncoder bcryptEncoder;
@@ -70,12 +71,7 @@ public class PublicServiceImpl implements PublicService {
         if (!version.equals(clientVersion)) {
             throw new IncompatibleVersionException("", version, clientVersion);
         }
-        ServerInfo[] serverInfos = new ServerInfo[1];
-        serverInfos[0] = new ServerInfo();
-        serverInfos[0].address = "http://localhost:8081/virtualpets-server/site";
-        serverInfos[0].locale = "ru";
-        serverInfos[0].name = "Русскоязычный основной";
-        return serverInfos;
+        return properties.getServers();
     }
 
     @Override
@@ -237,36 +233,6 @@ public class PublicServiceImpl implements PublicService {
             loginResult.setSuccess(false);
         }
         return loginResult;
-    }
-
-    /**
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * @param version
-     *            the version to set
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    /**
-     * @return the applicationUrl
-     */
-    public String[] getApplicationUrl() {
-        return applicationUrl;
-    }
-
-    /**
-     * @param applicationUrl
-     *            the applicationUrl to set
-     */
-    public void setApplicationUrl(String[] applicationUrl) {
-        this.applicationUrl = applicationUrl;
     }
 
     @Override

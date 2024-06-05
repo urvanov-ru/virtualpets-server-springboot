@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService, ru.urvanov.virtualpets.shar
     @Autowired
     private MessageSource messageSource;
     
-    @Value("${application.version}")
+    @Value("${virtualpets-server-springboot.version}")
     private String version;
     
     @Autowired
