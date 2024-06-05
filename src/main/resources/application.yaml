@@ -33,10 +33,10 @@ spring:
 virtualpets-server-springboot:
   version: 0.21
   servers:
-   - address: http://localhost:8080
+   - url: http://localhost:8080
      name: Русскоязычный основной
      locale: ru
-   - address: broken_test
+   - url: broken_test
      name: broken_test
      locale: broken_test
   mail:

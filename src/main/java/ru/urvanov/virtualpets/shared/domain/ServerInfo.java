@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 public class ServerInfo implements Serializable {
     private static final long serialVersionUID = -7056060003187438749L;
-    public String address;
-    public String locale;
-    public String name;
+    private String url;
+    private String locale;
+    private String name;
 
-    public String getAddress() {
-        return address;
+    public String getUrl() {
+        return url;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getLocale() {
@@ -34,7 +34,7 @@ public class ServerInfo implements Serializable {
 
     @Override
     public String toString() {
-        return address + " " + locale + " " + name;
+        return url + " " + locale + " " + name;
 
     }
 }
