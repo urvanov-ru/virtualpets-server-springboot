@@ -55,7 +55,7 @@ public class PublicServiceImpl implements PublicService {
     private String version;
 
     @Value("${application.url}")
-    private String applicationUrl;
+    private String[] applicationUrl;
 
     @Autowired
     private BCryptPasswordEncoder bcryptEncoder;
@@ -257,7 +257,7 @@ public class PublicServiceImpl implements PublicService {
     /**
      * @return the applicationUrl
      */
-    public String getApplicationUrl() {
+    public String[] getApplicationUrl() {
         return applicationUrl;
     }
 
@@ -265,7 +265,7 @@ public class PublicServiceImpl implements PublicService {
      * @param applicationUrl
      *            the applicationUrl to set
      */
-    public void setApplicationUrl(String applicationUrl) {
+    public void setApplicationUrl(String[] applicationUrl) {
         this.applicationUrl = applicationUrl;
     }
 

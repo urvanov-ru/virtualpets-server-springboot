@@ -33,9 +33,15 @@ spring:
     from: noemail@nowhere.com
     subject: Recover password
     
-application:
+virtualpets-server-springboot:
   version: 0.21
-  url: http://localhost:8080
+  servers:
+   - url: http://localhost:8080
+     name: Русскоязычный основной (ru)
+     locale: ru
+   - url: broken_test
+     name: broken_test
+     locale: broken_test
 
 
 
