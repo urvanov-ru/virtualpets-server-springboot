@@ -1,4 +1,8 @@
 spring:
+  application:
+    name: virtualpets-server-springboot
+  config:
+    import: configserver:http://localhost:8888
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     driver-class-name: org.postgresql.Driver
