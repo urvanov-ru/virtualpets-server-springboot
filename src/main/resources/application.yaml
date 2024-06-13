@@ -33,7 +33,13 @@ spring:
 #spring.mail.port=8888
 #spring.mail.username=test
 #spring.mail.password=test
-    
+logging:
+  level:
+    root : warn
+  file:
+    name: virtualpets_server_springboot.log
+
+  
 virtualpets-server-springboot:
   version: 0.21
   servers:
