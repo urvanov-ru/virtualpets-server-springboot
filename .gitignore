@@ -10,4 +10,4 @@ dependency-reduced-pom.xml
 /.settings
 /.project
 /target
-
+./virtualpets_server_springboot*.log
