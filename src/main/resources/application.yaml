@@ -38,13 +38,6 @@ logging:
     root : warn
   file:
     name: virtualpets_server_springboot.log
-    path: logs
-#  logback:
-#    rollingpolicy:
-#      file-name-pattern: virtualpets_server_springboot.%d{yyyy-MM-dd}.%i.gz
-#      max-file-size: 6MB
-#      total-size-cap: 100MB
-#      max-history: 3
 virtualpets-server-springboot:
   version: 0.21
   servers:
