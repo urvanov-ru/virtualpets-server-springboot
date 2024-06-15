@@ -37,7 +37,7 @@ logging:
   level:
     root : warn
   file:
-    name: virtualpets_server_springboot.log
+    name: ./log/virtualpets_server_springboot.log
 virtualpets-server-springboot:
   version: 0.21
   servers:
