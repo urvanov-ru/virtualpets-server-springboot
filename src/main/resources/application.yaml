@@ -35,10 +35,12 @@ spring:
 #spring.mail.password=test
 logging:
   level:
-    root : warn
+    root : debug
   file:
     name: ./log/virtualpets_server_springboot.log
 virtualpets-server-springboot:
+  play:
+    url: http://localhost:8081
   version: 0.21
   servers:
    - url: http://localhost:8080

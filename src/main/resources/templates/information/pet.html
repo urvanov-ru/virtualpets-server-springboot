@@ -12,22 +12,22 @@
     </div>
     <div class="body">
         <div id="main">
-        <H1 th:text="#{pet_info}"></H1>
-        <p th:text="#{pet_name} + ${': ' + pet.name}"></p>
-        <p th:text="#{pet_level} + ${': ' + pet.level}"></p>
-        <p th:text="#{pet_experience} + ${': ' + pet.experience}"></p>
-        <H1 th:text="#{achievements}"></H1>
+        <H1 th:text="#{virtualpets-server-springboot.site.pet_info}"></H1>
+        <p th:text="#{virtualpets-server-springboot.site.pet_name} + ${': ' + pet.name}"></p>
+        <p th:text="#{virtualpets-server-springboot.site.pet_level} + ${': ' + pet.level}"></p>
+        <p th:text="#{virtualpets-server-springboot.site.pet_experience} + ${': ' + pet.experience}"></p>
+        <H1 th:text="#{virtualpets-server-springboot.site.achievements}"></H1>
         <div  th:each="info : ${pet.achievements}">
             <div class="achievementUnlocked" th:if="${info.unlocked}">
-                <p th:text="#{ru.urvanov.virtualpets.client.localization.achievement.__${info.code}__}">
+                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}__}">
                 </p>
-                <p th:text="#{ru.urvanov.virtualpets.client.localization.achievement.__${info.code}___DESCRIPTION}">
+                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
                 </p>
             </div>
             <div class="achievementLocked" th:if="${!info.unlocked}">
-                <p th:text="#{ru.urvanov.virtualpets.client.localization.achievement.__${info.code}__}">
+                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}__}">
                 </p>
-                <p th:text="#{ru.urvanov.virtualpets.client.localization.achievement.__${info.code}___DESCRIPTION}">
+                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
                 </p>
             </div>
             <p>
