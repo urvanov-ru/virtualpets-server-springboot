@@ -10,6 +10,8 @@ spring:
     password: postgres
     hikari:
       schema: virtualpets_server_springboot
+  messages:
+    fallback-to-system-locale: false
   jpa:
     properties:
       hibernate:
@@ -26,9 +28,9 @@ spring:
           characterEncoding: utf8
           useUnicode: 'true'
         implicit_naming_strategy: default
-
   liquibase:
     default-schema: virtualpets_server_springboot
+    
 #spring.mail.host=localhost
 #spring.mail.port=8888
 #spring.mail.username=test
