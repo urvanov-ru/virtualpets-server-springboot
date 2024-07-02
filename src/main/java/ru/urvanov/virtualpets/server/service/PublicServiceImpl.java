@@ -23,25 +23,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.urvanov.virtualpets.server.api.domain.GetServersArg;
+import ru.urvanov.virtualpets.server.api.domain.LoginResult;
+import ru.urvanov.virtualpets.server.api.domain.RecoverPasswordArg;
+import ru.urvanov.virtualpets.server.api.domain.RecoverSessionArg;
+import ru.urvanov.virtualpets.server.api.domain.RegisterArgument;
+import ru.urvanov.virtualpets.server.api.domain.ServerInfo;
+import ru.urvanov.virtualpets.server.api.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.server.config.VirtualpetsServerSpringBootProperties;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.User;
-import ru.urvanov.virtualpets.shared.domain.GetServersArg;
-import ru.urvanov.virtualpets.shared.domain.LoginResult;
-import ru.urvanov.virtualpets.shared.domain.RecoverPasswordArg;
-import ru.urvanov.virtualpets.shared.domain.RecoverPasswordResult;
-import ru.urvanov.virtualpets.shared.domain.RecoverSessionArg;
-import ru.urvanov.virtualpets.shared.domain.RegisterArgument;
-import ru.urvanov.virtualpets.shared.domain.ServerInfo;
-import ru.urvanov.virtualpets.shared.domain.ServerTechnicalInfo;
-import ru.urvanov.virtualpets.shared.exception.DaoException;
-import ru.urvanov.virtualpets.shared.exception.IncompatibleVersionException;
-import ru.urvanov.virtualpets.shared.exception.NameIsBusyException;
-import ru.urvanov.virtualpets.shared.exception.ServiceException;
-import ru.urvanov.virtualpets.shared.service.PublicService;
+import ru.urvanov.virtualpets.server.service.exception.IncompatibleVersionException;
+import ru.urvanov.virtualpets.server.service.exception.NameIsBusyException;
+import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
-public class PublicServiceImpl implements PublicService {
+public class PublicServiceImpl implements PublicApiService {
 
     @Autowired
     private UserDao userDao;
@@ -65,26 +62,27 @@ public class PublicServiceImpl implements PublicService {
     private Clock clock;
 
     @Override
-    public ServerInfo[] getServers(GetServersArg arg) throws ServiceException,
-            DaoException {
-        String clientVersion = arg.getVersion();
+    public ServerInfo[] getServers(GetServersArg getServersArg)
+            throws ServiceException {
+        String clientVersion = getServersArg.version();
         if (!version.equals(clientVersion)) {
-            throw new IncompatibleVersionException("", version, clientVersion);
+            throw new IncompatibleVersionException(
+                    "", version, clientVersion);
         }
         return properties.getServers();
     }
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void register(RegisterArgument arg)
-            throws ServiceException, DaoException {
+    public void register(RegisterArgument registerArgument)
+            throws ServiceException {
         try {
-            String clientVersion = arg.getVersion();
+            String clientVersion = registerArgument.version();
             if (!version.equals(clientVersion)) {
                 throw new IncompatibleVersionException("", version,
                         clientVersion);
             }
-            User user = userDao.findByLogin(arg.getLogin()).orElseThrow();
+            User user = userDao.findByLogin(registerArgument.login()).orElseThrow();
             if (user != null) {
                 throw new NameIsBusyException();
             }
@@ -93,10 +91,10 @@ public class PublicServiceImpl implements PublicService {
             }
         } catch (jakarta.persistence.NoResultException noResultException) {
             User user = new User();
-            user.setLogin(arg.getLogin());
-            user.setName(arg.getLogin());
-            user.setPassword(bcryptEncoder.encode(arg.getPassword()));
-            user.setEmail(arg.getEmail());
+            user.setLogin(registerArgument.login());
+            user.setName(registerArgument.login());
+            user.setPassword(bcryptEncoder.encode(registerArgument.password()));
+            user.setEmail(registerArgument.email());
             user.setRegistrationDate(OffsetDateTime.now(clock));
             user.setRole(ru.urvanov.virtualpets.server.dao.domain.Role.USER);
             userDao.save(user);
@@ -106,15 +104,17 @@ public class PublicServiceImpl implements PublicService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public RecoverPasswordResult recoverPassword(RecoverPasswordArg argument)
-            throws ServiceException, DaoException {
-        String clientVersion = argument.getVersion();
+    public void recoverPassword(
+            RecoverPasswordArg recoverPasswordArgument)
+            throws ServiceException {
+        String clientVersion = recoverPasswordArgument.version();
         if (!version.equals(clientVersion)) {
-            throw new IncompatibleVersionException("", version, clientVersion);
+            throw new IncompatibleVersionException(
+                    "", version, clientVersion);
         }
 
-        String email = argument.getEmail();
-        String login = argument.getLogin();
+        String email = recoverPasswordArgument.email();
+        String login = recoverPasswordArgument.login();
 
         MessageDigest digest = null;
         try {
@@ -132,7 +132,8 @@ public class PublicServiceImpl implements PublicService {
         String key = sb.toString();
         OffsetDateTime recoverPasswordValid = OffsetDateTime.now(clock);
         recoverPasswordValid = recoverPasswordValid.minusMonths(1);
-        User user = userDao.findByLoginAndEmail(login, email).orElseThrow();
+        User user = userDao.findByLoginAndEmail(login, email)
+                .orElseThrow();
         user.setRecoverPasswordKey(key);
         user.setRecoverPasswordValid(recoverPasswordValid);
         userDao.save(user);
@@ -149,68 +150,19 @@ public class PublicServiceImpl implements PublicService {
 //            throw new SendMailException("Send mail exception.", ex);
 //        }
 
-        RecoverPasswordResult result = new RecoverPasswordResult();
-
-        result.setSuccess(true);
-        return result;
     }
-//
-//    /**
-//     * @return the mailSender
-//     */
-//    public MailSender getMailSender() {
-//        return mailSender;
-//    }
-//
-//    /**
-//     * @param mailSender
-//     *            the mailSender to set
-//     */
-//    public void setMailSender(MailSender mailSender) {
-//        this.mailSender = mailSender;
-//    }
-//
-//    /**
-//     * @return the templateMessage
-//     */
-//    public SimpleMailMessage getTemplateMessage() {
-//        return templateMessage;
-//    }
-//
-//    /**
-//     * @param templateMessage
-//     *            the templateMessage to set
-//     */
-//    public void setTemplateMessage(SimpleMailMessage templateMessage) {
-//        this.templateMessage = templateMessage;
-//    }
 
-//    public MailSender getMailSender() {
-//        return mailSender;
-//    }
-//
-//    public void setMailSender(MailSender mailSender) {
-//        this.mailSender = mailSender;
-//    }
-//
-//    public SimpleMailMessage getTemplateMessage() {
-//        return templateMessage;
-//    }
-//
-//    public void setTemplateMessage(SimpleMailMessage templateMessage) {
-//        this.templateMessage = templateMessage;
-//    }
 
     @Override
     @Transactional(rollbackFor = ServiceException.class, readOnly = true)
-    public LoginResult recoverSession(RecoverSessionArg arg)
-            throws ServiceException, DaoException {
-        String clientVersion = arg.getVersion();
+    public LoginResult recoverSession(RecoverSessionArg recoverSessionArg)
+            throws ServiceException {
+        String clientVersion = recoverSessionArg.version();
         if (!version.equals(clientVersion)) {
             throw new IncompatibleVersionException("", version, clientVersion);
         }
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        String unid = arg.getUnid();
+        String unid = recoverSessionArg.unid();
         User user = userDao.findByUnid(unid).orElseThrow();
         if (user != null) {
 
@@ -223,42 +175,32 @@ public class PublicServiceImpl implements PublicService {
         }
         Authentication auth = securityContext.getAuthentication();
 
-        LoginResult loginResult = new LoginResult();
+        LoginResult loginResult;
         Object principal = auth.getPrincipal();
         if (principal instanceof User) {
-            loginResult.setSuccess(true);
-            loginResult.setUnid(user.getUnid());
-            loginResult.setUserId(user.getId());
+            loginResult = new LoginResult(true, null, user.getId(), user.getUnid());
         } else {
-            loginResult.setSuccess(false);
+            throw new ServiceException("Failed to recover session");
         }
         return loginResult;
     }
 
     @Override
     public ServerTechnicalInfo getServerTechnicalInfo()
-            throws ServiceException, DaoException {
+            throws ServiceException {
         try {
-            ServerTechnicalInfo info = new ServerTechnicalInfo();
+            
             Properties properties = System.getProperties();
             Map<String, String> infoMap = new HashMap<String, String>();
             for (Entry<Object, Object> entry : properties.entrySet()) {
                 infoMap.put(String.valueOf(entry.getKey()),
                         String.valueOf(entry.getValue()));
             }
-            info.setInfo(infoMap);
+            ServerTechnicalInfo info = new ServerTechnicalInfo(infoMap);
             return info;
         } catch (Exception ex) {
             throw new ServiceException(ex);
         }
-    }
-
-    public UserDao getUserDao() {
-        return userDao;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
 }

@@ -12,14 +12,11 @@ import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.annotation.PostConstruct;
+import ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGameType;
+import ru.urvanov.virtualpets.server.api.domain.LevelInfo;
 import ru.urvanov.virtualpets.server.dao.BookDao;
 import ru.urvanov.virtualpets.server.dao.BuildingMaterialDao;
 import ru.urvanov.virtualpets.server.dao.ClothDao;
@@ -27,7 +24,6 @@ import ru.urvanov.virtualpets.server.dao.DrinkDao;
 import ru.urvanov.virtualpets.server.dao.FoodDao;
 import ru.urvanov.virtualpets.server.dao.LevelDao;
 import ru.urvanov.virtualpets.server.dao.PetDao;
-import ru.urvanov.virtualpets.server.dao.PetFoodDao;
 import ru.urvanov.virtualpets.server.dao.RoomDao;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
@@ -52,21 +48,13 @@ import ru.urvanov.virtualpets.server.dao.domain.PetDrink;
 import ru.urvanov.virtualpets.server.dao.domain.PetFood;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.dao.domain.Room;
-import ru.urvanov.virtualpets.server.dao.domain.SelectedPet;
 import ru.urvanov.virtualpets.server.dao.domain.User;
-import ru.urvanov.virtualpets.shared.domain.HiddenObjectsGameType;
-import ru.urvanov.virtualpets.shared.domain.LevelInfo;
-import ru.urvanov.virtualpets.shared.exception.DaoException;
-import ru.urvanov.virtualpets.shared.exception.ServiceException;
-import ru.urvanov.virtualpets.shared.service.HiddenObjectsService;
+import ru.urvanov.virtualpets.server.service.domain.HiddenObjectsGameStatus;
+import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
+import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
-public class HiddenObjectsServiceImpl implements HiddenObjectsService {
-    private static final String HIDDEN_OBJECTS_GAME_ID = "hiddenObjectsGameId";
-
-    private static final String HIDDEN_OBJECTS_GAME_STARTED = "hiddenObjectsGameStarted";
-    private static final String HIDDEN_OBJECTS_GAME_OVER = "hiddenObjectsGameOver";
-    private static final String HIDDEN_OBJECTS_GAME_TYPE = "hiddenObjectsGameType";
+public class HiddenObjectsServiceImpl implements HiddenObjectsApiService {
     private static final int MAX_OBJECTS_FOR_SEARCH = 8;
     private static final int GAME_TIMEOUT_SECONDS = 30;
 
@@ -128,20 +116,14 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     private int lastGameId;
 
     @Override
-    public synchronized ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame joinGame(
-            ru.urvanov.virtualpets.shared.domain.JoinHiddenObjectsGameArg arg)
-            throws DaoException, ServiceException {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = (Authentication) securityContext
-                .getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        user = userDao.findById(user.getId()).orElseThrow();
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-        SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
-                ServletRequestAttributes.SCOPE_SESSION);
+    public synchronized ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame joinGame(
+            UserPetDetails userPetDetails,
+            HiddenObjectsGameStatus hiddenObjectsGameStatus,
+            ru.urvanov.virtualpets.server.api.domain.JoinHiddenObjectsGameArg joinHiddenObjectsGameArg)
+            throws ServiceException {
+        User user = userDao.findById(userPetDetails.getUserId()).orElseThrow();
         
-        Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
+        Pet pet = petDao.findById(userPetDetails.getPetId()).orElseThrow();
 
         HiddenObjectsGame foundGame = null;
         HiddenObjectsPlayer player = new HiddenObjectsPlayer();
@@ -161,11 +143,11 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         if (bow != null) {
             player.setBowId(bow.getId());
         }
-        Map<Integer, HiddenObjectsGame> map = notStartedGames.get(arg
-                .getHiddenObjectsGameType());
+        Map<Integer, HiddenObjectsGame> map = notStartedGames.get(joinHiddenObjectsGameArg
+                .hiddenObjectsGameType());
         if (map == null) {
             map = new HashMap<Integer, HiddenObjectsGame>();
-            notStartedGames.put(arg.getHiddenObjectsGameType(), map);
+            notStartedGames.put(joinHiddenObjectsGameArg.hiddenObjectsGameType(), map);
         }
         for (HiddenObjectsGame hig : map.values()) {
             if (hig.getPetsCount() < HiddenObjectsGame.MAX_PLAYERS_COUNT) {
@@ -181,26 +163,23 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
             map.put(lastGameId, foundGame);
         }
 
-        sra.setAttribute(HIDDEN_OBJECTS_GAME_ID, lastGameId,
-                ServletRequestAttributes.SCOPE_SESSION);
-        sra.setAttribute(HIDDEN_OBJECTS_GAME_STARTED, false,
-                ServletRequestAttributes.SCOPE_SESSION);
-        sra.setAttribute(HIDDEN_OBJECTS_GAME_OVER, false,
-                ServletRequestAttributes.SCOPE_SESSION);
-        sra.setAttribute(HIDDEN_OBJECTS_GAME_TYPE,
-                arg.getHiddenObjectsGameType(),
-                ServletRequestAttributes.SCOPE_SESSION);
-        return getResult(foundGame);
+        hiddenObjectsGameStatus.setId(lastGameId);
+        hiddenObjectsGameStatus.setStarted(false);
+        hiddenObjectsGameStatus.setOver(false);
+        hiddenObjectsGameStatus.setType(joinHiddenObjectsGameArg.hiddenObjectsGameType());
+
+        return getResult(userPetDetails, foundGame);
     }
 
-    private ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame getResult(
+    private ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame getResult(
+            UserPetDetails userPetDetails,
             HiddenObjectsGame foundGame) {
-        ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame result = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame();
+        ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame result = new ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame();
         result.setObjects(foundGame.getObjectsForSearch());
         HiddenObjectsPlayer[] players = foundGame.getDisplayablePlayers();
         for (int n = 0; n < players.length; n++) {
             if (players[n] != null) {
-                ru.urvanov.virtualpets.shared.domain.HiddenObjectsPlayer resultPlayer = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsPlayer();
+                ru.urvanov.virtualpets.server.api.domain.HiddenObjectsPlayer resultPlayer = new ru.urvanov.virtualpets.server.api.domain.HiddenObjectsPlayer();
                 resultPlayer.setPetId(players[n].getPetId());
                 resultPlayer.setPetName(players[n].getPetName());
                 resultPlayer.setUserId(players[n].getUserId());
@@ -223,51 +202,34 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
 
         HiddenObjectsCollected[] collectedObjects = foundGame
                 .getCollectedObjects();
-        ru.urvanov.virtualpets.shared.domain.HiddenObjectsCollected[] resultCollectedObjects = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsCollected[collectedObjects.length];
+        ru.urvanov.virtualpets.server.api.domain.HiddenObjectsCollected[] resultCollectedObjects = new ru.urvanov.virtualpets.server.api.domain.HiddenObjectsCollected[collectedObjects.length];
         for (n = 0; n < collectedObjects.length; n++) {
-            ru.urvanov.virtualpets.shared.domain.HiddenObjectsCollected hoc = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsCollected();
-            hoc.setObjectId(collectedObjects[n].getObjectId());
-            hoc.setPlayer(result.getPlayer(collectedObjects[n].getPlayer()
-                    .getUserId()));
+            int objectId = collectedObjects[n].getObjectId();
+            ru.urvanov.virtualpets.server.api.domain.HiddenObjectsPlayer player = result.getPlayer(collectedObjects[n].getPlayer()
+                    .getUserId());
+            ru.urvanov.virtualpets.server.api.domain.HiddenObjectsCollected hoc = new ru.urvanov.virtualpets.server.api.domain.HiddenObjectsCollected(objectId, player);
             resultCollectedObjects[n] = hoc;
         }
         result.setCollectedObjects(resultCollectedObjects);
         result.setGameStarted(foundGame.isStarted());
         result.setGameOver(foundGame.isGameOver());
         if (foundGame.isGameOver()) {
-            ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                    .getRequestAttributes();
-            SelectedPet selectedPet = (SelectedPet) sra.getAttribute("pet",
-                    ServletRequestAttributes.SCOPE_SESSION);
-            Pet pet = petDao.findById(selectedPet.getId()).orElseThrow();
+            Pet pet = petDao.findById(userPetDetails.getPetId()).orElseThrow();
             HiddenObjectsPlayer player = foundGame.getPlayer(pet.getUser()
                     .getId());
-            ru.urvanov.virtualpets.shared.domain.HiddenObjectsReward resultReward = new ru.urvanov.virtualpets.shared.domain.HiddenObjectsReward();
+            ru.urvanov.virtualpets.server.api.domain.HiddenObjectsReward resultReward = new ru.urvanov.virtualpets.server.api.domain.HiddenObjectsReward();
             HiddenObjectsReward playerReward = player.getReward();
-            resultReward.setFood(conversionService.convert(
-                    playerReward.getFood(),
-                    ru.urvanov.virtualpets.shared.domain.FoodType.class));
+            resultReward.setFoodId(playerReward.getFoodId());
             resultReward.setClothId(playerReward.getClothId());
             resultReward.setBookId(playerReward.getBookId());
-            resultReward.setDrinkType(conversionService.convert(
-                    playerReward.getDrinkType(),
-                    ru.urvanov.virtualpets.shared.domain.DrinkType.class));
+            resultReward.setDrinkId(playerReward.getDrinkId());
             resultReward.setLevelInfo(playerReward.getLevelInfo());
             resultReward.setExperience(playerReward.getExperience());
             resultReward
-                    .setBuildingMaterialType(conversionService.convert(
-                            playerReward.getBuildingMaterialType(),
-                            ru.urvanov.virtualpets.shared.domain.BuildingMaterialType.class));
-            ru.urvanov.virtualpets.server.dao.domain.AchievementId[] achievements = playerReward
-                    .getAchievements();
-            ru.urvanov.virtualpets.shared.domain.AchievementCode[] sharedAchievements = new ru.urvanov.virtualpets.shared.domain.AchievementCode[achievements.length];
-            for (int m = 0; m < achievements.length; m++) {
-                sharedAchievements[m] = conversionService
-                        .convert(
-                                achievements[m],
-                                ru.urvanov.virtualpets.shared.domain.AchievementCode.class);
-            }
-            resultReward.setAchievements(sharedAchievements);
+                    .setBuildingMaterialId(playerReward.getBuildingMaterialId());
+            
+            resultReward.setAchievements(playerReward
+                    .getAchievements());
             result.setReward(resultReward);
         }
         if (foundGame.getStartTime() != null) {
@@ -282,102 +244,76 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     }
 
     @Override
-    public synchronized ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame getGameInfo()
-            throws DaoException, ServiceException {
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-        Integer gameId = (Integer) sra.getAttribute(HIDDEN_OBJECTS_GAME_ID,
-                ServletRequestAttributes.SCOPE_SESSION);
-        Boolean hiddenObjectsGameStarted = (Boolean) sra.getAttribute(
-                HIDDEN_OBJECTS_GAME_STARTED,
-                ServletRequestAttributes.SCOPE_SESSION);
-        Boolean hiddenObjectsGameOver = (Boolean) sra.getAttribute(
-                HIDDEN_OBJECTS_GAME_OVER,
-                ServletRequestAttributes.SCOPE_SESSION);
-        HiddenObjectsGameType hiddenObjectsGameType = (HiddenObjectsGameType) sra
-                .getAttribute(HIDDEN_OBJECTS_GAME_TYPE,
-                        ServletRequestAttributes.SCOPE_SESSION);
-        if (hiddenObjectsGameStarted == null) {
-            hiddenObjectsGameStarted = false;
-        }
-        if (hiddenObjectsGameOver == null) {
-            hiddenObjectsGameOver = null;
-        }
-        if (gameId == null) {
+    public synchronized ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame getGameInfo(
+            UserPetDetails userPetDetails,
+            HiddenObjectsGameStatus hiddenObjectsGameStatus)
+            throws ServiceException {
+        //      if (hiddenObjectsGameStatus.isStarted() == null) {
+        //      hiddenObjectsGameStarted = false;
+        //  }
+        //  if (hiddenObjectsGameOver == null) {
+        //      hiddenObjectsGameOver = null;
+        //  }
+        if (hiddenObjectsGameStatus.getId() == null) {
             throw new ServiceException("No game with such id");
         }
         HiddenObjectsGame foundGame = null;
         Map<Integer, HiddenObjectsGame> map = notStartedGames
-                .get(hiddenObjectsGameType);
-        if (!hiddenObjectsGameStarted && map != null) {
-            foundGame = map.get(gameId);
+                .get(hiddenObjectsGameStatus.getType());
+        if (!hiddenObjectsGameStatus.isStarted() && map != null) {
+            foundGame = map.get(hiddenObjectsGameStatus.getId());
         }
-        if ((foundGame == null) && (!hiddenObjectsGameOver)) {
-            foundGame = games.get(gameId);
+        if ((foundGame == null) && (!hiddenObjectsGameStatus.isOver())) {
+            foundGame = games.get(hiddenObjectsGameStatus.getId());
             if (foundGame != null) {
                 Calendar startTime = foundGame.getStartTime();
                 Calendar time = Calendar.getInstance();
                 time.add(Calendar.SECOND, -GAME_TIMEOUT_SECONDS);
                 if (time.after(startTime)) {
-                    finishGame(foundGame, gameId);
+                    finishGame(foundGame, hiddenObjectsGameStatus.getId());
                 }
             }
         }
         if (foundGame == null) {
-            foundGame = finishedGames.get(gameId);
-            if ((gameId != null) && (!hiddenObjectsGameOver)) {
-                hiddenObjectsGameOver = true;
-                sra.setAttribute(HIDDEN_OBJECTS_GAME_OVER, true,
-                        ServletRequestAttributes.SCOPE_SESSION);
+            foundGame = finishedGames.get(hiddenObjectsGameStatus.getId());
+            if ((hiddenObjectsGameStatus.getId() != null) && (!hiddenObjectsGameStatus.isOver())) {
+                hiddenObjectsGameStatus.setOver(true);
             }
         } else {
-            if (foundGame.isStarted() != hiddenObjectsGameStarted) {
-                sra.setAttribute(HIDDEN_OBJECTS_GAME_STARTED,
-                        foundGame.isStarted(),
-                        ServletRequestAttributes.SCOPE_SESSION);
+            if (foundGame.isStarted() != hiddenObjectsGameStatus.isStarted()) {
+                hiddenObjectsGameStatus.setStarted(foundGame.isStarted());
             }
-            if (foundGame.isGameOver() != hiddenObjectsGameOver) {
-                sra.setAttribute(HIDDEN_OBJECTS_GAME_OVER,
-                        foundGame.isGameOver(),
-                        ServletRequestAttributes.SCOPE_SESSION);
+            if (foundGame.isGameOver() != hiddenObjectsGameStatus.isOver()) {
+                hiddenObjectsGameStatus.setOver(foundGame.isGameOver());
             }
         }
-        return getResult(foundGame);
+        return getResult(userPetDetails, foundGame);
     }
 
     @Override
-    public synchronized ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame collectObject(
-            ru.urvanov.virtualpets.shared.domain.CollectObjectArg arg)
-            throws DaoException, ServiceException {
+    public synchronized ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame collectObject(
+            UserPetDetails userPetDetails,
+            HiddenObjectsGameStatus hiddenObjectsGameStatus,
+            ru.urvanov.virtualpets.server.api.domain.CollectObjectArg arg)
+            throws ServiceException {
 
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = (Authentication) securityContext
-                .getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        Integer userId = user.getId();
+        Integer userId = userPetDetails.getUserId();
 
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-        Integer gameId = (Integer) sra.getAttribute(HIDDEN_OBJECTS_GAME_ID,
-                ServletRequestAttributes.SCOPE_SESSION);
-        Boolean hiddenObjectsGameStarted = (Boolean) sra.getAttribute(
-                HIDDEN_OBJECTS_GAME_STARTED,
-                ServletRequestAttributes.SCOPE_SESSION);
-        if (hiddenObjectsGameStarted == null) {
-            hiddenObjectsGameStarted = false;
-        }
-        if (gameId == null) {
+//      if (hiddenObjectsGameStarted == null) {
+//          hiddenObjectsGameStarted = false;
+//      }
+        if (hiddenObjectsGameStatus.getId() == null) {
             throw new ServiceException("No game with such id");
         }
         HiddenObjectsGame foundGame = null;
-        if (!hiddenObjectsGameStarted) {
+        if (!hiddenObjectsGameStatus.isStarted()) {
             throw new ServiceException("Game not started.");
         }
         if (foundGame == null) {
-            foundGame = games.get(gameId);
+            foundGame = games.get(hiddenObjectsGameStatus.getId());
         }
         if (foundGame != null) {
-            Integer collectObjectId = arg.getObjectId();
+            Integer collectObjectId = arg.objectId();
             Integer[] objectsForSearch = foundGame.getObjectsForSearch();
             for (int n = 0; n < HiddenObjectsGame.COUNT_DISPLAYABLE_OBJECTS; n++) {
                 Integer objectId = objectsForSearch[n];
@@ -390,17 +326,18 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                         foundGame.addCollectedObject(collectObjectId, player);
                         int objCount = foundGame.getObjectsForSearchCount();
                         if (objCount == 0) {
-                            finishGame(foundGame, gameId);
+                            finishGame(foundGame, hiddenObjectsGameStatus.getId());
                         }
                     }
                 }
             }
         } else {
-            foundGame = finishedGames.get(gameId);
+            foundGame = finishedGames.get(hiddenObjectsGameStatus.getId());
         }
-        return getResult(foundGame);
+        return getResult(userPetDetails, foundGame);
     }
-
+    
+    
     private void finishGame(HiddenObjectsGame foundGame, Integer gameId) {
         foundGame.setGameOver(true);
         games.remove(gameId);
@@ -415,9 +352,9 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 int score = player.getScore();
                 FoodId foodId = FoodId.DRY_FOOD;
                 String clothId = null;
-                BuildingMaterialId buildingMaterialType = null;
+                BuildingMaterialId buildingMaterialId = null;
                 String bookId = null;
-                DrinkId drinkType = null;
+                DrinkId drinkId = null;
                 if (score > MAX_OBJECTS_FOR_SEARCH
                         / HiddenObjectsGame.MAX_PLAYERS_COUNT) {
                     if (game.getObjectsForSearchCount() == 0) {
@@ -435,10 +372,10 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                             clothId = calculateClothDrop(random).getId();
                         }
                         if (random.nextInt(100) < 300) {
-                            buildingMaterialType = calculateBuildingMaterialDrop(random).getId();
+                            buildingMaterialId = calculateBuildingMaterialDrop(random).getId();
                         }
                         if (machineWithDrinks != null) {
-                            drinkType = calculateDrinkDrop(random, machineWithDrinks.getId()).getId();
+                            drinkId = calculateDrinkDrop(random, machineWithDrinks.getId()).getId();
                         }
                         if (bookcase != null && random.nextInt(100) < 100) {
                             bookId = calculateBookDrop(random, bookcase.getId()).getId();
@@ -447,10 +384,10 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 }
                 HiddenObjectsReward reward = new HiddenObjectsReward();
 
-                reward.setFood(foodId);
+                reward.setFoodId(foodId);
 
-                reward.setBuildingMaterialType(buildingMaterialType);
-                reward.setDrinkType(drinkType);
+                reward.setBuildingMaterialId(buildingMaterialId);
+                reward.setDrinkId(drinkId);
                 reward.setBookId(bookId);
                 player.setReward(reward);
 
@@ -478,33 +415,33 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                     cloths.add(clothDao.findById(clothId).orElseThrow());
                     reward.setClothId(clothId);
                 }
-                if (buildingMaterialType != null) {
+                if (buildingMaterialId != null) {
                     Map<BuildingMaterialId, PetBuildingMaterial> mapBuildingMaterials = fullPet
                             .getBuildingMaterials();
                     PetBuildingMaterial petBuildingMaterial = mapBuildingMaterials
-                            .get(buildingMaterialType);
+                            .get(buildingMaterialId);
                     if (petBuildingMaterial == null) {
                         petBuildingMaterial = new PetBuildingMaterial();
                         petBuildingMaterial
-                                .setBuildingMaterial(buildingMaterialDao.getReferenceById(buildingMaterialType));
+                                .setBuildingMaterial(buildingMaterialDao.getReferenceById(buildingMaterialId));
                         petBuildingMaterial.setPet(fullPet);
                         petBuildingMaterial.setBuildingMaterialCount(0);
-                        fullPet.getBuildingMaterials().put(buildingMaterialType,
+                        fullPet.getBuildingMaterials().put(buildingMaterialId,
                                 petBuildingMaterial);
                     }
                     petBuildingMaterial
                             .setBuildingMaterialCount(petBuildingMaterial
                                     .getBuildingMaterialCount() + 1);
                 }
-                if (drinkType != null) {
+                if (drinkId != null) {
                     Map<DrinkId, PetDrink> mapDrinks = fullPet.getDrinks();
-                    PetDrink petDrink = mapDrinks.get(drinkType);
+                    PetDrink petDrink = mapDrinks.get(drinkId);
                     if (petDrink == null) {
                         petDrink = new PetDrink();
-                        petDrink.setDrink(drinkDao.getReferenceById(drinkType));
+                        petDrink.setDrink(drinkDao.getReferenceById(drinkId));
                         petDrink.setPet(fullPet);
                         petDrink.setDrinkCount(0);
-                        fullPet.getDrinks().put(drinkType, petDrink);
+                        fullPet.getDrinks().put(drinkId, petDrink);
                     }
                     petDrink.setDrinkCount(petDrink.getDrinkCount() + 1);
                 }
@@ -538,17 +475,15 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
                 int experienceReward = 1;
                 petService.addExperience(fullPet, experienceReward);
 
-                LevelInfo levelInfo = new LevelInfo();
-                levelInfo.setExperience(fullPet.getExperience());
-                levelInfo.setLevel(fullPet.getLevel().getId());
-                levelInfo.setMinExperience(fullPet.getLevel().getExperience());
                 Level nextLevel = levelDao.findById(fullPet.getLevel()
                         .getId() + 1).orElseThrow();
+                int maxExperience;
                 if (nextLevel != null) {
-                    levelInfo.setMaxExperience(nextLevel.getExperience());
+                    maxExperience = nextLevel.getExperience();
                 } else {
-                    levelInfo.setMaxExperience(Integer.MAX_VALUE);
+                    maxExperience = Integer.MAX_VALUE;
                 }
+                LevelInfo levelInfo = new LevelInfo(fullPet.getLevel().getId(), fullPet.getExperience(), fullPet.getLevel().getExperience(), maxExperience);
                 reward.setExperience(experienceReward);
                 reward.setLevelInfo(levelInfo);
 
@@ -594,20 +529,11 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     }
 
     @Override
-    public synchronized void leaveGame() {
+    public synchronized void leaveGame(UserPetDetails userPetDetails,
+            HiddenObjectsGameStatus hiddenObjectsGameStatus) {
 
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-
-        Integer gameId = (Integer) sra.getAttribute("hiddenObjectsGameId",
-                ServletRequestAttributes.SCOPE_SESSION);
-
-        HiddenObjectsGameType hiddenObjectsGameType = (HiddenObjectsGameType) sra
-                .getAttribute(HIDDEN_OBJECTS_GAME_TYPE,
-                        ServletRequestAttributes.SCOPE_SESSION);
-
-        notStartedGames.get(hiddenObjectsGameType).remove(gameId);
-        games.remove(gameId);
+        notStartedGames.get(hiddenObjectsGameStatus.getType()).remove(hiddenObjectsGameStatus.getId());
+        games.remove(hiddenObjectsGameStatus.getId());
     }
 
     public ConversionService getConversionService() {
@@ -619,31 +545,23 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
     }
 
     @Override
-    public synchronized ru.urvanov.virtualpets.shared.domain.HiddenObjectsGame startGame()
-            throws DaoException, ServiceException {
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-        Integer gameId = (Integer) sra.getAttribute(HIDDEN_OBJECTS_GAME_ID,
-                ServletRequestAttributes.SCOPE_SESSION);
-        Boolean hiddenObjectsGameStarted = (Boolean) sra.getAttribute(
-                HIDDEN_OBJECTS_GAME_STARTED,
-                ServletRequestAttributes.SCOPE_SESSION);
-        HiddenObjectsGameType hiddenObjectsGameType = (HiddenObjectsGameType) sra
-                .getAttribute(HIDDEN_OBJECTS_GAME_TYPE,
-                        ServletRequestAttributes.SCOPE_SESSION);
-        if (hiddenObjectsGameStarted == null) {
-            hiddenObjectsGameStarted = false;
-        }
+    public synchronized ru.urvanov.virtualpets.server.api.domain.HiddenObjectsGame startGame(
+            UserPetDetails userPetDetails,
+            HiddenObjectsGameStatus hiddenObjectsGameStatus)
+            throws ServiceException {
+        //      if (hiddenObjectsGameStarted == null) {
+        //      hiddenObjectsGameStarted = false;
+        //  }
         HiddenObjectsGame game = null;
         Map<Integer, HiddenObjectsGame> map = notStartedGames
-                .get(hiddenObjectsGameType);
-        if (!hiddenObjectsGameStarted && map != null) {
-            game = map.get(gameId);
+                .get(hiddenObjectsGameStatus.getType());
+        if (!hiddenObjectsGameStatus.isStarted() && map != null) {
+            game = map.get(hiddenObjectsGameStatus.getId());
         }
         if (game == null) {
-            game = games.get(gameId);
+            game = games.get(hiddenObjectsGameStatus.getId());
             if (game != null) {
-                return getResult(game);
+                return getResult(userPetDetails, game);
             }
         }
         if (game == null) {
@@ -653,7 +571,7 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         Integer[] objectsForSearch = new Integer[MAX_OBJECTS_FOR_SEARCH];
 
         int hiddenObjectsCount;
-        switch (hiddenObjectsGameType) {
+        switch (hiddenObjectsGameStatus.getType()) {
         case TREASURY:
             hiddenObjectsCount = TREASURY_HIDDEN_OBJECTS_COUNT;
             break;
@@ -683,11 +601,9 @@ public class HiddenObjectsServiceImpl implements HiddenObjectsService {
         game.setObjects(lst);
         game.setStarted(true);
         game.setStartTime(Calendar.getInstance());
-        notStartedGames.get(hiddenObjectsGameType).remove(gameId);
-        games.put(gameId, game);
-        sra.setAttribute(HIDDEN_OBJECTS_GAME_STARTED, true,
-                ServletRequestAttributes.SCOPE_SESSION);
-        return getResult(game);
+        notStartedGames.get(hiddenObjectsGameStatus.getType()).remove(hiddenObjectsGameStatus.getId());
+        games.put(hiddenObjectsGameStatus.getId(), game);
+        return getResult(userPetDetails, game);
     }
     
     @PostConstruct

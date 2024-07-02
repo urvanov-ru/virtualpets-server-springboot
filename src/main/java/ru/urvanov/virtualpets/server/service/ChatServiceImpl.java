@@ -2,6 +2,7 @@ package ru.urvanov.virtualpets.server.service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +11,18 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import ru.urvanov.virtualpets.server.api.domain.ChatMessage;
+import ru.urvanov.virtualpets.server.api.domain.RefreshChatArg;
+import ru.urvanov.virtualpets.server.api.domain.RefreshChatResult;
+import ru.urvanov.virtualpets.server.api.domain.SendChatMessageArg;
 import ru.urvanov.virtualpets.server.dao.ChatDao;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.Chat;
 import ru.urvanov.virtualpets.server.dao.domain.User;
-import ru.urvanov.virtualpets.shared.domain.ChatMessage;
-import ru.urvanov.virtualpets.shared.domain.RefreshChatArg;
-import ru.urvanov.virtualpets.shared.domain.RefreshChatResult;
-import ru.urvanov.virtualpets.shared.domain.SendChatMessageArg;
-import ru.urvanov.virtualpets.shared.domain.SendChatMessageResult;
-import ru.urvanov.virtualpets.shared.exception.DaoException;
-import ru.urvanov.virtualpets.shared.exception.ServiceException;
-import ru.urvanov.virtualpets.shared.service.ChatService;
+import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
-public class ChatServiceImpl implements ChatService {
+public class ChatServiceImpl implements ChatApiService {
 
     @Autowired
     private ChatDao chatDao;
@@ -41,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     public RefreshChatResult getMessages(RefreshChatArg arg)
-            throws DaoException, ServiceException {
+            throws ServiceException {
         
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication  authentication = (Authentication) securityContext.getAuthentication();
@@ -53,7 +51,7 @@ public class ChatServiceImpl implements ChatService {
         userDao.save(user);
         
         
-        Integer id = arg.getLastChatMessageId();
+        Integer id = arg.lastChatMessageId();
         Iterable<Chat> messages;
         if (id == null) {
             messages = chatDao.findLast(20, userId);
@@ -61,11 +59,9 @@ public class ChatServiceImpl implements ChatService {
             messages = chatDao.findFromId(id, userId);
         }
         
-        RefreshChatResult result = new RefreshChatResult();
-        result.setSuccess(true);
         
         
-        ChatMessage[] chatMessages = StreamSupport
+        List<ChatMessage> chatMessages = StreamSupport
                 .stream(messages.spliterator(), false)
                 .map(c -> {
             ChatMessage chatMessage = new ChatMessage();
@@ -83,15 +79,16 @@ public class ChatServiceImpl implements ChatService {
             chatMessage.setSendTime(c.getSendTime());
             chatMessage.setId(c.getId());
             return chatMessage;
-        }).toArray(ChatMessage[]::new);
+        }).toList();
         
 
-        if (chatMessages.length > 0) {
-            result.setLastChatMessageId(chatMessages[chatMessages.length-1].getId());
+        Integer lastChatMessageId;
+        if (!chatMessages.isEmpty()) {
+            lastChatMessageId = chatMessages.get(chatMessages.size() - 1).getId();
         } else {
-            result.setLastChatMessageId(arg.getLastChatMessageId());
+            lastChatMessageId = arg.lastChatMessageId();
         }
-        result.setChatMessages(chatMessages);
+        RefreshChatResult result = new RefreshChatResult(chatMessages, lastChatMessageId);
         return result;
     }
 
@@ -99,41 +96,21 @@ public class ChatServiceImpl implements ChatService {
      * @see ru.urvanov.virtualpets.shared.service.ChatService#sendMessage(ru.urvanov.virtualpets.shared.domain.SendChatMessageArg)
      */
     @Override
-    public SendChatMessageResult sendMessage(SendChatMessageArg arg)
-            throws DaoException, ServiceException {
+    public void sendMessage(SendChatMessageArg sendChatMessageArg)
+            throws ServiceException {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         User user = (User)authentication.getPrincipal();
         
         Chat chat = new Chat();
-        if (arg.getAddresseeId() != null) {
-            chat.setAddressee(userDao.getReferenceById(arg.getAddresseeId()));
+        if (sendChatMessageArg.addresseeId() != null) {
+            chat.setAddressee(userDao.getReferenceById(
+                    sendChatMessageArg.addresseeId()));
         }
-        chat.setMessage(arg.getMessage());
+        chat.setMessage(sendChatMessageArg.message());
         chat.setSender(userDao.getReferenceById(user.getId()));
         chat.setSendTime(OffsetDateTime.now(clock));
         chatDao.save(chat);
-        
-        SendChatMessageResult result = new SendChatMessageResult();
-        result.setSuccess(true);
-        return result;
     }
-
-    public ChatDao getChatDao() {
-        return chatDao;
-    }
-
-    public void setChatDao(ChatDao chatDao) {
-        this.chatDao = chatDao;
-    }
-
-    public UserDao getUserDao() {
-        return userDao;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
 
 }

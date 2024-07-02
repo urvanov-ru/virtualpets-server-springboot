@@ -19,7 +19,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.urvanov.virtualpets.shared.domain.LoginArg;
+import ru.urvanov.virtualpets.server.api.domain.LoginArg;
 
 public class CustomAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -52,8 +52,8 @@ public class CustomAuthenticationProcessingFilter extends AbstractAuthentication
         request.setAttribute("loginArg", creds);
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        creds.getLogin(),
-                        creds.getPassword(),
+                        creds.login(),
+                        creds.password(),
                         Collections.emptyList()
                 ));
     }
