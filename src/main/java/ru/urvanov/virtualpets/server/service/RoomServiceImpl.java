@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +52,7 @@ import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.dao.domain.RefrigeratorCost;
 import ru.urvanov.virtualpets.server.dao.domain.Room;
-import ru.urvanov.virtualpets.server.dao.domain.SelectedPet;
-import ru.urvanov.virtualpets.server.dao.exception.DaoException;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
-import ru.urvanov.virtualpets.server.service.exception.NotEnoughPetResourcesException;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
@@ -309,11 +305,7 @@ public class RoomServiceImpl implements RoomApiService {
         
         
         Refrigerator refrigerator = refrigeratorDao.findFullById(1).orElseThrow();
-        try {
-            petService.substractPetResources(pet, refrigerator);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre.toString());
-        }
+        petService.substractPetResources(pet, refrigerator);
         room.setRefrigerator(refrigerator);
         room.setRefrigeratorX(position.x());
         room.setRefrigeratorY(position.y());
@@ -361,11 +353,7 @@ public class RoomServiceImpl implements RoomApiService {
         if (refrigerator == null) {
             throw new ServiceException("Your refrigerator level is max.");
         }
-        try {
-            petService.substractPetResources(pet, refrigerator);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre.toString());
-        }
+        petService.substractPetResources(pet, refrigerator);
         room.setRefrigerator(refrigerator);
         petService.addExperience(pet, 1);
     }
@@ -391,11 +379,7 @@ public class RoomServiceImpl implements RoomApiService {
         }
         
         Bookcase bookcase = bookcaseDao.findFullById(1).orElseThrow();
-        try {
-            petService.substractPetResources(pet, bookcase);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre);
-        }
+        petService.substractPetResources(pet, bookcase);
         room.setBookcase(bookcase);
         room.setBookcaseX(position.x());
         room.setBookcaseY(position.y());
@@ -428,11 +412,7 @@ public class RoomServiceImpl implements RoomApiService {
         if (bookcase == null) {
             throw new ServiceException("Your bookcase level is max.");
         }
-        try {
-            petService.substractPetResources(pet, bookcase);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre.toString());
-        }
+        petService.substractPetResources(pet, bookcase);
         room.setBookcase(bookcase);
         petService.addExperience(pet, 1);
     }
@@ -479,11 +459,7 @@ public class RoomServiceImpl implements RoomApiService {
         
         MachineWithDrinks machineWithDrinks = machineWithDrinksDao
                 .findFullById(1).orElseThrow();
-        try {
-            petService.substractPetResources(pet, machineWithDrinks);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre);
-        }
+        petService.substractPetResources(pet, machineWithDrinks);
         room.setMachineWithDrinks(machineWithDrinks);
         room.setMachineWithDrinksX(position.x());
         room.setMachineWithDrinksY(position.y());
@@ -576,11 +552,7 @@ public class RoomServiceImpl implements RoomApiService {
         if (machineWithDrinks == null) {
             throw new ServiceException("Your machine with drinks level is max.");
         }
-        try {
-            petService.substractPetResources(pet, machineWithDrinks);
-        } catch (NotEnoughPetResourcesException nepre) {
-            throw new ServiceException(nepre.toString());
-        }
+        petService.substractPetResources(pet, machineWithDrinks);
         room.setMachineWithDrinks(machineWithDrinks);
         petService.addExperience(pet, 1);
     }
