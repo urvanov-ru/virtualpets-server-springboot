@@ -59,7 +59,6 @@ import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.Refrigerator;
 import ru.urvanov.virtualpets.server.dao.domain.RefrigeratorCost;
 import ru.urvanov.virtualpets.server.dao.domain.Room;
-import ru.urvanov.virtualpets.server.dao.exception.DaoException;
 import ru.urvanov.virtualpets.server.service.domain.PetDetails;
 import ru.urvanov.virtualpets.server.service.domain.PetInformationPageAchievement;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
@@ -326,8 +325,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
-    @Transactional(rollbackFor = { ServiceException.class,
-            DaoException.class })
+    @Transactional(rollbackFor = ServiceException.class )
     public GetPetJournalEntriesResult getPetJournalEntries(
             UserPetDetails userPetDetails, int count)
             throws ServiceException {
@@ -363,8 +361,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
-    @Transactional(rollbackFor = { ServiceException.class,
-            DaoException.class })
+    @Transactional(rollbackFor = ServiceException.class )
     public void create(UserPetDetails userPetDetails, CreatePetArg arg)
             throws ServiceException {
         Pet pet = new Pet();
@@ -379,8 +376,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
-    @Transactional(rollbackFor = { ServiceException.class,
-            DaoException.class })
+    @Transactional(rollbackFor = ServiceException.class )
     public void select(UserPetDetails userPetDetails, SelectPetArg arg)
             throws ServiceException {
         int id = arg.petId();
@@ -582,8 +578,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
-    @Transactional(rollbackFor = {
-            DaoException.class, ServiceException.class})
+    @Transactional(rollbackFor = ServiceException.class )
     public void delete(UserPetDetails userPetDetails, Integer petId) {
         Room room = roomDao.findByPetId(petId).orElseThrow();
         if (room != null) {

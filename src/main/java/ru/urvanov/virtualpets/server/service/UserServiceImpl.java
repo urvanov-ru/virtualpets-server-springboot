@@ -28,7 +28,6 @@ import ru.urvanov.virtualpets.server.api.domain.UserInformation;
 import ru.urvanov.virtualpets.server.api.domain.UserInformationArg;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.User;
-import ru.urvanov.virtualpets.server.dao.exception.DaoException;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.domain.UserProfile;
 import ru.urvanov.virtualpets.server.service.exception.IncompatibleVersionException;

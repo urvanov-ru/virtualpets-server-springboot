@@ -5,7 +5,6 @@ import ru.urvanov.virtualpets.server.api.domain.LoginResult;
 import ru.urvanov.virtualpets.server.api.domain.RefreshUsersOnlineResult;
 import ru.urvanov.virtualpets.server.api.domain.UserInformation;
 import ru.urvanov.virtualpets.server.api.domain.UserInformationArg;
-import ru.urvanov.virtualpets.server.dao.exception.DaoException;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
@@ -27,5 +26,5 @@ public interface UserApiService {
             throws ServiceException;
 
     void closeSession(UserPetDetails userPetDetails)
-            throws DaoException, ServiceException;;
+            throws ServiceException;;
 }
