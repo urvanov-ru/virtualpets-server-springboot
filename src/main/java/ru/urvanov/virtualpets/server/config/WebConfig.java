@@ -5,7 +5,11 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import ru.urvanov.virtualpets.server.convserv.BookToApiConverter;
+import ru.urvanov.virtualpets.server.convserv.ClothToApiConverter;
+import ru.urvanov.virtualpets.server.convserv.DrinkToApiConverter;
+import ru.urvanov.virtualpets.server.convserv.FoodToApiConverter;
+import ru.urvanov.virtualpets.server.convserv.PetToApiConverter;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -24,23 +28,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-//        registry.addConverter(new PetTypeServerToSharedConverter());
-//        registry.addConverter(new PetTypeSharedToServerConverter());
-//        registry.addConverter(new RoleServerToSharedConverter());
-//        registry.addConverter(new RoleSharedToServerConverter());
-//        registry.addConverter(new FoodTypeServerToSharedConverter());
-//        registry.addConverter(new FoodTypeSharedToServerConverter());
-//        registry.addConverter(new ClothTypeServerToSharedConverter());
-//        registry.addConverter(new ClothTypeSharedToServerConverter());
-//        registry.addConverter(new SexServerToSharedConverter());
-//        registry.addConverter(new SexSharedToServerConverter());
-//        registry.addConverter(new BuildingMaterialTypeServerToSharedConverter());
-//        registry.addConverter(new BuildingMaterialTypeSharedToServerConverter());
-//        registry.addConverter(new DrinkTypeServerToSharedConverter());
-//        registry.addConverter(new DrinkTypeSharedToServerConverter());
-//        registry.addConverter(new JournalEntryTypeSharedToServerConverter());
-//        registry.addConverter(new JournalEntryTypeServerToSharedConverter());
-//        registry.addConverter(new AchievementCodeServerToSharedConverter());
-//        registry.addConverter(new AchievementCodeSharedToServerConverter());
+        registry.addConverter(new BookToApiConverter());
+        registry.addConverter(new ClothToApiConverter());
+        registry.addConverter(new DrinkToApiConverter());
+        registry.addConverter(new FoodToApiConverter());
+        registry.addConverter(new PetToApiConverter());
     }
 }

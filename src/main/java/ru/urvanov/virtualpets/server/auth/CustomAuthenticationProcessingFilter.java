@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,11 @@ public class CustomAuthenticationProcessingFilter
 
     private ObjectWriter objectWriter = new ObjectMapper().writer();
 
+    public CustomAuthenticationProcessingFilter(AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository) {
+        this(authenticationManager);
+        this.setSecurityContextRepository(securityContextRepository);
+    }
+    
     protected CustomAuthenticationProcessingFilter(
             AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher("/rest/v1/UserService/login",
@@ -89,7 +95,6 @@ public class CustomAuthenticationProcessingFilter
             ServletException {
         LoginArg creds = new ObjectMapper()
                 .readValue(request.getInputStream(), LoginArg.class);
-
         Authentication authentication = getAuthenticationManager()
                 .authenticate(new UsernamePasswordAuthenticationToken(
                         creds.login(), creds.password(),

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,9 @@ public class PetServiceImpl implements PetService, PetApiService {
     
     @Autowired
     private Clock clock;
-
+    
+    @Autowired
+    private ConversionService conversionService;
     
     @Override
     public void addExperience(Pet pet, Integer exp) {
@@ -225,7 +228,10 @@ public class PetServiceImpl implements PetService, PetApiService {
         Set<Book> books = pet.getBooks();
         
         List<ru.urvanov.virtualpets.server.api.domain.Book> resultBooks = books.stream()
-                .map(b -> new ru.urvanov.virtualpets.server.api.domain.Book(b.getId(), b.getBookcaseLevel(), b.getBookcaseOrder()))
+                .map(b -> conversionService.convert(
+                        b,
+                        ru.urvanov.virtualpets.server
+                                .api.domain.Book.class))
                 .collect(Collectors.toList());
         
         return new GetPetBooksResult(resultBooks);
@@ -240,11 +246,10 @@ public class PetServiceImpl implements PetService, PetApiService {
         
         List<ru.urvanov.virtualpets.server.api.domain.Cloth> resultCloths
                 = cloths.stream()
-                .map(c -> new ru.urvanov.virtualpets.server.api.domain.Cloth(
-                        c.getId(),
-                        c.getClothType(),
-                        c.getWardrobeOrder()
-                        ))
+                        .map(c -> conversionService.convert(
+                                c,
+                                ru.urvanov.virtualpets.server
+                                        .api.domain.Cloth.class))
                 .collect(Collectors.toList());
 
         ru.urvanov.virtualpets.server.api.domain.GetPetClothsResult result = new ru.urvanov.virtualpets.server.api.domain.GetPetClothsResult(
@@ -293,11 +298,10 @@ public class PetServiceImpl implements PetService, PetApiService {
         List<ru.urvanov.virtualpets.server.api.domain.Drink> resultDrinks
                 = drinks
                 .values().stream()
-                .map(d -> new ru.urvanov.virtualpets.server.api.domain.Drink(
-                        d.getDrink().getId(),
-                        d.getDrink().getMachineWithDrinksLevel(),
-                        d.getDrink().getMachineWithDrinksOrder(),
-                        d.getDrinkCount()))
+                .map(d -> conversionService.convert(
+                        d,
+                        ru.urvanov.virtualpets.server
+                               .api.domain.Drink.class))
                 .collect(Collectors.toList());
 
         return new GetPetDrinksResult(resultDrinks);
@@ -313,12 +317,10 @@ public class PetServiceImpl implements PetService, PetApiService {
                 .orElseThrow();
         List<ru.urvanov.virtualpets.server.api.domain.Food> resultFoods
                 = StreamSupport.stream(petFoods.spliterator(), false)
-                .map(f -> new ru.urvanov.virtualpets.server.api.domain.Food(
-                        f.getFood().getId(),
-                        f.getFood().getRefrigeratorLevel(),
-                        f.getFood().getRefrigeratorOrder(),
-                        f.getFoodCount()
-                        ))
+                .map(f -> conversionService.convert(
+                        f,
+                        ru.urvanov.virtualpets.server.
+                                api.domain.Food.class))
                 .collect(Collectors.toList());
         return new GetPetFoodsResult(resultFoods);
     }
@@ -354,8 +356,8 @@ public class PetServiceImpl implements PetService, PetApiService {
             throws ServiceException {
         List<Pet> pets = petDao.findByUserId(userPetDetails.getUserId());
 
-        List<PetInfo> petInfos = pets.stream().map(
-                p -> new PetInfo(p.getId(), p.getName(), p.getPetType()))
+        List<PetInfo> petInfos = pets.stream()
+                .map(p -> conversionService.convert(p, PetInfo.class))
                 .collect(Collectors.toList());
         return new PetListResult(petInfos);
     }
@@ -373,6 +375,7 @@ public class PetServiceImpl implements PetService, PetApiService {
         pet.setPetType(arg.petType());
         Level level = levelDao.findById(1).orElseThrow();
         pet.setLevel(level);
+        petDao.save(pet);
     }
 
     @Override
