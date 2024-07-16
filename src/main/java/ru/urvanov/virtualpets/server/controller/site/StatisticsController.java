@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.controller.site;
 
 import java.util.ArrayList;
@@ -22,10 +19,6 @@ import ru.urvanov.virtualpets.server.dao.domain.LastRegisteredUser;
 import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.service.PetService;
 
-/**
- * @author fedya
- * 
- */
 @Controller
 @RequestMapping("site")
 public class StatisticsController {
@@ -35,11 +28,9 @@ public class StatisticsController {
 
     @Autowired
     private PetService petService;
-    
-    //@Autowired
-    //private UserService userService;
 
-    @RequestMapping(value = "/information/statistics", method = RequestMethod.GET)
+    @RequestMapping(value = "/information/statistics",
+            method = RequestMethod.GET)
     public String showStatistics(Locale locale, Model model) {
         StatisticsParams statisticsParams = new StatisticsParams();
         statisticsParams.setMaxRecordsCount(100);
@@ -58,8 +49,6 @@ public class StatisticsController {
         if (!statisticsParamsBindingResult.hasErrors()) {
             switch (statisticsParams.getType()) {
             case LAST_REGISTERED_USERS:
-                // Iterable<User> lastRegisteredUsers = userService.findLastRegisteredUsers(0,  statisticsParams.getMaxRecordsCount());
-                
                 users = jdbcReportDao.findLastRegisteredUsers(0,
                         statisticsParams.getMaxRecordsCount());
                 break;

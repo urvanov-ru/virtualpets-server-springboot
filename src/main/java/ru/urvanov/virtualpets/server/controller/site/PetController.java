@@ -22,8 +22,10 @@ public class PetController {
     @Autowired
     private PetService petService;
 
-    @RequestMapping(value = "/information/pet", method = RequestMethod.GET)
-    public String petInfo(@RequestParam(value = "id") Integer id, Model model) {
+    @RequestMapping(value = "/information/pet",
+            method = RequestMethod.GET)
+    public String petInfo(@RequestParam(value = "id") Integer id,
+            Model model) {
         logger.info("/information/pet started.");
         PetDetails pet = petService.petInformationPage(id);
         model.addAttribute("pet", pet);
