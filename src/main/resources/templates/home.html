@@ -7,26 +7,36 @@
 </head>
 <body>
     <div th:replace = "fragments/header :: header">
+        Шапка сайта
     </div>
     <div th:replace = "fragments/menu :: menu">
+        Меню сайта
     </div>
     <div class = "body">
         <div id = "main">
         <th:block th:utext
-            = "#{virtualpets-server-springboot.site.welcome_message1}" />
+            = "#{virtualpets-server-springboot.site.welcome_message1}">
+            <p>Текст приветственного сообщения 1.</p>
+        </th:block>
     
-        <th:block
-            th:utext = "#{virtualpets-server-springboot.site.welcome_message2}" />
+        <th:block th:utext
+            = "#{virtualpets-server-springboot.site.welcome_message2}" >
+            <p>Текст приветственного сообщения 2.</p>
+        </th:block>
         <img alt = "screenshot001" src = "/screenshot001.jpg"
             width = "457" height = "351" />
     
         <th:block th:utext
-            = "#{virtualpets-server-springboot.site.welcome_message3}" />
+            = "#{virtualpets-server-springboot.site.welcome_message3}">
+            <p>Текст приветственного сообщения 3.</p>
+        </th:block>
         <img alt = "screenshot002" src = "/screenshot002.jpg"
             width = "457" height = "351" />
     
         <th:block th:utext
-            = "#{virtualpets-server-springboot.site.welcome_message4}" />
+            = "#{virtualpets-server-springboot.site.welcome_message4}">
+            <p>Текст приветственного сообщения 4.</p>
+        </th:block>
         <img alt = "screenshot003" src = "/screenshot003.jpg"
             width = "457" height = "351" />
         </div>
