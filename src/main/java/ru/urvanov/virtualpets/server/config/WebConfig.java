@@ -1,10 +1,16 @@
 package ru.urvanov.virtualpets.server.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
 import ru.urvanov.virtualpets.server.convserv.BookToApiConverter;
 import ru.urvanov.virtualpets.server.convserv.ClothToApiConverter;
 import ru.urvanov.virtualpets.server.convserv.DrinkToApiConverter;
@@ -33,5 +39,15 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new DrinkToApiConverter());
         registry.addConverter(new FoodToApiConverter());
         registry.addConverter(new PetToApiConverter());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LocaleChangeInterceptor());
+    }
+    
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new CookieLocaleResolver("locale");
     }
 }
