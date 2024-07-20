@@ -1,4 +1,6 @@
-<div class="header" th:fragment="header">
+<div class="header"
+    xmlns:th = "http://www.thymeleaf.org"
+    th:fragment="header">
     <img alt="virtualpets logo" th:src="@{/logo.jpg}"
         width="500" height="100" />
     <H1 th:text="#{virtualpets-server-springboot.app_name}"></H1>

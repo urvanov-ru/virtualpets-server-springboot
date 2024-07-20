@@ -1,4 +1,6 @@
-<div class="menu" th:fragment="menu">
+<div class="menu"
+    xmlns:th = "http://www.thymeleaf.org"
+    th:fragment="menu">
     <ul>
     <li><a th:href="@{/site/home}" th:text="#{virtualpets-server-springboot.site.home}"></a></li>
     <li><a th:href="${menu_play_url}" th:text="#{virtualpets-server-springboot.site.play}"></a></li>
