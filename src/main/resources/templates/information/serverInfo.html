@@ -2,32 +2,31 @@
 <html xmlns:th = "http://www.thymeleaf.org"
     th:lang = "${#locale.toLanguageTag()}">
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="/wood.css" type="text/css"
-    media="screen" />
+  <meta charset = "utf-8">
+  <link rel = "stylesheet" href = "/wood.css" type = "text/css"
+    media = "screen" />
 </head>
 <body>
-    <div th:replace="fragments/header :: header">
+    <div th:replace = "fragments/header :: header">
     </div>
-    <div th:replace="fragments/menu :: menu">
+    <div th:replace = "fragments/menu :: menu">
     </div>
-    <div class="body">
-        <div id="main">
+    <div class = "body">
+        <div id = "main">
         
-            <H1 th:text="#{virtualpets-server-springboot.site.server_info}"></H1>
-                <p>
+            <H1 th:text
+                = "#{virtualpets-server-springboot.site.server_info}">
+                </H1>
                 <table>
-                    <caption th:text="${server_info}"></caption>
-                    <tr th:each="info : ${infos}">
-                        <td th:text="${info.key}"></td>
-                        <td th:text="${info.value}"></td>
+                    <caption th:text = "${server_info}"></caption>
+                    <tr th:each = "info : ${infos}">
+                        <td th:text = "${info.key}"></td>
+                        <td th:text = "${info.value}"></td>
                     </tr>
-                    </c:forEach>
                 </table>
-                </p>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer">
+    <div th:replace = "fragments/footer :: footer">
     </div>
 </body>
 </html>
