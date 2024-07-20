@@ -2,33 +2,37 @@
 <html xmlns:th = "http://www.thymeleaf.org"
     th:lang = "${#locale.toLanguageTag()}">
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="/wood.css" type="text/css"
-    media="screen" />
+  <meta charset = "utf-8">
+  <link rel = "stylesheet" href = "/wood.css" type = "text/css"
+    media = "screen" />
 </head>
 <body>
-    <div th:replace="fragments/header :: header">
+    <div th:replace = "fragments/header :: header">
     </div>
-    <div th:replace="fragments/menu :: menu">
+    <div th:replace = "fragments/menu :: menu">
     </div>
-    <div class="body">
-        <div id="main">
-        <H1 th:text="#{virtualpets-server-springboot.site.pet_info}"></H1>
-        <p th:text="#{virtualpets-server-springboot.site.pet_name} + ${': ' + pet.name}"></p>
-        <p th:text="#{virtualpets-server-springboot.site.pet_level} + ${': ' + pet.level}"></p>
-        <p th:text="#{virtualpets-server-springboot.site.pet_experience} + ${': ' + pet.experience}"></p>
-        <H1 th:text="#{virtualpets-server-springboot.site.achievements}"></H1>
-        <div  th:each="info : ${pet.achievements}">
-            <div class="achievementUnlocked" th:if="${info.unlocked}">
-                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}__}">
+    <div class = "body">
+        <div id = "main">
+        <H1 th:text = "#{virtualpets-server-springboot.site.pet_info}">
+        </H1>
+        <p th:text = "#{virtualpets-server-springboot.site.pet_name}
+        + ${': ' + pet.name}"></p>
+        <p th:text = "#{virtualpets-server-springboot.site.pet_level}
+        + ${': ' + pet.level}"></p>
+        <p th:text = "#{virtualpets-server-springboot.site.pet_experience}
+        + ${': ' + (pet.experience == null ? 0 : pet.experience)}"></p>
+        <H1 th:text = "#{virtualpets-server-springboot.site.achievements}"></H1>
+        <div  th:each = "info : ${pet.achievements}">
+            <div class = "achievementUnlocked" th:if = "${info.unlocked}">
+                <p th:text = "#{virtualpets-server-springboot.achievement.__${info.code}__}">
                 </p>
-                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
+                <p th:text = "#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
                 </p>
             </div>
-            <div class="achievementLocked" th:if="${!info.unlocked}">
-                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}__}">
+            <div class = "achievementLocked" th:if = "${!info.unlocked}">
+                <p th:text = "#{virtualpets-server-springboot.achievement.__${info.code}__}">
                 </p>
-                <p th:text="#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
+                <p th:text = "#{virtualpets-server-springboot.achievement.__${info.code}___DESCRIPTION}">
                 </p>
             </div>
             <p>
@@ -36,7 +40,7 @@
         </div>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer">
+    <div th:replace = "fragments/footer :: footer">
     </div>
 </body>
 </html>
