@@ -24,21 +24,21 @@
             = "#{virtualpets-server-springboot.site.welcome_message2}" >
             <p>Текст приветственного сообщения 2.</p>
         </th:block>
-        <img alt = "screenshot001" src = "/screenshot001.jpg"
+        <img alt = "screenshot001" th:src = "@{/screenshot001.jpg}"
             width = "457" height = "351" />
     
         <th:block th:utext
             = "#{virtualpets-server-springboot.site.welcome_message3}">
             <p>Текст приветственного сообщения 3.</p>
         </th:block>
-        <img alt = "screenshot002" src = "/screenshot002.jpg"
+        <img alt = "screenshot002" th:src = "@{/screenshot002.jpg}"
             width = "457" height = "351" />
     
         <th:block th:utext
             = "#{virtualpets-server-springboot.site.welcome_message4}">
             <p>Текст приветственного сообщения 4.</p>
         </th:block>
-        <img alt = "screenshot003" src = "/screenshot003.jpg"
+        <img alt = "screenshot003" th:src = "@{/screenshot003.jpg}"
             width = "457" height = "351" />
         </div>
     </div>
