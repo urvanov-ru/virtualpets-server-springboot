@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class GlobalMethods {
     
     @ModelAttribute("menu_play_url")
-    public String menuPlayUrl(@Value("${virtualpets-server-springboot.play.url}") String playUrl) {
+    public String menuPlayUrl(
+            @Value("${virtualpets-server-springboot.play.url}")
+            String playUrl) {
         return playUrl;
     }
 
