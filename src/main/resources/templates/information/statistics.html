@@ -45,12 +45,19 @@
                 </div>
             </form>
             <table th:if = "${not #lists.isEmpty(users)}">
-                <caption th:text = "#{virtualpets-server-springboot.site.last_registered_users}"></caption>
+                <caption th:text
+                = "#{virtualpets-server-springboot.site.last_registered_users}"></caption>
                 <thead>
                     <tr>
-                        <th th:text = "#{virtualpets-server-springboot.site.registration_date}"></th>
-                        <th th:text = "#{virtualpets-server-springboot.site.name}"></th>
-                        <th th:text = "#{virtualpets-server-springboot.site.pets_count}"></th>
+                        <th th:text
+                        = "#{virtualpets-server-springboot.site.registration_date}">
+                        </th>
+                        <th th:text
+                        = "#{virtualpets-server-springboot.site.name}">
+                        </th>
+                        <th th:text
+                        = "#{virtualpets-server-springboot.site.pets_count}">
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,7 +71,11 @@
             <table th:if = "${not #lists.isEmpty(pets)}">
                 <tr th:each = "pet : ${pets}">
                     <td th:text = "${pet.createdDate}"></td>
-                    <td><a th:href = "@{/site/information/pet(id=${pet.id})}" th:text = "${pet.name}"></a></td>
+                    <td><a
+                    th:href = "@{/site/information/pet(id=${pet.id})}"
+                    th:text = "${pet.name}">
+                    </a>
+                    </td>
                 </tr>
             </table>
         </div>
