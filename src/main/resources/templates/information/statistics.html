@@ -2,74 +2,74 @@
 <html xmlns:th = "http://www.thymeleaf.org"
     th:lang = "${#locale.toLanguageTag()}">
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="/wood.css" type="text/css"
-    media="screen" />
+  <meta charset = "utf-8">
+  <link rel = "stylesheet" href = "/wood.css" type = "text/css"
+    media = "screen" />
 </head>
 <body>
-    <div th:replace="fragments/header :: header">
+    <div th:replace = "fragments/header :: header">
     </div>
-    <div th:replace="fragments/menu :: menu">
+    <div th:replace = "fragments/menu :: menu">
     </div>
-    <div class="body">
-        <div id="main">
+    <div class = "body">
+        <div id = "main">
         
         
         
-            <H1 th:text="${statistics_var}"></H1>
-            <form th:object="${statisticsParams}" method="post">
-                <div style="width: 300px;" class="form">
-                    <div style="width: 100px; display: inline;" th:text="#{virtualpets-server-springboot.site.records_in_page}"></div>
+            <H1 th:text = "${statistics_var}"></H1>
+            <form th:object = "${statisticsParams}" method = "post">
+                <div style = "width: 300px;" class = "form">
+                    <div style = "width: 100px; display: inline;" th:text = "#{virtualpets-server-springboot.site.records_in_page}"></div>
                     <div
-                        style="width: 200px; display: inline; margin-right: auto;">
-                        <input th:field="*{maxRecordsCount}" />
+                        style = "width: 200px; display: inline; margin-right: auto;">
+                        <input th:field = "*{maxRecordsCount}" />
                     </div>
-                    <div style="width: 300px;">
+                    <div style = "width: 300px;">
                         <div></div>
                     </div>
-                    <div style="width: 100px; display: inline;" th:text="#{virtualpets-server-springboot.site.statistics_type}"></div>
+                    <div style = "width: 100px; display: inline;" th:text = "#{virtualpets-server-springboot.site.statistics_type}"></div>
                     <div
-                        style="width: 200px; display: inline; margin-right: auto;">
-                        <select th:field="*{type}" multiple="false">
-                            <option th:value="LAST_REGISTERED_USERS" th:text="#{virtualpets-server-springboot.site.last_registered_users}"></option>
-                            <option th:value="LAST_CREATED_PETS" th:text="#{virtualpets-server-springboot.site.last_created_pets}"></option>
+                        style = "width: 200px; display: inline; margin-right: auto;">
+                        <select th:field = "*{type}" multiple = "false">
+                            <option th:value = "LAST_REGISTERED_USERS" th:text = "#{virtualpets-server-springboot.site.last_registered_users}"></option>
+                            <option th:value = "LAST_CREATED_PETS" th:text = "#{virtualpets-server-springboot.site.last_created_pets}"></option>
                         </select>
                     </div>
-                    <div style="width: 300px;">
+                    <div style = "width: 300px;">
                         <div></div>
                     </div>
                     <div
-                        style="width: 300px; display: inline; margin-left: auto;">
-                        <input type="submit" th:value="#{virtualpets-server-springboot.site.show_statistics}" />
+                        style = "width: 300px; display: inline; margin-left: auto;">
+                        <input type = "submit" th:value = "#{virtualpets-server-springboot.site.show_statistics}" />
                     </div>
                 </div>
             </form>
-            <table th:if="${not #lists.isEmpty(users)}">
-                <caption th:text="#{virtualpets-server-springboot.site.last_registered_users}"></caption>
+            <table th:if = "${not #lists.isEmpty(users)}">
+                <caption th:text = "#{virtualpets-server-springboot.site.last_registered_users}"></caption>
                 <thead>
                     <tr>
-                        <th th:text="#{virtualpets-server-springboot.site.registration_date}"></th>
-                        <th th:text="#{virtualpets-server-springboot.site.name}"></th>
-                        <th th:text="#{virtualpets-server-springboot.site.pets_count}"></th>
+                        <th th:text = "#{virtualpets-server-springboot.site.registration_date}"></th>
+                        <th th:text = "#{virtualpets-server-springboot.site.name}"></th>
+                        <th th:text = "#{virtualpets-server-springboot.site.pets_count}"></th>
                     </tr>
                 </thead>
                 <tbody>
-	                <tr th:each="user : ${users}">
-	                    <td th:text="${user.registrationDate}"></td>
-	                    <td th:text="${user.name}"></td>
-	                    <td th:text="${user.petsCount}"></td>
+	                <tr th:each = "user : ${users}">
+	                    <td th:text = "${user.registrationDate}"></td>
+	                    <td th:text = "${user.name}"></td>
+	                    <td th:text = "${user.petsCount}"></td>
 	                </tr>
                 </tbody>
             </table>
-            <table th:if="${not #lists.isEmpty(pets)}">
-                <tr th:each="pet : ${pets}">
-                    <td th:text="${pet.createdDate}"></td>
-                    <td><a th:href="@{/site/information/pet(id=${pet.id})}" th:text="${pet.name}"></a></td>
+            <table th:if = "${not #lists.isEmpty(pets)}">
+                <tr th:each = "pet : ${pets}">
+                    <td th:text = "${pet.createdDate}"></td>
+                    <td><a th:href = "@{/site/information/pet(id=${pet.id})}" th:text = "${pet.name}"></a></td>
                 </tr>
             </table>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer">
+    <div th:replace = "fragments/footer :: footer">
     </div>
 </body>
 </html>
