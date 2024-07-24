@@ -37,7 +37,7 @@ public class SecurityConfig {
         return http
                 .securityMatcher( "/site**")
                 .authorizeHttpRequests((authorize) ->
-                    authorize.requestMatchers("/site/**").permitAll()
+                    authorize.anyRequest().permitAll()
                 )
                 .build();
     }
