@@ -32,8 +32,8 @@ public class SecurityConfig {
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChainAll(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain securityFilterChainSite(
+            HttpSecurity http) throws Exception {
         return http
                 .securityMatcher( "/site**")
                 .authorizeHttpRequests((authorize) ->
@@ -44,7 +44,8 @@ public class SecurityConfig {
 
     
     @Bean
-    public SecurityFilterChain securityFilterChain1(HttpSecurity http,
+    public SecurityFilterChain securityFilterChainApi(
+            HttpSecurity http,
             AuthenticationManager authenticationManager,
             SecurityContextRepository securityContextRepository,
             AuthenticationEntryPoint authenticationEntryPoint
