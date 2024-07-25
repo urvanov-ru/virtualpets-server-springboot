@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChainSite(
             HttpSecurity http) throws Exception {
         return http
-                .securityMatcher( "/site**")
+                .securityMatcher( "/site/**")
                 .authorizeHttpRequests((authorize) ->
                     authorize.anyRequest().permitAll()
                 )
@@ -44,7 +44,7 @@ public class SecurityConfig {
 
     
     @Bean
-    public SecurityFilterChain securityFilterChainApi(
+    public SecurityFilterChain securityFilterChainGame(
             HttpSecurity http,
             AuthenticationManager authenticationManager,
             SecurityContextRepository securityContextRepository,
