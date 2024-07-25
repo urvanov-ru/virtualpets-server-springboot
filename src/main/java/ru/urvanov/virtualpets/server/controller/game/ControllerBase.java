@@ -38,7 +38,8 @@ public class ControllerBase extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IncompatibleVersionException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ProblemDetail handleException(
-             IncompatibleVersionException ex, WebRequest request) throws Exception {
+             IncompatibleVersionException ex, WebRequest request)
+                     throws Exception {
         ProblemDetail problemDetail = ProblemDetail
                 .forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(ex.getErrorCode());
