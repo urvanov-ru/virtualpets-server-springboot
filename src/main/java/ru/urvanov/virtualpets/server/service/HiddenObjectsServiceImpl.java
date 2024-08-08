@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -54,6 +55,7 @@ import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
+@PreAuthorize("hasRole('USER')")
 public class HiddenObjectsServiceImpl implements HiddenObjectsApiService {
     private static final int MAX_OBJECTS_FOR_SEARCH = 8;
     private static final int GAME_TIMEOUT_SECONDS = 30;

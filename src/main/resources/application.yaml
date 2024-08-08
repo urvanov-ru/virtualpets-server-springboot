@@ -44,13 +44,8 @@ virtualpets-server-springboot:
   play:
     url: http://localhost:8081
   version: 0.21
-  servers:
+  server:
    - url: http://localhost:8080
-     name: Русскоязычный основной
-     locale: ru
-   - url: broken_test
-     name: broken_test
-     locale: broken_test
   mail:
     from: noemail@nowhere.com
     subject: Recover password

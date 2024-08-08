@@ -22,14 +22,26 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("site/download").setViewName("download");
-        registry.addViewController("site/information").setViewName("information/list");
-        registry.addViewController("site/information/gameHelp").setViewName("information/gameHelp");
+        registry.addViewController("site/download")
+                .setViewName("download");
+        registry.addViewController("site/information")
+                .setViewName("information/list");
+        registry.addViewController("site/information/gameHelp")
+                .setViewName("information/gameHelp");
+        registry.addViewController("site/information/gameHelp")
+                .setViewName("information/gameHelp");
+        registry.addViewController("site/login")
+                .setViewName("login");
     }
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/rest/**").allowCredentials(true).allowedOrigins("http://localhost:8081,http://localhost:8081/").allowCredentials(true);
+        registry.addMapping("/rest/**").allowCredentials(true)
+            .allowedOrigins("""
+                    http://localhost:8081, \
+                    http://localhost:8081/, \
+                    http://virtualpets.urvanov.ru""")
+            .allowCredentials(true);
     }
 
     @Override

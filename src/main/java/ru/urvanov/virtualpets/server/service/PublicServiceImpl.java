@@ -13,6 +13,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.api.domain.GetServersArg;
+import ru.urvanov.virtualpets.server.api.domain.LoginArg;
 import ru.urvanov.virtualpets.server.api.domain.LoginResult;
 import ru.urvanov.virtualpets.server.api.domain.RecoverPasswordArg;
 import ru.urvanov.virtualpets.server.api.domain.RecoverSessionArg;
@@ -32,9 +36,11 @@ import ru.urvanov.virtualpets.server.api.domain.ServerInfo;
 import ru.urvanov.virtualpets.server.api.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.server.config.VirtualpetsServerSpringBootProperties;
 import ru.urvanov.virtualpets.server.dao.UserDao;
+import ru.urvanov.virtualpets.server.dao.domain.Role;
 import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.server.service.exception.IncompatibleVersionException;
 import ru.urvanov.virtualpets.server.service.exception.NameIsBusyException;
+import ru.urvanov.virtualpets.server.service.exception.SendMailException;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
@@ -42,15 +48,12 @@ public class PublicServiceImpl implements PublicApiService {
 
     @Autowired
     private UserDao userDao;
-
-    //@Autowired
-    //private MailSender mailSender;
-
-    //@Autowired
-    //private SimpleMailMessage templateMessage;
-
-    @Value("${virtualpets-server-springboot.version}")
-    private String version;
+//
+//    @Autowired
+//    private MailSender mailSender;
+//
+//    @Autowired
+//    private SimpleMailMessage templateMessage;
 
     @Autowired
     private VirtualpetsServerSpringBootProperties properties;
@@ -61,16 +64,6 @@ public class PublicServiceImpl implements PublicApiService {
     @Autowired
     private Clock clock;
 
-    @Override
-    public ServerInfo[] getServers(GetServersArg getServersArg)
-            throws ServiceException {
-        String clientVersion = getServersArg.version();
-        if (!version.equals(clientVersion)) {
-            throw new IncompatibleVersionException(
-                    "", version, clientVersion);
-        }
-        return properties.getServers();
-    }
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
@@ -78,8 +71,8 @@ public class PublicServiceImpl implements PublicApiService {
             throws ServiceException {
         try {
             String clientVersion = registerArgument.version();
-            if (!version.equals(clientVersion)) {
-                throw new IncompatibleVersionException("", version,
+            if (!properties.getVersion().equals(clientVersion)) {
+                throw new IncompatibleVersionException("", properties.getVersion(),
                         clientVersion);
             }
             User user = userDao.findByLogin(registerArgument.login()).orElseThrow();
@@ -92,15 +85,29 @@ public class PublicServiceImpl implements PublicApiService {
         } catch (jakarta.persistence.NoResultException noResultException) {
             User user = new User();
             user.setLogin(registerArgument.login());
-            user.setName(registerArgument.login());
+            user.setName(registerArgument.name());
             user.setPassword(bcryptEncoder.encode(registerArgument.password()));
             user.setEmail(registerArgument.email());
             user.setRegistrationDate(OffsetDateTime.now(clock));
-            user.setRole(ru.urvanov.virtualpets.server.dao.domain.Role.USER);
+            user.setRoles(Role.USER.name());
+            user.setEnabled(true);
             userDao.save(user);
         }
     }
-
+    
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public LoginResult login(LoginArg loginArg)
+            throws ServiceException {
+        String clientVersion = loginArg.version();
+        if (!properties.getVersion().equals(clientVersion)) {
+            throw new IncompatibleVersionException("", properties.getVersion(),
+                    clientVersion);
+        }
+        User user = userDao.findByLogin(loginArg.login()).orElseThrow();
+        return new LoginResult(true, null, user.getId(),
+                user.getLogin(), user.getName());
+    }
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
@@ -108,9 +115,9 @@ public class PublicServiceImpl implements PublicApiService {
             RecoverPasswordArg recoverPasswordArgument)
             throws ServiceException {
         String clientVersion = recoverPasswordArgument.version();
-        if (!version.equals(clientVersion)) {
+        if (!properties.getVersion().equals(clientVersion)) {
             throw new IncompatibleVersionException(
-                    "", version, clientVersion);
+                    "", properties.getVersion(), clientVersion);
         }
 
         String email = recoverPasswordArgument.email();
@@ -138,11 +145,11 @@ public class PublicServiceImpl implements PublicApiService {
         user.setRecoverPasswordValid(recoverPasswordValid);
         userDao.save(user);
 
-        // Create a thread safe "copy" of the template message and customize it
+//        // Create a thread safe "copy" of the template message and customize it
 //        SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 //        msg.setTo(email);
 //        msg.setText("Dear " + user.getName()
-//                + ", follow this link to recover password " + applicationUrl
+//                + ", follow this link to recover password " + properties.getServer().getUrl()
 //                + "/site/recoverPassword?recoverPasswordKey=" + key + " ");
 //        try {
 //            this.mailSender.send(msg);
@@ -150,39 +157,6 @@ public class PublicServiceImpl implements PublicApiService {
 //            throw new SendMailException("Send mail exception.", ex);
 //        }
 
-    }
-
-
-    @Override
-    @Transactional(rollbackFor = ServiceException.class, readOnly = true)
-    public LoginResult recoverSession(RecoverSessionArg recoverSessionArg)
-            throws ServiceException {
-        String clientVersion = recoverSessionArg.version();
-        if (!version.equals(clientVersion)) {
-            throw new IncompatibleVersionException("", version, clientVersion);
-        }
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        String unid = recoverSessionArg.unid();
-        User user = userDao.findByUnid(unid).orElseThrow();
-        if (user != null) {
-
-            Set<GrantedAuthority> granted = new HashSet<GrantedAuthority>();
-            granted.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    user, null, granted);
-            securityContext.setAuthentication(token);
-        }
-        Authentication auth = securityContext.getAuthentication();
-
-        LoginResult loginResult;
-        Object principal = auth.getPrincipal();
-        if (principal instanceof User) {
-            loginResult = new LoginResult(true, null, user.getId(), user.getUnid());
-        } else {
-            throw new ServiceException("Failed to recover session");
-        }
-        return loginResult;
     }
 
     @Override

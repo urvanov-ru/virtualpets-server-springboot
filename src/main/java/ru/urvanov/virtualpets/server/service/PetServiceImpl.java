@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +64,7 @@ import ru.urvanov.virtualpets.server.service.domain.PetDetails;
 import ru.urvanov.virtualpets.server.service.domain.PetInformationPageAchievement;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.NotEnoughPetResourcesException;
+import ru.urvanov.virtualpets.server.service.exception.PetNotFoundException;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service("petService")
@@ -350,6 +352,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
+    @PreAuthorize("hasRole('USER')")
     public PetListResult getUserPets(UserPetDetails userPetDetails)
             throws ServiceException {
         List<Pet> pets = petDao.findByUserId(userPetDetails.getUserId());
@@ -361,6 +364,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class )
     public void create(UserPetDetails userPetDetails, CreatePetArg arg)
             throws ServiceException {
@@ -376,11 +380,16 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class )
     public void select(UserPetDetails userPetDetails, SelectPetArg arg)
             throws ServiceException {
         int id = arg.petId();
-        Pet pet = petDao.findFullById(id).orElseThrow();
+        Pet pet = petDao.findById(id)
+                .orElseThrow(() -> new PetNotFoundException(id));
+        if (!pet.getUser().getId().equals(userPetDetails.getUserId())) {
+            throw new PetNotFoundException(id);
+        }
         OffsetDateTime currentDateTime = OffsetDateTime.now(clock);
         boolean fireAchievement = false;
         if (pet.getEveryDayLoginLast() == null) {
@@ -404,13 +413,11 @@ public class PetServiceImpl implements PetService, PetApiService {
         }
 
         pet.setLoginDate(currentDateTime);
-        if (!pet.getUser().getId().equals(userPetDetails.getUserId())) {
-            throw new ServiceException();
-        }
         userPetDetails.setPetId(pet.getId());
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class)
     public void drink(UserPetDetails userPetDetails, DrinkArg drinkArg)
             throws ServiceException {
@@ -454,6 +461,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class)
     public void satiety(UserPetDetails userPetDetails,
             SatietyArg satietyArg)
@@ -495,6 +503,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class)
     public void education(UserPetDetails userPetDetails)
             throws ServiceException {
@@ -527,6 +536,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class)
     public void mood(UserPetDetails userPetDetails)
             throws ServiceException {
@@ -538,6 +548,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     
     
     @Override
+    @PreAuthorize("hasRole('USER')")
     public GetPetRucksackInnerResult getPetRucksackInner(
             UserPetDetails userPetDetails)
             throws ServiceException {
@@ -557,9 +568,10 @@ public class PetServiceImpl implements PetService, PetApiService {
         return new GetPetRucksackInnerResult(buildingMaterialCounts);
     }
 
-    @Override
-    public PetDetails petInformationPage(Integer id) {
-        Pet fullPet = petDao.findFullById(id).orElseThrow();
+    public PetDetails petInformationPage(Integer id)
+            throws PetNotFoundException {
+        Pet fullPet = petDao.findByIdWithJournalEntriesAndAchievements(id)
+                .orElseThrow(() -> new PetNotFoundException());
         PetDetails result = new PetDetails();
         result.setId(fullPet.getId());
         result.setName(fullPet.getName());
@@ -578,12 +590,19 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
-    @Transactional(rollbackFor = ServiceException.class )
-    public void delete(UserPetDetails userPetDetails, Integer petId) {
+    @PreAuthorize("hasRole('USER')")
+    @Transactional(rollbackFor = ServiceException.class)
+    public void delete(UserPetDetails userPetDetails, Integer petId)
+            throws ServiceException {
         Room room = roomDao.findByPetId(petId).orElseThrow();
-        if (room != null) {
+        Pet pet = petDao.findFullById(petId)
+                .orElseThrow(() -> new PetNotFoundException(petId));
             roomDao.delete(room);
+        if (pet.getUser().getId().equals(userPetDetails.getUserId())) {
+            roomDao.findByPetId(petId).ifPresent(r -> roomDao.delete(r));
+            petDao.delete(pet);
+        } else {
+            throw new PetNotFoundException(petId);
         }
-        petDao.deleteById(petId);
     }
 }

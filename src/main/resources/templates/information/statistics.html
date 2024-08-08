@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th = "http://www.thymeleaf.org"
+    xmlns:sec = "http://www.thymeleaf.org/extras/spring-security"
     th:lang = "${#locale.toLanguageTag()}">
 <head>
   <meta charset = "utf-8">
+  <title th:text="#{virtualpets-server-springboot.site.title}"></title>
   <link rel = "stylesheet" href = "/wood.css" type = "text/css"
     media = "screen" />
 </head>
@@ -13,9 +15,6 @@
     </div>
     <div class = "body">
         <div id = "main">
-        
-        
-        
             <H1 th:text = "${statistics_var}"></H1>
             <form th:object = "${statisticsParams}" method = "post">
                 <div style = "width: 300px;" class = "form">
@@ -25,18 +24,23 @@
                         <input th:field = "*{maxRecordsCount}" />
                     </div>
                     <div style = "width: 300px;">
-                        <div></div>
+                        <p th:if="${#fields.hasErrors('maxRecordsCount')}" th:errors="*{maxRecordsCount}">Incorrect value</p>
                     </div>
                     <div style = "width: 100px; display: inline;" th:text = "#{virtualpets-server-springboot.site.statistics_type}"></div>
                     <div
                         style = "width: 200px; display: inline; margin-right: auto;">
-                        <select th:field = "*{type}" multiple = "false">
+                        <select th:field = "*{type}" size = "1">
                             <option th:value = "LAST_REGISTERED_USERS" th:text = "#{virtualpets-server-springboot.site.last_registered_users}"></option>
                             <option th:value = "LAST_CREATED_PETS" th:text = "#{virtualpets-server-springboot.site.last_created_pets}"></option>
                         </select>
                     </div>
                     <div style = "width: 300px;">
-                        <div></div>
+                        <p th:if="${#fields.hasErrors('type')}" th:errors="*{type}">Incorrect type</p>
+                    </div>
+                    <div style = "width: 300px;">
+                        <input type = "hidden"
+                            th:name = "${_csrf.parameterName}"
+                            th:value = "${_csrf.token}"/>
                     </div>
                     <div
                         style = "width: 300px; display: inline; margin-left: auto;">
@@ -59,6 +63,8 @@
                         <th th:text
                         = "#{virtualpets-server-springboot.site.pets_count}">
                         </th>
+                        <th sec:authorize-url = "@{/site/admin/user}">
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,6 +72,11 @@
 	                    <td th:text = "${user.registrationDate}"></td>
 	                    <td th:text = "${user.name}"></td>
 	                    <td th:text = "${user.petsCount}"></td>
+                        <td sec:authorize-url = "@{/site/admin/user}">
+                            <a th:href = "@{/site/admin/user/{userId}(userId=${user.id})}"
+                            th:text = "#{virtualpets-server-springboot.site.change_user_access}">
+                            </a>
+                        </td>
 	                </tr>
                 </tbody>
             </table>

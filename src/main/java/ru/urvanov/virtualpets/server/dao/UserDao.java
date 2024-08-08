@@ -20,8 +20,6 @@ public interface UserDao extends JpaRepository<User, Integer> {
 
     Optional<User> findByLoginAndEmail(String name, String email);
 
-    Optional<User> findByUnid(String unid);
-
     Optional<User> findByRecoverPasswordKey(String recoverKey);
 
     default Page<User> findLastRegisteredUsers(int page, int pageSize) {

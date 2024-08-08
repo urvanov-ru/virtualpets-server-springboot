@@ -5,27 +5,28 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 import ru.urvanov.virtualpets.server.auth.CustomAuthenticationEntryPoint;
-import ru.urvanov.virtualpets.server.auth.CustomAuthenticationProcessingFilter;
 import ru.urvanov.virtualpets.server.auth.DatabaseAuthenticationProvider;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
+    
+    public static String REMEMBER_ME_GAME_KEY = "virtualpets-server-springboot-game";
+    
     @Bean
     public BCryptPasswordEncoder bcryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -33,12 +34,29 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain securityFilterChainSite(
-            HttpSecurity http) throws Exception {
+            HttpSecurity http,
+            AuthenticationManager authenticationManager) throws Exception {
         return http
                 .securityMatcher( "/site/**")
                 .authorizeHttpRequests((authorize) ->
-                    authorize.anyRequest().permitAll()
+                    authorize.requestMatchers("/site/admin/**")
+                        .hasRole("ADMIN")
+                    .requestMatchers("/site/user/**")
+                        .hasRole("USER")
+                    .requestMatchers("/site/**")
+                        .permitAll()
                 )
+                .formLogin((formLogin) ->
+                    formLogin.loginPage("/site/login")
+                        .loginProcessingUrl("/site/login")
+                        .defaultSuccessUrl("/site/user/profile")
+                        .failureUrl("/site/login?error=1")
+                )
+                .logout((logout) ->
+                    logout.logoutUrl("/site/logout")
+                        .logoutSuccessUrl("/site/login?logout=1")
+                )
+                .authenticationManager(authenticationManager)
                 .build();
     }
 
@@ -53,14 +71,8 @@ public class SecurityConfig {
         http
             .securityMatcher("/rest/**")
             .csrf(AbstractHttpConfigurer::disable)
-            .addFilterAfter(new CustomAuthenticationProcessingFilter(
-                    authenticationManager,
-                    securityContextRepository),
-                    BasicAuthenticationFilter.class)
             .authorizeHttpRequests((authorize) -> 
                 authorize.requestMatchers("/rest/v1/PublicService/**")
-                    .permitAll()
-                .requestMatchers("/rest/v1/UserService/login")
                     .permitAll()
                 .requestMatchers("/rest/**").hasRole("USER")
             )
@@ -69,11 +81,7 @@ public class SecurityConfig {
                 )
             .exceptionHandling(eH -> 
                    eH.authenticationEntryPoint(authenticationEntryPoint))
-            .authenticationManager(authenticationManager)
-            .sessionManagement((session) -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                );
-
+            .authenticationManager(authenticationManager);
         return http.build();
     }
 
@@ -91,9 +99,9 @@ public class SecurityConfig {
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint();
     }
-    
+
     @Bean
-    public AuthenticationProvider authenticationProvider(
+    public DatabaseAuthenticationProvider authenticationProvider(
             UserDetailsService userService,
             BCryptPasswordEncoder bcryptEncoder) {
         DatabaseAuthenticationProvider databaseAuthenticationProvider
@@ -105,7 +113,7 @@ public class SecurityConfig {
     
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationProvider authenticationProvider) {
-        return new ProviderManager(List.of(authenticationProvider));
+            DatabaseAuthenticationProvider gameAuthenticationProvider) {
+        return new ProviderManager(List.of(gameAuthenticationProvider));
     }
 }

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org"
+    xmlns:sec = "http://www.thymeleaf.org/extras/spring-security"
+    th:lang = "${#locale.toLanguageTag()}">
+<head>
+  <meta charset = "utf-8">
+  <title th:text = "#{virtualpets-server-springboot.app_name}"></title>
+  <link rel = "stylesheet" th:href = "@{/wood.css}" type = "text/css"
+    media = "screen" />
+</head>
+<body>
+    <div th:replace = "fragments/header :: header">
+        Шапка сайта
+    </div>
+    <div th:replace = "fragments/menu :: menu">
+        Меню сайта
+    </div>
+    <div class = "body">
+        <div id = "main">
+        <div>
+        <th:block th:text = "#{virtualpets-server-springboot.site.username}" />
+        :
+        <th:block sec:authentication = "principal.username" />
+        </div>
+        
+        <div>
+        <th:block th:text = "#{virtualpets-server-springboot.site.name}" />
+        :
+        <th:block sec:authentication = "principal.name" />
+        </div>
+        <div>
+        Roles: <span sec:authentication = "principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+        </div>
+        <div sec:authorize-url = "@{/site/user/profile}">
+            <a th:href = "@{/site/user/profile}" th:text = 
+            "#{virtualpets-server-springboot.site.profile}"></a>
+        </div>
+        <div>
+            <a th:href = "@{/site/information/statistics}" th:text = 
+            "#{virtualpets-server-springboot.site.statistics}"></a>
+        </div>
+        <div>
+           <form method = "POST" th:action = "@{/site/logout}">
+                <input type = "hidden"
+                    th:name = "${_csrf.parameterName}"
+                    th:value = "${_csrf.token}"/>
+                <input type = "submit" th:value = 
+                "#{virtualpets-server-springboot.site.logout}" />
+            </form>
+        </div>
+        
+        <div>
+        ADMINISTRATOR PANEL!!!
+        </div>
+        
+        </div>
+    </div>
+    <div th:replace = "fragments/footer :: footer">
+    </div>
+</body>
+</html>
+

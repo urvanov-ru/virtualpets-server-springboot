@@ -3,15 +3,26 @@ package ru.urvanov.virtualpets.server.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import ru.urvanov.virtualpets.server.api.domain.ServerInfo;
-
 @ConfigurationProperties("virtualpets-server-springboot")
 @Configuration
 public class VirtualpetsServerSpringBootProperties {
 
     private String version;
     
-    private ServerInfo[] servers;
+    private Server server;
+    
+    public class Server {
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+        
+    }
 
     public String getVersion() {
         return version;
@@ -21,12 +32,12 @@ public class VirtualpetsServerSpringBootProperties {
         this.version = version;
     }
 
-    public ServerInfo[] getServers() {
-        return servers;
+    public Server getServer() {
+        return server;
     }
 
-    public void setServers(ServerInfo[] servers) {
-        this.servers = servers;
+    public void setServer(Server server) {
+        this.server = server;
     }
-    
+
 }
