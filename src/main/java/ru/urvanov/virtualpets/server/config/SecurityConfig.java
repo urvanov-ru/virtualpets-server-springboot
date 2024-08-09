@@ -114,7 +114,7 @@ public class SecurityConfig {
     
     @Bean
     public AuthenticationManager authenticationManager(
-            DaoAuthenticationProvider gameAuthenticationProvider) {
-        return new ProviderManager(List.of(gameAuthenticationProvider));
+            DaoAuthenticationProvider authenticationProvider) {
+        return new ProviderManager(List.of(authenticationProvider));
     }
 }
