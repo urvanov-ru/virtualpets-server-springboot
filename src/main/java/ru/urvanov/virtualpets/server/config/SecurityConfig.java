@@ -6,11 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
@@ -19,7 +21,6 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 import org.springframework.security.web.context.SecurityContextRepository;
 
 import ru.urvanov.virtualpets.server.auth.CustomAuthenticationEntryPoint;
-import ru.urvanov.virtualpets.server.auth.DatabaseAuthenticationProvider;
 
 @Configuration
 @EnableMethodSecurity
@@ -101,19 +102,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DatabaseAuthenticationProvider authenticationProvider(
+    public DaoAuthenticationProvider authenticationProvider(
             UserDetailsService userService,
-            BCryptPasswordEncoder bcryptEncoder) {
-        DatabaseAuthenticationProvider databaseAuthenticationProvider
-                = new DatabaseAuthenticationProvider();
-        databaseAuthenticationProvider.setUserDetailsService(userService);
-        databaseAuthenticationProvider.setBcryptEncoder(bcryptEncoder);
-        return databaseAuthenticationProvider;
+            PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider daoAuthenticationProvider
+                = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        return daoAuthenticationProvider;
     }
     
     @Bean
     public AuthenticationManager authenticationManager(
-            DatabaseAuthenticationProvider gameAuthenticationProvider) {
+            DaoAuthenticationProvider gameAuthenticationProvider) {
         return new ProviderManager(List.of(gameAuthenticationProvider));
     }
 }

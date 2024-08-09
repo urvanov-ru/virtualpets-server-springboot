@@ -5,42 +5,26 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.config.VirtualpetsServerSpringBootProperties;
-import ru.urvanov.virtualpets.server.controller.game.domain.GetServersArg;
 import ru.urvanov.virtualpets.server.controller.game.domain.LoginArg;
 import ru.urvanov.virtualpets.server.controller.game.domain.LoginResult;
 import ru.urvanov.virtualpets.server.controller.game.domain.RecoverPasswordArg;
-import ru.urvanov.virtualpets.server.controller.game.domain.RecoverSessionArg;
 import ru.urvanov.virtualpets.server.controller.game.domain.RegisterArgument;
-import ru.urvanov.virtualpets.server.controller.game.domain.ServerInfo;
 import ru.urvanov.virtualpets.server.controller.game.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.Role;
 import ru.urvanov.virtualpets.server.dao.domain.User;
 import ru.urvanov.virtualpets.server.service.exception.IncompatibleVersionException;
 import ru.urvanov.virtualpets.server.service.exception.NameIsBusyException;
-import ru.urvanov.virtualpets.server.service.exception.SendMailException;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
@@ -59,7 +43,7 @@ public class PublicServiceImpl implements PublicGameService {
     private VirtualpetsServerSpringBootProperties properties;
 
     @Autowired
-    private BCryptPasswordEncoder bcryptEncoder;
+    private PasswordEncoder passwordEncoder;
     
     @Autowired
     private Clock clock;
@@ -86,7 +70,7 @@ public class PublicServiceImpl implements PublicGameService {
             User user = new User();
             user.setLogin(registerArgument.login());
             user.setName(registerArgument.name());
-            user.setPassword(bcryptEncoder.encode(registerArgument.password()));
+            user.setPassword(passwordEncoder.encode(registerArgument.password()));
             user.setEmail(registerArgument.email());
             user.setRegistrationDate(OffsetDateTime.now(clock));
             user.setRoles(Role.USER.name());
