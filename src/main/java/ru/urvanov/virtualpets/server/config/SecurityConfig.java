@@ -27,12 +27,7 @@ import ru.urvanov.virtualpets.server.auth.CustomAuthenticationEntryPoint;
 public class SecurityConfig {
     
     public static String REMEMBER_ME_GAME_KEY = "virtualpets-server-springboot-game";
-    
-    @Bean
-    public BCryptPasswordEncoder bcryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    
+
     @Bean
     public SecurityFilterChain securityFilterChainSite(
             HttpSecurity http,
@@ -111,7 +106,12 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
     }
-    
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(
             DaoAuthenticationProvider authenticationProvider) {
