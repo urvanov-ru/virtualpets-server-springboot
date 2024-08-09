@@ -29,12 +29,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
-import ru.urvanov.virtualpets.server.controller.api.domain.LoginArg;
-import ru.urvanov.virtualpets.server.controller.api.domain.LoginResult;
-import ru.urvanov.virtualpets.server.controller.api.domain.RefreshUsersOnlineResult;
-import ru.urvanov.virtualpets.server.controller.api.domain.UserInfo;
-import ru.urvanov.virtualpets.server.controller.api.domain.UserInformation;
-import ru.urvanov.virtualpets.server.controller.api.domain.UserInformationArg;
+import ru.urvanov.virtualpets.server.controller.game.domain.LoginArg;
+import ru.urvanov.virtualpets.server.controller.game.domain.LoginResult;
+import ru.urvanov.virtualpets.server.controller.game.domain.RefreshUsersOnlineResult;
+import ru.urvanov.virtualpets.server.controller.game.domain.UserInfo;
+import ru.urvanov.virtualpets.server.controller.game.domain.UserInformation;
+import ru.urvanov.virtualpets.server.controller.game.domain.UserInformationArg;
 import ru.urvanov.virtualpets.server.dao.UserDao;
 import ru.urvanov.virtualpets.server.dao.domain.Role;
 import ru.urvanov.virtualpets.server.dao.domain.User;
@@ -46,7 +46,7 @@ import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 import ru.urvanov.virtualpets.server.service.exception.UserNotFoundException;
 
 @Service("userService")
-public class UserServiceImpl implements UserService, UserApiService  {
+public class UserServiceImpl implements UserService, UserGameService  {
     
     @Autowired
     private UserDao userDao;

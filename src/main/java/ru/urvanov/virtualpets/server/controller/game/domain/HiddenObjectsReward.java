@@ -1,16 +1,22 @@
-package ru.urvanov.virtualpets.server.dao.domain;
+package ru.urvanov.virtualpets.server.controller.game.domain;
 
-import ru.urvanov.virtualpets.server.controller.game.domain.LevelInfo;
+import java.io.Serializable;
 
-public class HiddenObjectsReward {
+import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
+import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
+import ru.urvanov.virtualpets.server.dao.domain.DrinkId;
+import ru.urvanov.virtualpets.server.dao.domain.FoodId;
+
+public class HiddenObjectsReward implements Serializable {
+
     private FoodId foodId;
     private String clothId;
     private LevelInfo levelInfo;
     private int experience;
     private BuildingMaterialId buildingMaterialId;
+    private AchievementId[] achievements;
     private String bookId;
     private DrinkId drinkId;
-    private AchievementId[] achievements;
 
     public FoodId getFoodId() {
         return foodId;
@@ -53,6 +59,14 @@ public class HiddenObjectsReward {
         this.buildingMaterialId = buildingMaterialId;
     }
 
+    public AchievementId[] getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(AchievementId[] achievements) {
+        this.achievements = achievements;
+    }
+
     public String getBookId() {
         return bookId;
     }
@@ -67,14 +81,6 @@ public class HiddenObjectsReward {
 
     public void setDrinkId(DrinkId drinkId) {
         this.drinkId = drinkId;
-    }
-
-    public AchievementId[] getAchievements() {
-        return achievements;
-    }
-
-    public void setAchievements(AchievementId[] achievements) {
-        this.achievements = achievements;
     }
 
 }
