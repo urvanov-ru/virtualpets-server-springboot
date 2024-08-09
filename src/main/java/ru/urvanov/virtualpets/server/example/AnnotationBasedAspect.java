@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ru.urvanov.virtualpets.server.controller.game.domain.HiddenObjectsGame;
+import ru.urvanov.virtualpets.server.controller.api.domain.HiddenObjectsGame;
 
 @Aspect
 @Component
