@@ -20,10 +20,25 @@ import org.springframework.security.core.userdetails.User;
  */
 public class UserDetailsImpl extends User {
 
+    /**
+     * Первичный ключ пользователя.
+     */
     private Integer userId;
     
+    /**
+     * Полное отображаемое имя пользователя.
+     */
     private String name;
 
+    /**
+     * Инициализирует экземпляр UserDetailsImpl.
+     * @param userId Первичный ключ пользователя.
+     * @param username Логин.
+     * @param name Полное отображаемое имя пользователя.
+     * @param password Пароль.
+     * @param enabled Учётная запись включена.
+     * @param authorities Список ролей.
+     */
     public UserDetailsImpl(Integer userId, String username, String name,
             String password,
             boolean enabled,
@@ -35,10 +50,16 @@ public class UserDetailsImpl extends User {
 
     private static final long serialVersionUID = -3285304553448604871L;
 
+    /**
+     * @return Первичный ключ пользователя
+     */
     public Integer getUserId() {
         return userId;
     }
 
+    /**
+     * @return Полное отображаемое имя пользователя.
+     */
     public String getName() {
         return name;
     }
