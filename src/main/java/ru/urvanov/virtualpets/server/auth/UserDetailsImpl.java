@@ -5,6 +5,19 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+/**
+ * Реализация интерфейса
+ * {@link org.springframework.security.core.userdetails.UserDetails}.
+ * Добавляет два поля:
+ * <ul>
+ *   <li>
+ *   userId - первичный ключ пользователя,
+ *   </li>
+ *   <li>
+ *   name - полное отображаемое имя пользователя.
+ *   </li>
+ * </ul>
+ */
 public class UserDetailsImpl extends User {
 
     private Integer userId;
