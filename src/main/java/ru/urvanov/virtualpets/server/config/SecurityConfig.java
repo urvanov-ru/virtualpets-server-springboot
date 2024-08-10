@@ -34,6 +34,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager) throws Exception {
         return http
                 .securityMatcher( "/site/**")
+                .authenticationManager(authenticationManager)
                 .authorizeHttpRequests((authorize) ->
                     authorize.requestMatchers("/site/admin/**")
                         .hasRole("ADMIN")
@@ -52,7 +53,6 @@ public class SecurityConfig {
                     logout.logoutUrl("/site/logout")
                         .logoutSuccessUrl("/site/login?logout=1")
                 )
-                .authenticationManager(authenticationManager)
                 .build();
     }
 
@@ -64,8 +64,9 @@ public class SecurityConfig {
             SecurityContextRepository securityContextRepository,
             AuthenticationEntryPoint authenticationEntryPoint
             ) throws Exception {
-        http
+        return http
             .securityMatcher("/api/**")
+            .authenticationManager(authenticationManager)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> 
                 authorize.requestMatchers("/api/v1/PublicService/**")
@@ -75,10 +76,9 @@ public class SecurityConfig {
             .securityContext((securityContext) -> securityContext
                     .securityContextRepository(securityContextRepository)
                 )
-            .exceptionHandling(eH -> 
-                   eH.authenticationEntryPoint(authenticationEntryPoint))
-            .authenticationManager(authenticationManager);
-        return http.build();
+            .exceptionHandling(e -> 
+                   e.authenticationEntryPoint(authenticationEntryPoint))
+            .build();
     }
 
     @Bean
