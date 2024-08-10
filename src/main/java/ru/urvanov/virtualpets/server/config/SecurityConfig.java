@@ -65,12 +65,12 @@ public class SecurityConfig {
             AuthenticationEntryPoint authenticationEntryPoint
             ) throws Exception {
         http
-            .securityMatcher("/rest/**")
+            .securityMatcher("/api/**")
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> 
-                authorize.requestMatchers("/rest/v1/PublicService/**")
+                authorize.requestMatchers("/api/v1/PublicService/**")
                     .permitAll()
-                .requestMatchers("/rest/**").hasRole("USER")
+                .requestMatchers("/api/**").hasRole("USER")
             )
             .securityContext((securityContext) -> securityContext
                     .securityContextRepository(securityContextRepository)
