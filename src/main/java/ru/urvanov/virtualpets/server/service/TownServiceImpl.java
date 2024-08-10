@@ -22,7 +22,7 @@ import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @Service
-public class TownServiceImpl implements TownGameService {
+public class TownServiceImpl implements TownApiService {
 
     @Autowired
     private ru.urvanov.virtualpets.server.service.PetService petService;

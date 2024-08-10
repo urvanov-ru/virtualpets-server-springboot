@@ -9,7 +9,7 @@ import ru.urvanov.virtualpets.server.controller.api.domain.ServerInfo;
 import ru.urvanov.virtualpets.server.controller.api.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
-public interface PublicGameService {
+public interface PublicApiService {
 
     void register(RegisterArgument registerArgument)
             throws ServiceException;
