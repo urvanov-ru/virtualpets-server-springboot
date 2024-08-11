@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 // По умолчанию используется настройка из Spring MVC.
+                .cors(Customizer.withDefaults())
+                .csrf(Customizer.withDefaults())
                 .formLogin((formLogin) ->
                     formLogin.loginPage("/site/login")
                         .loginProcessingUrl("/site/login")
