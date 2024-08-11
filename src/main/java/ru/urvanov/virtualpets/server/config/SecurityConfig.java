@@ -64,7 +64,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChainApi(
             HttpSecurity http,
             AuthenticationManager authenticationManager,
-            SecurityContextRepository securityContextRepository,
             AuthenticationEntryPoint authenticationEntryPoint
             ) throws Exception {
         return http
