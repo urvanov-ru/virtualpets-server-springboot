@@ -70,19 +70,16 @@ public class SecurityConfig {
         return http
             .securityMatcher("/api/**")
             .authenticationManager(authenticationManager)
+            .exceptionHandling(e -> 
+                    e.authenticationEntryPoint(authenticationEntryPoint))
+            .authorizeHttpRequests((authorize) -> 
+                authorize.requestMatchers("/api/v1/PublicService/**")
+                        .permitAll()
+                        .requestMatchers("/api/**").hasRole("USER")
+            )
             // По умолчанию используется настройка из Spring MVC.
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests((authorize) -> 
-                authorize.requestMatchers("/api/v1/PublicService/**")
-                    .permitAll()
-                .requestMatchers("/api/**").hasRole("USER")
-            )
-            .securityContext((securityContext) -> securityContext
-                    .securityContextRepository(securityContextRepository)
-                )
-            .exceptionHandling(e -> 
-                   e.authenticationEntryPoint(authenticationEntryPoint))
             .build();
     }
 
