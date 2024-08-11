@@ -44,8 +44,7 @@ public class SecurityConfig {
                     .requestMatchers("/site/**")
                         .permitAll()
                 )
-                // По умолчанию используется настройка из Spring MVC.
-                .cors(Customizer.withDefaults())
+                
                 .csrf(Customizer.withDefaults())
                 .formLogin((formLogin) ->
                     formLogin.loginPage("/site/login")
@@ -71,6 +70,7 @@ public class SecurityConfig {
         return http
             .securityMatcher("/api/**")
             .authenticationManager(authenticationManager)
+            // По умолчанию используется настройка из Spring MVC.
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> 
