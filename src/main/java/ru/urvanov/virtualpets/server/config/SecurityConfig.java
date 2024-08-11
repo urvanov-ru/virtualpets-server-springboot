@@ -61,7 +61,7 @@ public class SecurityConfig {
 
     
     @Bean
-    public SecurityFilterChain securityFilterChainGame(
+    public SecurityFilterChain securityFilterChainApi(
             HttpSecurity http,
             AuthenticationManager authenticationManager,
             SecurityContextRepository securityContextRepository,
