@@ -590,10 +590,8 @@ public class PetServiceImpl implements PetService, PetApiService {
     @Transactional(rollbackFor = ServiceException.class)
     public void delete(UserPetDetails userPetDetails, Integer petId)
             throws ServiceException {
-        Room room = roomDao.findByPetId(petId).orElseThrow();
         Pet pet = petDao.findFullById(petId)
                 .orElseThrow(() -> new PetNotFoundException(petId));
-            roomDao.delete(room);
         if (pet.getUser().getId().equals(userPetDetails.getUserId())) {
             roomDao.findByPetId(petId).ifPresent(r -> roomDao.delete(r));
             petDao.delete(pet);
