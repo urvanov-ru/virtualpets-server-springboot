@@ -26,7 +26,6 @@ import ru.urvanov.virtualpets.server.controller.api.domain.RegisterArgument;
 import ru.urvanov.virtualpets.server.controller.api.domain.ServerTechnicalInfo;
 import ru.urvanov.virtualpets.server.dao.domain.Role;
 import ru.urvanov.virtualpets.server.service.PublicApiService;
-import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @RestController // (1)
@@ -35,9 +34,6 @@ public class PublicController extends ControllerBase { // (3)
 
     @Autowired
     public PublicApiService publicService;
-
-    @Autowired
-    private UserPetDetails userPetDetails;
     
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -48,8 +44,9 @@ public class PublicController extends ControllerBase { // (3)
     @ResponseStatus(HttpStatus.NO_CONTENT) // (1)
     @RequestMapping(method = RequestMethod.POST, value = "register")//(2)
     public void register(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid RegisterArgument registerArgument) // (3)
-            throws ServiceException {
+                    throws ServiceException {
         publicService.register(registerArgument);
     }
 
@@ -57,25 +54,27 @@ public class PublicController extends ControllerBase { // (3)
     @RequestMapping(method = RequestMethod.POST,
             value = "recoverPassword")
     public void recoverPassword(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid RecoverPasswordArg recoverPasswordArg)
-            throws ServiceException {
+                    throws ServiceException {
         publicService.recoverPassword(recoverPasswordArg);
     }
 
     @RequestMapping(method = RequestMethod.GET,
             value = "server-technical-info")
-    public ServerTechnicalInfo getServerTechnicalInfo()
+    public ServerTechnicalInfo getServerTechnicalInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
         return publicService.getServerTechnicalInfo();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "login")
     public LoginResult login(
-            // @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid LoginArg loginArg,
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse)
-            throws ServiceException {
+                    throws ServiceException {
         
         Authentication authenticationRequest =
                 UsernamePasswordAuthenticationToken.unauthenticated(
@@ -88,19 +87,17 @@ public class PublicController extends ControllerBase { // (3)
         securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
         httpServletRequest.setAttribute("remember-me", true);
         LoginResult result = publicService.login(loginArg);
-        userPetDetails.setUserId(result.userId());
         return result;
     }
     
     @RequestMapping(method = RequestMethod.GET, value = "checkSession")
     public LoginResult checkSession(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
-            throws ServiceException {
+                    throws ServiceException {
         if (userDetailsImpl != null && userDetailsImpl.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority()
                         .equals("ROLE_" + Role.USER.name()))) {
-            userPetDetails.setUserId(userDetailsImpl.getUserId());
             return new LoginResult(true, null, userDetailsImpl.getUserId(), userDetailsImpl.getUsername(), userDetailsImpl.getName());
         }
         return new LoginResult(false, null, null, null, null);

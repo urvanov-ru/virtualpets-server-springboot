@@ -103,8 +103,8 @@ public class UserServiceImpl implements UserService, UserApiService  {
                 throw new ServiceException("Too big file.");
             }
         }
-        if (userPetDetails.getUserId().equals(userInformation.getId())) {
-            User user = userDao.findById(userPetDetails.getUserId())
+        if (userPetDetails.userId().equals(userInformation.getId())) {
+            User user = userDao.findById(userPetDetails.userId())
                     .orElseThrow();
             user.setName(userInformation.getName());
             user.setSex(userInformation.getSex());
@@ -121,11 +121,18 @@ public class UserServiceImpl implements UserService, UserApiService  {
     }
 
     @Override
-    public UserProfile getProfile(UserPetDetails userPetDetails) {
+    @PreAuthorize("hasRole('USER') && (#userId eq principal.userId)")
+    public UserProfile getProfile(Integer userId)
+            throws UserNotFoundException {
         UserProfile userProfile = new UserProfile();
-        userProfile.setBirthdate(userPetDetails.getUserBirthdate());
-        userProfile.setName(userPetDetails.getUserName());
-        userProfile.setEmail(userPetDetails.getUserEmail());
+        Optional<User> user = userDao.findById(userId);
+        user.ifPresent(u -> {
+            userProfile.setBirthdate(u.getBirthdate());
+            userProfile.setName(u.getLogin());
+            userProfile.setEmail(u.getEmail());
+        });
+        user.orElseThrow(() ->
+                new UserNotFoundException(userId));
         return userProfile;
     }
 

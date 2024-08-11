@@ -41,7 +41,7 @@ public class TownServiceImpl implements TownApiService {
     public GetTownInfoResult getTownInfo(UserPetDetails userPetDetails)
             throws ServiceException {
         Pet pet = petDao.findByIdWithJournalEntriesAndAchievements(
-                userPetDetails.getPetId()).orElseThrow();
+                userPetDetails.petId()).orElseThrow();
 
         Map<JournalEntryId, PetJournalEntry> mapJournalEntries = pet
                 .getJournalEntries();
