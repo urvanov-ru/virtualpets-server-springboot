@@ -3,6 +3,7 @@ package ru.urvanov.virtualpets.server.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -36,12 +37,18 @@ public class WebConfig implements WebMvcConfigurer {
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowCredentials(true)
+        registry.addMapping("/api/**")
+            .allowCredentials(true)
             .allowedOrigins("""
                     http://localhost:8081, \
                     http://localhost:8081/, \
                     http://virtualpets.urvanov.ru""")
-            .allowCredentials(true);
+            .allowedMethods(
+                    HttpMethod.GET.name(),
+                    HttpMethod.POST.name(),
+                    HttpMethod.PUT.name(),
+                    HttpMethod.OPTIONS.name(),
+                    HttpMethod.DELETE.name());
     }
 
     @Override
