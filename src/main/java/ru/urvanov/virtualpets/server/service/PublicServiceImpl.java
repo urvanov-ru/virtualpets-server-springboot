@@ -80,17 +80,13 @@ public class PublicServiceImpl implements PublicApiService {
     }
     
     @Override
-    @Transactional(rollbackFor = ServiceException.class)
-    public LoginResult login(LoginArg loginArg)
+    public void login(LoginArg loginArg)
             throws ServiceException {
         String clientVersion = loginArg.version();
         if (!properties.getVersion().equals(clientVersion)) {
             throw new IncompatibleVersionException("", properties.getVersion(),
                     clientVersion);
         }
-        User user = userDao.findByLogin(loginArg.login()).orElseThrow();
-        return new LoginResult(true, null, user.getId(),
-                user.getLogin(), user.getName());
     }
 
     @Override
