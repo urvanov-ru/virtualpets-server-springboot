@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService, UserApiService  {
 
     @Override
     @PreAuthorize("hasRole('USER') && (#userId eq principal.userId)")
-    public UserProfile getProfile(Integer userId)
+    public UserProfile getProfile(@P("userId") Integer userId)
             throws UserNotFoundException {
         UserProfile userProfile = new UserProfile();
         Optional<User> user = userDao.findById(userId);
