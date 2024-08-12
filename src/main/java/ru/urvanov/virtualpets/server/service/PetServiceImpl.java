@@ -220,6 +220,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
+    @PreAuthorize("hasRole('USER')")
     public GetPetBooksResult getPetBooks(
             UserPetDetails userPetDetails)
             throws ServiceException {
@@ -238,6 +239,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     public GetPetClothsResult getPetCloths(UserPetDetails userPetDetails) {
         Pet pet = petDao.findByIdWithFullCloths(userPetDetails.petId())
                 .orElseThrow();
@@ -259,6 +261,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class)
     public void savePetCloths(UserPetDetails userPetDetails,
             SavePetCloths saveClothArg)
@@ -288,6 +291,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
     
     @Override
+    @PreAuthorize("hasRole('USER')")
     public GetPetDrinksResult getPetDrinks(UserPetDetails userPetDetails)
             throws ServiceException {
         Pet pet = petDao.findByIdWithFullDrinks(userPetDetails.petId())
@@ -305,6 +309,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     public GetPetFoodsResult getPetFoods(UserPetDetails userPetDetails)
             throws ServiceException {
         Iterable<PetFood> petFoods = petDao.findByIdWithFullFoods(
@@ -322,6 +327,7 @@ public class PetServiceImpl implements PetService, PetApiService {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = ServiceException.class )
     public GetPetJournalEntriesResult getPetJournalEntries(
             UserPetDetails userPetDetails, int count)
@@ -445,6 +451,7 @@ public class PetServiceImpl implements PetService, PetApiService {
         addExperience(pet, 1);
     }
 
+    @Override
     public void addAchievementIfNot(Pet pet, AchievementId achievement) {
         if (!pet.getAchievements().containsKey(achievement)) {
             PetAchievement petAchievement = new PetAchievement();
