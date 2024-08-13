@@ -51,9 +51,7 @@ virtualpets-server-springboot:
     subject: Recover password
 
 
-springdoc:
-  api-docs:
-    resolve-schema-properties: true
+
 
 
 
