@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.GetRoomInfoResult;
@@ -86,6 +87,7 @@ public class RoomController extends ControllerBase {
     @Operation(summary = "Открытие лутбокса.")
     public OpenBoxNewbieResult openBoxNewbie(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @Parameter(description = "Индекс лутбокса. Начинается с 0.")
             @PathVariable("index") int index)
                     throws ServiceException {
         return roomService.openBoxNewbie(
