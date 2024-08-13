@@ -3,15 +3,34 @@ package ru.urvanov.virtualpets.server.controller.api.domain;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Сообщение чата")
 public class ChatMessage implements Serializable {
 
     private static final long serialVersionUID = 3870376160365638500L;
+    
+    @Schema(description = "Идентификатор сообщения", example = "10034")
     private Integer id;
+    
+    @Schema(description = "Идентификатор отправителя", example = "1")
     private Integer senderId;
+    
+    @Schema(description = "Полное имя отправителя", example = "Tester")
     private String senderName;
+    
+    @Schema(description = "Идентификатор получателя", example = "2")
     private Integer addresseeId;
+    
+    @Schema(description = "Полное имя получателя", example = "Tester")
     private String addresseeName;
+    
+    @Schema(description = "Текст сообщения", example = "Привет")
     private String message;
+    
+    @Schema(
+            description = "Дата и время отправления",
+            example = "2024-08-13T12:55:22.399546Z")
     private OffsetDateTime sendTime;
     public Integer getId() {
         return id;

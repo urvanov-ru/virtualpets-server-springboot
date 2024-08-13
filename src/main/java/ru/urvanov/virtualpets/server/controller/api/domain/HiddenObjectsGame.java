@@ -5,17 +5,33 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Состояние игры с поиском скрытых предметов.")
 public class HiddenObjectsGame implements Serializable {
     private static final long serialVersionUID = -1019269544490394403L;
 
     public static final int MAX_PLAYERS_COUNT = 4;
 
+    @Schema(description = "Подключившиеся игроки.")
     private Map<Integer, HiddenObjectsPlayer> players = new HashMap<Integer, HiddenObjectsPlayer>();
+    
+    @Schema(description = "Предметы для поиска.")
     private Integer[] objects;
+    
+    @Schema(description = "Собранные предметы.")
     private HiddenObjectsCollected[] collectedObjects;
+    
+    @Schema(description = "Флаг старта игры.")
     private boolean gameStarted = false;
+    
+    @Schema(description = "Флаг окончания игры.")
     private boolean gameOver = false;
+    
+    @Schema(description = "Награда игрока.")
     private HiddenObjectsReward reward;
+    
+    @Schema(description = "Осталось секунд до окончания игры.")
     private int secondsLeft;
 
     public HiddenObjectsPlayer[] getPlayers() {

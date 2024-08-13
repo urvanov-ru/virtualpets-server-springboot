@@ -4,12 +4,24 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
 
+@Schema(description = "Цены на строительство.")
 public class RoomBuildMenuCosts implements Serializable {
     private static final long serialVersionUID = -7317824338376286772L;
+    
+    @Schema(description = """
+            Материалы, необходимые для строительства холодильника.""")
     private List<Map<BuildingMaterialId, Integer>> refrigeratorCosts;
+    
+    @Schema(description = """
+            Материалы, необходимые для строительства машины \
+            с напитками.""")
     private List<Map<BuildingMaterialId, Integer>> machineWithDrinksCosts;
+    
+    @Schema(description = """
+            Материалы, необходимые для строительства книжного шкафа.""")
     private List<Map<BuildingMaterialId, Integer>> bookcaseCosts;
 
     public List<Map<BuildingMaterialId, Integer>> getRefrigeratorCosts() {

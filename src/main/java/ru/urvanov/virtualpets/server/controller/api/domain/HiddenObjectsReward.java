@@ -1,13 +1,13 @@
 package ru.urvanov.virtualpets.server.controller.api.domain;
 
-import java.io.Serializable;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
 import ru.urvanov.virtualpets.server.dao.domain.BuildingMaterialId;
 import ru.urvanov.virtualpets.server.dao.domain.DrinkId;
 import ru.urvanov.virtualpets.server.dao.domain.FoodId;
 
-public class HiddenObjectsReward implements Serializable {
+@Schema(description = "Награда игрока.")
+public class HiddenObjectsReward {
 
     private FoodId foodId;
     private String clothId;

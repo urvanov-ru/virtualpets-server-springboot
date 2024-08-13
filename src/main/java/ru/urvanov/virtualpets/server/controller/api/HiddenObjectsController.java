@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.CollectObjectArg;
@@ -37,6 +38,7 @@ public class HiddenObjectsController extends ControllerBase {
     private SelectedPet selectedPet;
 
     @PostMapping("joinGame")
+    @Operation(summary = "Подключение к игре или создание новой.")
     public HiddenObjectsGame joinGame(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid
@@ -51,6 +53,7 @@ public class HiddenObjectsController extends ControllerBase {
     }
 
     @GetMapping("getGameInfo")
+    @Operation(summary = "Получение состояния игры.")
     public HiddenObjectsGame getGameInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
@@ -62,6 +65,12 @@ public class HiddenObjectsController extends ControllerBase {
     }
 
     @PostMapping("collectObject")
+    @Operation(
+            summary = "Сбор найденного предмета",
+            description = """
+                    Проверок на читерство нет. \
+                    Всё полностью на доверии клиенту.
+                    """)
     public HiddenObjectsGame collectObject(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid CollectObjectArg collectObjectArg)
@@ -74,6 +83,12 @@ public class HiddenObjectsController extends ControllerBase {
     }
 
     @PostMapping("startGame")
+    @Operation(
+            summary = "Начало игры с текущими игроками.",
+            description = """
+                    Окончание ожидания подключение игроков \
+                    и начало игры.
+                    """)
     public HiddenObjectsGame startGame(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
@@ -84,6 +99,7 @@ public class HiddenObjectsController extends ControllerBase {
                 hiddenObjectsGameStatus);
     }
 
+    @Operation(summary = "Выход из игры.")
     @PostMapping("leaveGame")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void leaveGame(

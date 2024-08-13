@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.CreatePetArg;
@@ -45,6 +46,7 @@ public class PetController extends ControllerBase {
     private SelectedPet selectedPet;
 
     @RequestMapping(value = "getUserPets", method = RequestMethod.GET)
+    @Operation(summary = "Получение списка питомцев.")
     public PetListResult getUserPets(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -56,6 +58,7 @@ public class PetController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "create", method = RequestMethod.POST)
+    @Operation(summary = "Создание питомца.")
     public void create(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid CreatePetArg createPetArg)
@@ -69,6 +72,7 @@ public class PetController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "select", method = RequestMethod.POST)
+    @Operation(summary = "Выбор питомца на текущий сеанс игры.")
     public void select(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SelectPetArg selectPetArg)
@@ -84,6 +88,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "delete/{petId}",
             method = RequestMethod.DELETE)
+    @Operation(summary = "Удаление питомца.")
     public void delete(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @PathVariable("petId") Integer petId)
@@ -97,6 +102,7 @@ public class PetController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "drink", method = RequestMethod.POST)
+    @Operation(summary = "Употребление напитка.")
     public void drink(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid DrinkArg drinkArg)
@@ -110,6 +116,7 @@ public class PetController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "satiety", method = RequestMethod.POST)
+    @Operation(summary = "Поедание блюда.")
     public void eat(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SatietyArg satietyArg)
@@ -123,6 +130,7 @@ public class PetController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "education", method = RequestMethod.POST)
+    @Operation(summary = "Чтение книги.")
     public void education(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -133,6 +141,7 @@ public class PetController extends ControllerBase {
     }
 
     @GetMapping(value = "getPetBooks")
+    @Operation(summary = "Получения содержимого книжного шкафа.")
     public GetPetBooksResult getPetBooks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -143,6 +152,7 @@ public class PetController extends ControllerBase {
     }
 
     @GetMapping(value = "getPetCloths")
+    @Operation(summary = "Получение содержимого гардеробной.")
     public GetPetClothsResult getPetCloths(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -154,6 +164,7 @@ public class PetController extends ControllerBase {
 
     @PostMapping(value = "savePetCloths")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Сохранение набора одежды.")
     public void savePetCloth(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SavePetCloths saveClothArg)
@@ -166,6 +177,7 @@ public class PetController extends ControllerBase {
     }
 
     @GetMapping(value = "getPetDrinks")
+    @Operation(summary = "Получение содержимого машины с напитками.")
     public GetPetDrinksResult getPetDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -176,6 +188,7 @@ public class PetController extends ControllerBase {
     }
 
     @GetMapping(value = "getPetFoods")
+    @Operation(summary = "Получение содержимого холодильника.")
     public GetPetFoodsResult getPetFoods(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -187,6 +200,7 @@ public class PetController extends ControllerBase {
 
     @RequestMapping(method = RequestMethod.GET,
             value = "getPetJournalEntries")
+    @Operation(summary = "Получение содержимого дневника питомца.")
     public GetPetJournalEntriesResult getPetJournalEntries(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestParam(name = "count") int count)
@@ -198,6 +212,7 @@ public class PetController extends ControllerBase {
                 count);
     }
 
+    @Operation(summary = "Получение содержимого рюкзака.")
     @GetMapping(value = "getPetRucksackInner")
     public GetPetRucksackInnerResult getPetRucksackInner(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)

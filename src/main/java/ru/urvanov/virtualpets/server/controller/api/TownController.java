@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.GetTownInfoResult;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectedPet;
@@ -25,6 +26,7 @@ public class TownController extends ControllerBase {
     private SelectedPet selectedPet;
     
     @GetMapping(value = "getTownInfo")
+    @Operation(summary = "Получение состояния игры.")
     public GetTownInfoResult getTownInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

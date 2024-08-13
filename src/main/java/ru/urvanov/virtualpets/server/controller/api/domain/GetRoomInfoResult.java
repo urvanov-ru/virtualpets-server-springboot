@@ -4,38 +4,135 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.urvanov.virtualpets.server.dao.domain.AchievementId;
 
 public class GetRoomInfoResult implements Serializable {
 
     private static final long serialVersionUID = -9110703336298015250L;
 
+    @Schema(description = "Настроение питомца.", example = "100")
     private int mood;
+    
+    @Schema(description = "Сытость питомца.", example = "100")
     private int satiety;
+    
+    @Schema(description = "Начитанность.", example = "100")
     private int education;
+    
+    @Schema(description = "Жажда (100 - не хочет пить)", example = "100")
     private int drink;
+    
+    @Schema(description = "Надетая шляпа", example = "COWBOY_HAT")
     private String hatId;
+    
+    @Schema(
+            description = "Надетая на туловище одежда",
+            example = "COLORED_BODY")
     private String clothId;
+    
+    @Schema(description = "Надетый бантик", example = "BLUE_BOW")
     private String bowId;
+    
+    @Schema(
+            description = "Уровень холодильника. Номерация с 1.",
+            example = "1")
     private Integer refrigeratorId;
+    
+    @Schema(
+            description = """
+                    Позиция холодильника в тайлах по горизонтали.""",
+            example = "1")
     private Integer refrigeratorX;
+    
+    @Schema(
+            description = """
+                    Позиция холодильника в тайлах по вертикали.""",
+            example = "1")
     private Integer refrigeratorY;
+    
+    @Schema(
+            description = """
+                    Лутбоксы новичка. Три штуки. \
+                    true - лутбокс ещё не открыт.""",
+            example = "[false, false, false]")
     private boolean[] boxesNewbie;
+    
+    @Schema(description = "Наличие дневника на полу", example = "true")
     private boolean journalOnFloor;
+    
+    @Schema(
+            description = "Уровень книжного шкафа. Номерация с 1.",
+            example = "1")
     private Integer bookcaseId;
+    
+    @Schema(
+            description = """
+                    Позиция книжного шкафа \
+                     в тайлах по горизонтали.""",
+            example = "1")
     private Integer bookcaseX;
+    
+    @Schema(
+            description = """
+                    Позиция книжного шкафа \
+                     в тайлах по вертикали.""",
+            example = "1")
     private Integer bookcaseY;
+    
+    @Schema(
+            description = "Уровень машины с напитками. Номерация с 1.",
+            example = "1")
     private Integer machineWithDrinksId;
+    
+    @Schema(
+            description = """
+                    Позиция машины с напитками \
+                     в тайлах по горизонтали.""",
+            example = "1")
     private Integer machineWithDrinksX;
+    
+    @Schema(
+            description = """
+                    Позиция машины с напитками \
+                     в тайлах по вертикали.""",
+                     example = "1")
     private Integer machineWithDrinksY;
+    
+    @Schema(
+            description = """
+                    Количество новых, непрочитанных \
+                    записей в дневнике.""",
+            example = "1")
     private long newJournalEntriesCount;
+    
+    @Schema(description = "Дневник поднят.", example = "false")
     private boolean haveJournal;
+    
+    @Schema(description = "Отображение рюкзака.", example = "false")
     private boolean haveRucksack;
+    
+    @Schema(
+            description = "Отображение иконки строительства.",
+            example = "false")
     private boolean haveHammer;
+    
+    @Schema(
+            description = "Отображение индикаторов состояния питомца.",
+            example = "true")
     private boolean haveIndicators;
+    
+    @Schema(
+            description = "Отображение стрелки в город.",
+            example = "false")
     private boolean haveToTownArrow;
+    
+    @Schema(description = "Уровень и опыт питомца.")
     private LevelInfo levelInfo;
+    
+    @Schema(description = "Новые полученные достижения.")
     private List<AchievementId> achievements = new ArrayList<>();
+    
     public int getMood() {
         return mood;
     }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.GetRoomInfoResult;
@@ -35,6 +36,7 @@ public class RoomController extends ControllerBase {
     private SelectedPet selectedPet;
 
     @GetMapping(value = "getRoomInfo")
+    @Operation(summary = "Получение состояния игры.")
     public GetRoomInfoResult getRoomInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -46,6 +48,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "pickJournalOnFloor")
+    @Operation(summary = "Поднятие дневника с пола.")
     public void pickJournalOnfloor(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -56,6 +59,7 @@ public class RoomController extends ControllerBase {
     }
 
     @PostMapping(value = "getBuildMenuCosts")
+    @Operation(summary = "Получение цен на строительство")
     public RoomBuildMenuCosts getBuildMenuCosts(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -67,6 +71,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "journalClosed")
+    @Operation(summary = "Событие закрытия дневника игроком.")
     public void journalClosed(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -77,6 +82,7 @@ public class RoomController extends ControllerBase {
     }
 
     @PostMapping(value = "openBoxNewbie/{index}/")
+    @Operation(summary = "Открытие лутбокса.")
     public OpenBoxNewbieResult openBoxNewbie(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @PathVariable("index") int index)
@@ -90,6 +96,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildMachineWithDrinks")
+    @Operation(summary = "Строительство машины с напитками.")
     public void buildMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -103,6 +110,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveMachineWithDrinks")
+    @Operation(summary = "Перемещение машины с напитками.")
     public void moveMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid  Point position)
@@ -116,6 +124,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildRefrigerator")
+    @Operation(summary = "Строительство холодильника.")
     public void buildRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -129,6 +138,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveRefrigerator")
+    @Operation(summary = "Перемещение холодильника.")
     public void moveRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -142,6 +152,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildBookcase")
+    @Operation(summary = "Строительство книжного шкафа.")
     public void buildBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -155,6 +166,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveBookcase")
+    @Operation(summary = "Перемещение книжного шкафа.")
     public void moveBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -168,6 +180,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeRefrigerator")
+    @Operation(summary = "Улучшение холодильника.")
     public void upgradeRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -179,6 +192,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeBookcase")
+    @Operation(summary = "Улучшение книжного шкафа.")
     public void upgradeBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -190,6 +204,7 @@ public class RoomController extends ControllerBase {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeMachineWithDrinks")
+    @Operation(summary = "Улучшение машины с напитками..")
     public void upgradeMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

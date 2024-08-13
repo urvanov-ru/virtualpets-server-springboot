@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -31,7 +32,8 @@ import ru.urvanov.virtualpets.server.service.exception.ServiceException;
 
 @RestController // (1)
 @RequestMapping(value = "api/v1/PublicService",
-        consumes = MediaType.APPLICATION_JSON_VALUE) // (2)
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE) // (2)
 public class PublicController extends ControllerBase { // (3)
 
     @Autowired
@@ -45,6 +47,7 @@ public class PublicController extends ControllerBase { // (3)
 
     @ResponseStatus(HttpStatus.NO_CONTENT) // (1)
     @RequestMapping(method = RequestMethod.POST, value = "register")//(2)
+    @Operation(summary = "Регистрация нового игрока.")
     public void register(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid RegisterArgument registerArgument) // (3)
@@ -55,6 +58,7 @@ public class PublicController extends ControllerBase { // (3)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(method = RequestMethod.POST,
             value = "recoverPassword")
+    @Operation(summary = "Восстановление пароля.")
     public void recoverPassword(
             @RequestBody @Valid RecoverPasswordArg recoverPasswordArg)
                     throws ServiceException {
@@ -70,7 +74,10 @@ public class PublicController extends ControllerBase { // (3)
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "login")
+    @Operation(summary = "Аутентификация пользователя.")
     public LoginResult login(
+            //@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            //        description = "ТЕСТ", required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,schema = @Schema(implementation = LoginArg.class )))
             @RequestBody @Valid LoginArg loginArg,
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse)
@@ -122,6 +129,14 @@ public class PublicController extends ControllerBase { // (3)
     }
     
     @RequestMapping(method = RequestMethod.GET, value = "checkSession")
+    @Operation(
+            summary = "Проверка активной сессии.",
+            description = """
+                    Если сессия активна, то возвращает результат \
+                    с success = true и заполненными полями \
+                    о текущем пользователе. \
+                    В противном случае в результате \
+                    поле success = false.""")
     public LoginResult checkSession(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
