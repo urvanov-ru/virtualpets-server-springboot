@@ -205,7 +205,7 @@ public class PetController extends ControllerBase {
     @Operation(summary = "Получение содержимого дневника питомца.")
     public GetPetJournalEntriesResult getPetJournalEntries(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-            @RequestParam(name = "count") int count)
+            @RequestParam(name = "count") @Min(1) int count)
                     throws ServiceException {
         return petService.getPetJournalEntries(
                 new UserPetDetails(
