@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.CreatePetArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.DrinkArg;
@@ -92,7 +93,7 @@ public class PetController extends ControllerBase {
     @Operation(summary = "Удаление питомца.")
     public void delete(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-            @PathVariable("petId") Integer petId)
+            @PathVariable("petId") @Min(1) Integer petId)
                     throws ServiceException {
         petService.delete(
                 new UserPetDetails(
