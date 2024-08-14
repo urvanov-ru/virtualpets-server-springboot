@@ -18,6 +18,7 @@ import ru.urvanov.virtualpets.server.controller.api.domain.CollectObjectArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.HiddenObjectsGame;
 import ru.urvanov.virtualpets.server.controller.api.domain.JoinHiddenObjectsGameArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectedPet;
+import ru.urvanov.virtualpets.server.controller.api.swagger.SwaggerCommonResponses;
 import ru.urvanov.virtualpets.server.service.HiddenObjectsApiService;
 import ru.urvanov.virtualpets.server.service.domain.HiddenObjectsGameStatus;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
@@ -40,6 +41,7 @@ public class HiddenObjectsController extends ControllerBase {
 
     @PostMapping("joinGame")
     @Operation(summary = "Подключение к игре или создание новой.")
+    @SwaggerCommonResponses
     public HiddenObjectsGame joinGame(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid
@@ -55,6 +57,7 @@ public class HiddenObjectsController extends ControllerBase {
 
     @GetMapping("getGameInfo")
     @Operation(summary = "Получение состояния игры.")
+    @SwaggerCommonResponses
     public HiddenObjectsGame getGameInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
@@ -72,6 +75,7 @@ public class HiddenObjectsController extends ControllerBase {
                     Проверок на читерство нет. \
                     Всё полностью на доверии клиенту.
                     """)
+    @SwaggerCommonResponses
     public HiddenObjectsGame collectObject(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid CollectObjectArg collectObjectArg)
@@ -90,6 +94,7 @@ public class HiddenObjectsController extends ControllerBase {
                     Окончание ожидания подключение игроков \
                     и начало игры.
                     """)
+    @SwaggerCommonResponses
     public HiddenObjectsGame startGame(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
@@ -103,6 +108,7 @@ public class HiddenObjectsController extends ControllerBase {
     @Operation(summary = "Выход из игры.")
     @PostMapping("leaveGame")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SwaggerCommonResponses
     public void leaveGame(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

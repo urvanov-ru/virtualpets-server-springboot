@@ -23,6 +23,7 @@ import ru.urvanov.virtualpets.server.controller.api.domain.OpenBoxNewbieResult;
 import ru.urvanov.virtualpets.server.controller.api.domain.Point;
 import ru.urvanov.virtualpets.server.controller.api.domain.RoomBuildMenuCosts;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectedPet;
+import ru.urvanov.virtualpets.server.controller.api.swagger.SwaggerCommonResponses;
 import ru.urvanov.virtualpets.server.service.RoomApiService;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
@@ -41,6 +42,7 @@ public class RoomController extends ControllerBase {
 
     @GetMapping(value = "getRoomInfo")
     @Operation(summary = "Получение состояния игры.")
+    @SwaggerCommonResponses
     public GetRoomInfoResult getRoomInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -53,6 +55,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "pickJournalOnFloor")
     @Operation(summary = "Поднятие дневника с пола.")
+    @SwaggerCommonResponses
     public void pickJournalOnfloor(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -64,6 +67,7 @@ public class RoomController extends ControllerBase {
 
     @PostMapping(value = "getBuildMenuCosts")
     @Operation(summary = "Получение цен на строительство")
+    @SwaggerCommonResponses
     public RoomBuildMenuCosts getBuildMenuCosts(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -76,6 +80,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "journalClosed")
     @Operation(summary = "Событие закрытия дневника игроком.")
+    @SwaggerCommonResponses
     public void journalClosed(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -87,6 +92,7 @@ public class RoomController extends ControllerBase {
 
     @PostMapping(value = "openBoxNewbie/{index}/")
     @Operation(summary = "Открытие лутбокса.")
+    @SwaggerCommonResponses
     public OpenBoxNewbieResult openBoxNewbie(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @Parameter(name = "index", description = "Индекс лутбокса. Начинается с 0.")
@@ -102,6 +108,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildMachineWithDrinks")
     @Operation(summary = "Строительство машины с напитками.")
+    @SwaggerCommonResponses
     public void buildMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -116,6 +123,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveMachineWithDrinks")
     @Operation(summary = "Перемещение машины с напитками.")
+    @SwaggerCommonResponses
     public void moveMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid  Point position)
@@ -130,6 +138,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildRefrigerator")
     @Operation(summary = "Строительство холодильника.")
+    @SwaggerCommonResponses
     public void buildRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -144,6 +153,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveRefrigerator")
     @Operation(summary = "Перемещение холодильника.")
+    @SwaggerCommonResponses
     public void moveRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -158,6 +168,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "buildBookcase")
     @Operation(summary = "Строительство книжного шкафа.")
+    @SwaggerCommonResponses
     public void buildBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -172,6 +183,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "moveBookcase")
     @Operation(summary = "Перемещение книжного шкафа.")
+    @SwaggerCommonResponses
     public void moveBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid Point position)
@@ -186,6 +198,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeRefrigerator")
     @Operation(summary = "Улучшение холодильника.")
+    @SwaggerCommonResponses
     public void upgradeRefrigerator(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -198,6 +211,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeBookcase")
     @Operation(summary = "Улучшение книжного шкафа.")
+    @SwaggerCommonResponses
     public void upgradeBookcase(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -210,6 +224,7 @@ public class RoomController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "upgradeMachineWithDrinks")
     @Operation(summary = "Улучшение машины с напитками..")
+    @SwaggerCommonResponses
     public void upgradeMachineWithDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

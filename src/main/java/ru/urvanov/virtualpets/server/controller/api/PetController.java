@@ -31,6 +31,7 @@ import ru.urvanov.virtualpets.server.controller.api.domain.SatietyArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.SavePetCloths;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectPetArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectedPet;
+import ru.urvanov.virtualpets.server.controller.api.swagger.SwaggerCommonResponses;
 import ru.urvanov.virtualpets.server.service.PetApiService;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
@@ -49,6 +50,7 @@ public class PetController extends ControllerBase {
 
     @RequestMapping(value = "getUserPets", method = RequestMethod.GET)
     @Operation(summary = "Получение списка питомцев.")
+    @SwaggerCommonResponses
     public PetListResult getUserPets(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -61,6 +63,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @Operation(summary = "Создание питомца.")
+    @SwaggerCommonResponses
     public void create(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid CreatePetArg createPetArg)
@@ -75,6 +78,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "select", method = RequestMethod.POST)
     @Operation(summary = "Выбор питомца на текущий сеанс игры.")
+    @SwaggerCommonResponses
     public void select(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SelectPetArg selectPetArg)
@@ -91,6 +95,7 @@ public class PetController extends ControllerBase {
     @RequestMapping(value = "delete/{petId}",
             method = RequestMethod.DELETE)
     @Operation(summary = "Удаление питомца.")
+    @SwaggerCommonResponses
     public void delete(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @PathVariable("petId") @Min(1) Integer petId)
@@ -105,6 +110,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "drink", method = RequestMethod.POST)
     @Operation(summary = "Употребление напитка.")
+    @SwaggerCommonResponses
     public void drink(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid DrinkArg drinkArg)
@@ -119,6 +125,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "satiety", method = RequestMethod.POST)
     @Operation(summary = "Поедание блюда.")
+    @SwaggerCommonResponses
     public void eat(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SatietyArg satietyArg)
@@ -133,6 +140,7 @@ public class PetController extends ControllerBase {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "education", method = RequestMethod.POST)
     @Operation(summary = "Чтение книги.")
+    @SwaggerCommonResponses
     public void education(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -144,6 +152,7 @@ public class PetController extends ControllerBase {
 
     @GetMapping(value = "getPetBooks")
     @Operation(summary = "Получения содержимого книжного шкафа.")
+    @SwaggerCommonResponses
     public GetPetBooksResult getPetBooks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -155,6 +164,7 @@ public class PetController extends ControllerBase {
 
     @GetMapping(value = "getPetCloths")
     @Operation(summary = "Получение содержимого гардеробной.")
+    @SwaggerCommonResponses
     public GetPetClothsResult getPetCloths(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -167,6 +177,7 @@ public class PetController extends ControllerBase {
     @PostMapping(value = "savePetCloths")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Сохранение набора одежды.")
+    @SwaggerCommonResponses
     public void savePetCloth(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid SavePetCloths saveClothArg)
@@ -180,6 +191,7 @@ public class PetController extends ControllerBase {
 
     @GetMapping(value = "getPetDrinks")
     @Operation(summary = "Получение содержимого машины с напитками.")
+    @SwaggerCommonResponses
     public GetPetDrinksResult getPetDrinks(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -191,6 +203,7 @@ public class PetController extends ControllerBase {
 
     @GetMapping(value = "getPetFoods")
     @Operation(summary = "Получение содержимого холодильника.")
+    @SwaggerCommonResponses
     public GetPetFoodsResult getPetFoods(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
@@ -203,6 +216,7 @@ public class PetController extends ControllerBase {
     @RequestMapping(method = RequestMethod.GET,
             value = "getPetJournalEntries")
     @Operation(summary = "Получение содержимого дневника питомца.")
+    @SwaggerCommonResponses
     public GetPetJournalEntriesResult getPetJournalEntries(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestParam(name = "count") @Min(1) int count)
@@ -216,6 +230,7 @@ public class PetController extends ControllerBase {
 
     @Operation(summary = "Получение содержимого рюкзака.")
     @GetMapping(value = "getPetRucksackInner")
+    @SwaggerCommonResponses
     public GetPetRucksackInnerResult getPetRucksackInner(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

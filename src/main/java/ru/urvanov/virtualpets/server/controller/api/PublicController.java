@@ -26,6 +26,7 @@ import ru.urvanov.virtualpets.server.controller.api.domain.LoginResult;
 import ru.urvanov.virtualpets.server.controller.api.domain.RecoverPasswordArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.RegisterArgument;
 import ru.urvanov.virtualpets.server.controller.api.domain.ServerTechnicalInfo;
+import ru.urvanov.virtualpets.server.controller.api.swagger.SwaggerCommonResponses;
 import ru.urvanov.virtualpets.server.dao.domain.Role;
 import ru.urvanov.virtualpets.server.service.PublicApiService;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
@@ -48,6 +49,7 @@ public class PublicController extends ControllerBase { // (3)
     @ResponseStatus(HttpStatus.NO_CONTENT) // (1)
     @RequestMapping(method = RequestMethod.POST, value = "register")//(2)
     @Operation(summary = "Регистрация нового игрока.")
+    @SwaggerCommonResponses
     public void register(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid RegisterArgument registerArgument) // (3)
@@ -59,6 +61,7 @@ public class PublicController extends ControllerBase { // (3)
     @RequestMapping(method = RequestMethod.POST,
             value = "recoverPassword")
     @Operation(summary = "Восстановление пароля.")
+    @SwaggerCommonResponses
     public void recoverPassword(
             @RequestBody @Valid RecoverPasswordArg recoverPasswordArg)
                     throws ServiceException {
@@ -67,6 +70,8 @@ public class PublicController extends ControllerBase { // (3)
 
     @RequestMapping(method = RequestMethod.GET,
             value = "server-technical-info")
+    @Operation(summary = "Получение технической информации о сервере")
+    @SwaggerCommonResponses
     public ServerTechnicalInfo getServerTechnicalInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
             throws ServiceException {
@@ -75,9 +80,8 @@ public class PublicController extends ControllerBase { // (3)
 
     @RequestMapping(method = RequestMethod.POST, value = "login")
     @Operation(summary = "Аутентификация пользователя.")
+    @SwaggerCommonResponses
     public LoginResult login(
-            //@io.swagger.v3.oas.annotations.parameters.RequestBody(
-            //        description = "ТЕСТ", required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,schema = @Schema(implementation = LoginArg.class )))
             @RequestBody @Valid LoginArg loginArg,
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse)
@@ -137,6 +141,7 @@ public class PublicController extends ControllerBase { // (3)
                     о текущем пользователе. \
                     В противном случае в результате \
                     поле success = false.""")
+    @SwaggerCommonResponses
     public LoginResult checkSession(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {

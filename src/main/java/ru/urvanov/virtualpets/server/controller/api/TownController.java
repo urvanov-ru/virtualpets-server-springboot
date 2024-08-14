@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import ru.urvanov.virtualpets.server.auth.UserDetailsImpl;
 import ru.urvanov.virtualpets.server.controller.api.domain.GetTownInfoResult;
 import ru.urvanov.virtualpets.server.controller.api.domain.SelectedPet;
+import ru.urvanov.virtualpets.server.controller.api.swagger.SwaggerCommonResponses;
 import ru.urvanov.virtualpets.server.service.TownApiService;
 import ru.urvanov.virtualpets.server.service.domain.UserPetDetails;
 import ru.urvanov.virtualpets.server.service.exception.ServiceException;
@@ -28,6 +29,7 @@ public class TownController extends ControllerBase {
     
     @GetMapping(value = "getTownInfo")
     @Operation(summary = "Получение состояния игры.")
+    @SwaggerCommonResponses
     public GetTownInfoResult getTownInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
                     throws ServiceException {
