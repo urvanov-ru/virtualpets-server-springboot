@@ -14,11 +14,26 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+/**
+ * Описание стандартных ответов API, которые может вернуть любой метод.
+ */
 @Retention(RUNTIME)
-@Target({METHOD, TYPE})
-@ApiResponse(responseCode = "400", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class))})
-@ApiResponse(responseCode = "403", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class))})
-@ApiResponse(responseCode = "404", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class))})
+@Target({ METHOD, TYPE })
+@ApiResponse(responseCode = "400", content = {
+        @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(
+                        implementation = ProblemDetail.class)) })
+@ApiResponse(responseCode = "403", content = {
+        @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(
+                        implementation = ProblemDetail.class)) })
+@ApiResponse(responseCode = "404", content = {
+        @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(
+                        implementation = ProblemDetail.class)) })
 public @interface SwaggerCommonResponses {
 
 }
