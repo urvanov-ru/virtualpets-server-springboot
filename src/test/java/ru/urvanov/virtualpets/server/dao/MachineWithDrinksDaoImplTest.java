@@ -34,7 +34,7 @@ public class MachineWithDrinksDaoImplTest extends AbstractDaoImplTest {
     public void testFind2() {
         Optional<MachineWithDrinks> drink = machineWithDrinksDao.findFullById(1);
         
-        assertThat(drink).map(MachineWithDrinks::getMachineWithDrinksCost).isPresent();
+        assertThat(drink).map(MachineWithDrinks::getMachineWithDrinksCosts).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")

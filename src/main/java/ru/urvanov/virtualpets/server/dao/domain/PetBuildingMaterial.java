@@ -1,6 +1,5 @@
 package ru.urvanov.virtualpets.server.dao.domain;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
@@ -18,9 +17,7 @@ import jakarta.persistence.Version;
  */
 @Entity
 @Table (name = "pet_building_material")
-public class PetBuildingMaterial implements Serializable {
-
-    private static final long serialVersionUID = 2864536542057382514L;
+public class PetBuildingMaterial {
 
     /**
      * Первичный ключ. Генерируемый.
@@ -28,7 +25,7 @@ public class PetBuildingMaterial implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="pet_building_material_seq")
     @SequenceGenerator(name="pet_building_material_seq",
-        sequenceName="pet_building_material_id_seq", allocationSize=1)
+        sequenceName="pet_building_material_id_seq", allocationSize = 1)
     private Integer id;
     
     @ManyToOne(fetch = FetchType.LAZY)

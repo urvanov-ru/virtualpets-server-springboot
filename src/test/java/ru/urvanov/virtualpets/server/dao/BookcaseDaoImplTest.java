@@ -35,7 +35,7 @@ public class BookcaseDaoImplTest extends AbstractDaoImplTest {
     void testFind2() {
         Optional<Bookcase> bookcase = bookcaseDao.findFullById(1);
         assertThat(bookcase).isPresent();
-        assertThat(bookcase).map(Bookcase::getBookcaseCost).isPresent();
+        assertThat(bookcase).map(Bookcase::getBookcaseCosts).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/BookcaseServiceImplTest.xls")

@@ -24,7 +24,7 @@ public interface RefrigeratorDao
     private static Specification<Refrigerator> findFullByIdSpecification(
             Integer id) {
         return (root, query, builder) -> {
-            root.fetch(Refrigerator_.refrigeratorCost);
+            root.fetch(Refrigerator_.refrigeratorCosts);
             Predicate predicate = builder
                     .equal(root.get(Refrigerator_.id), id);
             return predicate;
@@ -37,7 +37,7 @@ public interface RefrigeratorDao
 
     private static Specification<Refrigerator> findAllFullSpecification() {
         return (root, query, builder) -> {
-            root.fetch(Refrigerator_.refrigeratorCost);
+            root.fetch(Refrigerator_.refrigeratorCosts);
             return builder.and();
         };
     }

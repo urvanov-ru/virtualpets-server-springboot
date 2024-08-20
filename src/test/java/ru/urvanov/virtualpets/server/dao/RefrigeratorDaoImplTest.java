@@ -33,7 +33,7 @@ public class RefrigeratorDaoImplTest extends AbstractDaoImplTest {
     @Test
     public void testFind2() {
         Optional<Refrigerator> refrigerator = refrigeratorDao.findFullById(2);
-        assertThat(refrigerator).map(Refrigerator::getRefrigeratorCost).isPresent();
+        assertThat(refrigerator).map(Refrigerator::getRefrigeratorCosts).isPresent();
     }
     
     @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/RefrigeratorServiceImplTest.xls")

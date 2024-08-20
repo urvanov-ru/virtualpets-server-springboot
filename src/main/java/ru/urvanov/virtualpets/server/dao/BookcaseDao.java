@@ -27,7 +27,7 @@ public interface BookcaseDao
         return (root, query, builder) -> {
             Predicate predicateId = builder.equal(root.get(Bookcase_.id),
                     id);
-            root.fetch(Bookcase_.bookcaseCost, JoinType.LEFT);
+            root.fetch(Bookcase_.bookcaseCosts, JoinType.LEFT);
             return predicateId;
         };
     }
@@ -38,7 +38,7 @@ public interface BookcaseDao
 
     private static Specification<Bookcase> findAllFullSpecification() {
         return (root, query, builder) -> {
-            root.fetch(Bookcase_.bookcaseCost, JoinType.LEFT);
+            root.fetch(Bookcase_.bookcaseCosts, JoinType.LEFT);
             return builder.and();
         };
     }

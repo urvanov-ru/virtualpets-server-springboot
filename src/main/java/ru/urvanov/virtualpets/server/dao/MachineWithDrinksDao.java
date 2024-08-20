@@ -25,7 +25,7 @@ public interface MachineWithDrinksDao
     private static Specification<MachineWithDrinks> findFullByIdSpecification(
             Integer id) {
         return (root, query, builder) -> {
-            root.fetch(MachineWithDrinks_.machineWithDrinksCost,
+            root.fetch(MachineWithDrinks_.machineWithDrinksCosts,
                     JoinType.LEFT);
             Predicate predicate = builder
                     .equal(root.get(MachineWithDrinks_.id), id);
@@ -40,7 +40,7 @@ public interface MachineWithDrinksDao
 
     private static Specification<MachineWithDrinks> findAllFullSpecification() {
         return (root, query, builder) -> {
-            root.fetch(MachineWithDrinks_.machineWithDrinksCost,
+            root.fetch(MachineWithDrinks_.machineWithDrinksCosts,
                     JoinType.LEFT);
             return builder.and();
         };
