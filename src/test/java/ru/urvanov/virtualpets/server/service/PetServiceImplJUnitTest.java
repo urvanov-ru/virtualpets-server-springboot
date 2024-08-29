@@ -163,6 +163,9 @@ class PetServiceImplJUnitTest {
         logger.info("This method runs after each test.");
     }
     
+    /**
+     * Тестирование основной ветки повышения опыта.
+     */
     @Test
     void testAddExperience_ok() {
         // Подготовка тестовых данных
@@ -183,6 +186,10 @@ class PetServiceImplJUnitTest {
         assertEquals(1, pet.getExperience());
     }
     
+    /**
+     * Тестирование ветки повышения опыта, в которой питомец получает
+     * новый уровень.
+     */
     @Test
     void testAddExperience_levelUp() {
         // Подготовка тестовых данных
@@ -193,7 +200,8 @@ class PetServiceImplJUnitTest {
         pet.setLevel(level1);
         
         // Настройка mock-объектов
-        when(levelDao.findById(LEVEL2_ID)).thenReturn(Optional.of(level2));
+        when(levelDao.findById(LEVEL2_ID))
+                .thenReturn(Optional.of(level2));
         
         // Вызов тестируемого метода
         service.addExperience(pet, 1);
@@ -203,6 +211,10 @@ class PetServiceImplJUnitTest {
         assertEquals(level2, pet.getLevel());
     }
     
+    /**
+     * Тестирование ветки повышения опыта, в которой питомец уже
+     * достиг максимального уровня.
+     */
     @Test
     void testAddExperience_lastLevel() {
         // Подготовка тестовых данных
@@ -212,8 +224,10 @@ class PetServiceImplJUnitTest {
         pet.setLevel(level2);
         
         // Настройка mock-объектов
-        when(levelDao.findById(LEVEL2_ID)).thenReturn(Optional.of(level2));
-        when(levelDao.findById(LEVEL2_ID + 1)).thenReturn(Optional.empty());
+        when(levelDao.findById(LEVEL2_ID))
+                .thenReturn(Optional.of(level2));
+        when(levelDao.findById(LEVEL2_ID + 1))
+                .thenReturn(Optional.empty());
         
         // Вызов тестируемого метода
         service.addExperience(pet, 1);
