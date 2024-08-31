@@ -61,7 +61,6 @@ public class UserServiceTestNgTest {
         user1.setName(USER_FULL_NAME);
         usersOnline.add(user1);
         
-        
         // Настройка mock-объектов
         OffsetDateTime activeAfterDate = OffsetDateTime.now(clock)
                 .minusMinutes(5);
