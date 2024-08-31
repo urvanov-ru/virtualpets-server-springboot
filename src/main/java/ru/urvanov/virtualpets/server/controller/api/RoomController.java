@@ -65,7 +65,7 @@ public class RoomController extends ControllerBase {
                         selectedPet.getPetId()));
     }
 
-    @PostMapping(value = "getBuildMenuCosts")
+    @GetMapping(value = "getBuildMenuCosts")
     @Operation(summary = "Получение цен на строительство")
     @SwaggerCommonResponses
     public RoomBuildMenuCosts getBuildMenuCosts(
