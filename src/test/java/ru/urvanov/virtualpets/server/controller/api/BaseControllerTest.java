@@ -23,21 +23,36 @@ import jakarta.persistence.PersistenceContext;
 @SpringBootTest
 @ActiveProfiles({"test", "test-spring-boot"})
 abstract class BaseControllerTest {
+    
+    /**
+     * Конфигурация веб-приложения. С помощью 
+     * {@code wac.getServletContext()} осуществляется доступ к экземпляру
+     * {@link jakarta.servlet.ServletContext}
+     */
     @Autowired
     protected WebApplicationContext wac;
 
+    /**
+     * Методы наследников используют это поле для выполнения запросов:
+     *  <pre>{@code
+     *     mockMvc.perform(...
+     * }</pre>
+     */
     protected MockMvc mockMvc;
 
+    /**
+     * Управляет запуском и остановкой контейнера PostgreSQL.
+     * При запуске нескольких тестов контейнер создаётся один раз
+     * и переиспользуется последующими тестами.
+     */
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(
             "postgres:16.1");
 
-    @PersistenceContext
-    protected EntityManager em;
-
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .apply(springSecurity()).build();
+                .apply(springSecurity())
+                .build();
     }
 }
