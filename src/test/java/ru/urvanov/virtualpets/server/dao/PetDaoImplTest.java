@@ -1,6 +1,5 @@
 package ru.urvanov.virtualpets.server.dao;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,7 +18,6 @@ import ru.urvanov.virtualpets.server.dao.domain.Pet;
 import ru.urvanov.virtualpets.server.dao.domain.PetFood;
 import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.PetType;
-import ru.urvanov.virtualpets.server.test.annotation.DataSets;
 
 @Sql({ "/ru/urvanov/virtualpets/server/clean.sql",
         "PetDaoImplTest.sql" })
@@ -40,7 +38,6 @@ public class PetDaoImplTest extends BaseDaoImplTest {
     @Autowired
     private Clock clock;
     
-    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testSave() {
         long lastSize =  petDao.countByUserId(1);
@@ -56,7 +53,6 @@ public class PetDaoImplTest extends BaseDaoImplTest {
         assertEquals(lastSize + 1, newSize);
     }
     
-    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testGetNewJournalEntriesCount() {
         Optional<Pet> pet = petDao.findById(1);
@@ -64,7 +60,6 @@ public class PetDaoImplTest extends BaseDaoImplTest {
         assertEquals(Long.valueOf(0L), newJournalEntriesCount);
     }
     
-    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     public void testAddJournalEntry() {
         Pet pet = petDao.findById(1).orElseThrow();
@@ -83,7 +78,6 @@ public class PetDaoImplTest extends BaseDaoImplTest {
     }
     
     
-    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     @Transactional
     public void testAddFood() {
@@ -99,7 +93,6 @@ public class PetDaoImplTest extends BaseDaoImplTest {
         assertEquals(10, pet.getFoods().get(FoodId.CARROT).getFoodCount());
     }
     
-    @DataSets(setUpDataSet = "/ru/urvanov/virtualpets/server/service/PetServiceImplTest.xls")
     @Test
     @Transactional
     public void testFetchBooks() {
