@@ -3,7 +3,10 @@ package ru.urvanov.virtualpets.server.test.config;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 
@@ -18,13 +21,15 @@ import org.dbunit.util.fileloader.XlsDataFileLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 @Configuration
-@ComponentScan(basePackages = {"ru.urvanov.virtualpets.server.dao"})
-@Profile("test-dao")
-public class DaoTestConfig {
-
+@Profile("test")
+public class MockMvcConfig {
     
     /*@Bean
     public DataSource dataSource() {
@@ -51,12 +56,11 @@ public class DaoTestConfig {
         result.setDefaultSchema("virtualpets_server_springboot");
         return result;
     }
-    
- 
 
     @Bean(name = "databaseTester")
-    public DataSourceDatabaseTester dataSourceDatabaseTester(DataSource dataSource) throws Exception {
-        DataSourceDatabaseTester databaseTester = new DataSourceDatabaseTester(dataSource) {
+    public DataSourceDatabaseTester dataSourceDatabaseTester() throws Exception {
+        DataSourceDatabaseTester databaseTester = new DataSourceDatabaseTester(
+                dataSource()) {
             public IDatabaseConnection getConnection() throws Exception {
                 IDatabaseConnection result = super.getConnection();
                 result.getConfig().setProperty(DatabaseConfig.PROPERTY_ESCAPE_PATTERN, "\"?\"");

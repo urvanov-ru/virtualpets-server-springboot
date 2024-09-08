@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ru.urvanov.virtualpets.server.dao;
 
 
@@ -13,6 +10,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.dao.domain.FoodId;
@@ -23,11 +21,9 @@ import ru.urvanov.virtualpets.server.dao.domain.PetJournalEntry;
 import ru.urvanov.virtualpets.server.dao.domain.PetType;
 import ru.urvanov.virtualpets.server.test.annotation.DataSets;
 
-/**
- * @author fedya
- *
- */
-public class PetDaoImplTest extends AbstractDaoImplTest {
+@Sql({ "/ru/urvanov/virtualpets/server/clean.sql",
+        "PetDaoImplTest.sql" })
+public class PetDaoImplTest extends BaseDaoImplTest {
     
     @Autowired
     private PetDao petDao;
