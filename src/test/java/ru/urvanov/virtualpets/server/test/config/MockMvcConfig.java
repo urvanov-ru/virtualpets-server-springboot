@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 @Configuration
-@Profile("test")
+@Profile("test-spring-boot")
 public class MockMvcConfig {
     
     /*@Bean
