@@ -14,7 +14,7 @@ import ru.urvanov.virtualpets.server.dao.domain.Room;
 
 @Sql({ "/ru/urvanov/virtualpets/server/clean.sql",
         "RoomDaoImplTest.sql" })
-public class RoomDaoImplTest extends BaseDaoImplTest {
+class RoomDaoImplTest extends BaseDaoImplTest {
     
     @Autowired
     private RoomDao roomDao;
@@ -23,19 +23,19 @@ public class RoomDaoImplTest extends BaseDaoImplTest {
     private PetDao petDao;
 
     @Test
-    public void testFind1() {
+    void testFind1() {
         Optional<Room> room = roomDao.findByPetId(1);
         assertThat(room).map(Room::getPetId).isPresent();
     }
     
     @Test
-    public void testFind2() {
+    void testFind2() {
         Optional<Room> room = roomDao.findByPetId(-1);
         assertThat(room).isEmpty();
     }
     
     @Test
-    public void testSaveNew() {
+    void testSaveNew() {
         Room room = new Room();
         Pet pet = petDao.getReferenceById(2);
         room.setPetId(pet.getId());
@@ -46,7 +46,7 @@ public class RoomDaoImplTest extends BaseDaoImplTest {
     }
     
     @Test
-    public void testSaveExist() {
+    void testSaveExist() {
         Room room = roomDao.findByPetId(1).orElseThrow();
         room.setBoxNewbie1(false);
         roomDao.save(room);

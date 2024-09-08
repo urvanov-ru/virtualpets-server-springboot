@@ -25,7 +25,7 @@ import ru.urvanov.virtualpets.server.test.config.DaoTestConfig;
         "spring.liquibase.default-schema=virtualpets_server_springboot"
     })
 @DirtiesContext // dirtiesContext нужен из-за dynamicPropertySource
-public class BaseDaoImplTest {
+class BaseDaoImplTest {
 
     /**
      * TestContainers PostgreSQL контейнер.
@@ -39,6 +39,6 @@ public class BaseDaoImplTest {
     protected EntityManager em;
     
     @Test
-    public void test() {
+    void test() {
     }
 }

@@ -21,7 +21,7 @@ import ru.urvanov.virtualpets.server.dao.domain.PetType;
 
 @Sql({ "/ru/urvanov/virtualpets/server/clean.sql",
         "PetDaoImplTest.sql" })
-public class PetDaoImplTest extends BaseDaoImplTest {
+class PetDaoImplTest extends BaseDaoImplTest {
     
     @Autowired
     private PetDao petDao;
@@ -39,7 +39,7 @@ public class PetDaoImplTest extends BaseDaoImplTest {
     private Clock clock;
     
     @Test
-    public void testSave() {
+    void testSave() {
         long lastSize =  petDao.countByUserId(1);
         Pet pet = new Pet();
         pet.setName("test4y84hg4");
@@ -54,9 +54,11 @@ public class PetDaoImplTest extends BaseDaoImplTest {
     }
     
     @Test
-    public void testGetNewJournalEntriesCount() {
+    void testGetNewJournalEntriesCount() {
         Optional<Pet> pet = petDao.findById(1);
-        Long newJournalEntriesCount = petDao.getPetNewJournalEntriesCount(pet.map(Pet::getId).orElseThrow());
+        Long newJournalEntriesCount = petDao
+                .getPetNewJournalEntriesCount(pet.map(Pet::getId)
+                        .orElseThrow());
         assertEquals(Long.valueOf(0L), newJournalEntriesCount);
     }
     
@@ -69,12 +71,14 @@ public class PetDaoImplTest extends BaseDaoImplTest {
         petJournalEntry.setPet(pet);
         petJournalEntry.setReaded(true);
         
-        pet.getJournalEntries().put(JournalEntryId.EAT_SOMETHING, petJournalEntry);
+        pet.getJournalEntries().put(JournalEntryId.EAT_SOMETHING,
+                petJournalEntry);
         //petJournalEntry.setPet(pet);
         petDao.save(pet);
         
         pet = petDao.findFullById(1).orElseThrow();
-        assertTrue(pet.getJournalEntries().get(JournalEntryId.EAT_SOMETHING).isReaded());
+        assertTrue(pet.getJournalEntries()
+                .get(JournalEntryId.EAT_SOMETHING).isReaded());
     }
     
     
