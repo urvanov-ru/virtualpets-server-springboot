@@ -10,8 +10,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import ru.urvanov.virtualpets.server.Application;
-import ru.urvanov.virtualpets.server.test.config.DaoTestConfig;
 
+/**
+ * Базовый класс для тестов слоя DAO
+ */
 @Testcontainers
 @ContextConfiguration(classes={Application.class, DaoTestConfig.class})
 @ActiveProfiles({"test", "test-dao"})
@@ -20,7 +22,9 @@ import ru.urvanov.virtualpets.server.test.config.DaoTestConfig;
 class BaseDaoImplTest {
 
     /**
-     * TestContainers PostgreSQL контейнер.
+     * Управляет запуском и остановкой контейнера PostgreSQL.
+     * При запуске нескольких тестов контейнер создаётся один раз
+     * и переиспользуется последующими тестами.
      */
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer
