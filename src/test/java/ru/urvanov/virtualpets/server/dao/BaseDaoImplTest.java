@@ -10,12 +10,17 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import ru.urvanov.virtualpets.server.Application;
+import ru.urvanov.virtualpets.server.config.ClockConfig;
+import ru.urvanov.virtualpets.server.config.DaoTestConfig;
+import ru.urvanov.virtualpets.server.config.DataSourceConfig;
 
 /**
  * Базовый класс для тестов слоя DAO
  */
 @Testcontainers
-@ContextConfiguration(classes={Application.class, DaoTestConfig.class})
+@ContextConfiguration(classes = {
+        Application.class, DaoTestConfig.class, ClockConfig.class,
+        DataSourceConfig.class})
 @ActiveProfiles({"test", "test-dao"})
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
