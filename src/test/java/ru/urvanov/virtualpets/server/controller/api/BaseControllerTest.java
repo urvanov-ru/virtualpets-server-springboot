@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ExtendWith(SpringExtension.class)
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles({"test", "test-spring-boot"})
+@ActiveProfiles({"test", "test-mock-mvc"})
 abstract class BaseControllerTest {
     
     /**
