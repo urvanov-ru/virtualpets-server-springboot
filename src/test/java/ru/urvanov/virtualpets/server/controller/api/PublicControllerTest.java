@@ -44,6 +44,5 @@ class PublicControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.info").isMap())
                 .andExpect(jsonPath("$.info['java.version']")
                         .isString());
-        ;
     }
 }
