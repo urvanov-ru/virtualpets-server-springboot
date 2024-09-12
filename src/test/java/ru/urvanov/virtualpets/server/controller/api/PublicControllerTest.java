@@ -25,16 +25,25 @@ class PublicControllerTest extends BaseControllerTest {
     
     @Test
     void getServerTechnicalInfo() throws Exception {
-        Map<String, String> info = Map.of("java.version", "some_version");
+        // Подготовка данных
+        Map<String, String> info
+                = Map.of("java.version", "some_version");
         ServerTechnicalInfo expected = new ServerTechnicalInfo(info );
-        when(publicApiService.getServerTechnicalInfo()).thenReturn(expected);
-        mockMvc.perform(get("/api/v1/PublicService/server-technical-info")
+        
+        // Настройка моков
+        when(publicApiService.getServerTechnicalInfo())
+                .thenReturn(expected);
+        
+        // Выполнение запроса и проверка результата
+        mockMvc.perform(get(
+                "/api/v1/PublicService/server-technical-info")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpectAll(status().isOk(), content()
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.info").isMap())
-                .andExpect(jsonPath("$.info['java.version']").isString());
+                .andExpect(jsonPath("$.info['java.version']")
+                        .isString());
         ;
     }
 }
