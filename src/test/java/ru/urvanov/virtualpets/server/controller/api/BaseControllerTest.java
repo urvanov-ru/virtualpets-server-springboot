@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Базовый класс для тестов API с помощью MockMVC.
+ * Базовый класс для тестов MockMvc слоя контроллеров.
  */
 @ExtendWith(SpringExtension.class)
 @Testcontainers
