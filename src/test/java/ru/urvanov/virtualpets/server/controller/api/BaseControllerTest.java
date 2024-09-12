@@ -46,8 +46,8 @@ abstract class BaseControllerTest {
      * и переиспользуется последующими тестами.
      */
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(
-            "postgres:16.1");
+    public static PostgreSQLContainer<?> postgreSQLContainer
+            = new PostgreSQLContainer<>("postgres:16.1");
 
     @BeforeEach
     void setUp() {
