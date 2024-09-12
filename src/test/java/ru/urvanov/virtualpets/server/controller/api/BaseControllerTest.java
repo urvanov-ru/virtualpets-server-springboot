@@ -15,6 +15,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+/**
+ * Базовый класс для тестов API с помощью MockMVC.
+ */
 @ExtendWith(SpringExtension.class)
 @Testcontainers
 @SpringBootTest
