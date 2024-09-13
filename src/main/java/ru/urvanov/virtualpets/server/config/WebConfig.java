@@ -42,7 +42,8 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedOrigins("""
                     http://localhost:8081, \
                     http://localhost:8082, \
-                    http://virtualpets.urvanov.ru""")
+                    http://virtualpets.urvanov.ru, \
+                    https://virtualpets.urvanov.ru""")
             .allowedMethods(
                     HttpMethod.GET.name(),
                     HttpMethod.POST.name(),
