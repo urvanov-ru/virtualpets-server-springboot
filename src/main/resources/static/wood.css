@@ -59,6 +59,31 @@ a:visited {
     background-color: #553707;
 }
 
+@media screen and (max-width: 540px) {
+
+  .menu {
+      float: none;
+      width : auto;
+  }
+  .menu ul {
+    display : inline;
+    padding: 1px;
+  }
+  
+  .menu ul li {
+    display : inline;
+  }
+  
+  .menu a {
+    display : inline;
+    padding: 1px 5px 1px 5px;
+  }
+  
+  .header {
+    display : none;
+  }
+}
+
 .body {
     overflow: hidden;
     display: box;
@@ -120,21 +145,21 @@ input[type=text] {
     border-style: solid;
 }
 
-input[type=button],input[type=submit],select option {
+input[type=button],input[type=submit],select option,button {
     background: #ac8d5c;
     border-style: solid;
     border-color: #efe7db #1f1301 #1f1301 #efe7db;
     border-width: 3px;
 }
 
-input[type=button]:hover,input[type=submit]:hover,select option:hover {
+input[type=button]:hover,input[type=submit]:hover,select option:hover,button:hover {
     background: #dbc199;
     border-style: solid;
     border-color: #efe7db #1f1301 #1f1301 #efe7db;
     border-width: 3px;
 }
 
-input[type=button]:active,input[type=submit]:active,select option:active
+input[type=button]:active,input[type=submit]:active,select option:active,button:active
     {
     background: #dbc199;
     border-style: solid;
@@ -156,7 +181,7 @@ input[type=button]:active,input[type=submit]:active,select option:active
 	color: gray;
 	padding-left:50px;
 	font-size: 1em;
-	background-image: url('/achievement_background_gray.png');
+	background-image: url('/virtualpets-server-springframework/resources/images/achievement_background_gray.png');
 	background-repeat : no-repeat;
 	background-position: left top;
 	height : 100px;
@@ -166,7 +191,7 @@ input[type=button]:active,input[type=submit]:active,select option:active
 .achievementUnlocked {
 	padding-left:50px;
 	font-size: 1em;
-	background-image: url('/achievement_background.png');
+	background-image: url('/virtualpets-server-springframework/resources/images/achievement_background.png');
 	background-repeat : no-repeat;
 	background-position: left top;
 	height : 100px;
