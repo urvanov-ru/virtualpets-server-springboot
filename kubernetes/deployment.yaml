@@ -3,19 +3,19 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: virtualpets-server
-  name: virtualpets-server
+    app: virtualpets-server-springboot
+  name: virtualpets-server-springboot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: virtualpets-server
+      app: virtualpets-server-springboot
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: virtualpets-server
+        app: virtualpets-server-springboot
     spec:
       containers:
       - env:
@@ -34,8 +34,8 @@ spec:
             configMapKeyRef:
               name: virtualpets-config
               key: SPRING_DATASOURCE_PASSWORD
-        image: urvanovru/virtualpets-server
-        name: virtualpets-server
+        image: urvanovru/virtualpets-server-springboot
+        name: virtualpets-server-springboot
         imagePullPolicy: Never
         resources: {}
 status: {}
@@ -45,8 +45,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: virtualpets-server
-  name: virtualpets-server
+    app: virtualpets-server-springboot
+  name: virtualpets-server-springboot
 spec:
   ports:
   - name: 8080-8080
@@ -54,7 +54,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: virtualpets-server
+    app: virtualpets-server-springboot
   type: ClusterIP
 status:
   loadBalancer: {}
