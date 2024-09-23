@@ -18,7 +18,8 @@ import ru.urvanov.virtualpets.server.controller.api.domain.HiddenObjectsGame;
 @Component
 public class AnnotationBasedAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationBasedAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+            AnnotationBasedAspect.class);
     
     @Before("execution(* ru.urvanov.virtualpets.server.controller.site.*.*(..))")
     public void beforeSitePage(JoinPoint joinPoint) {
