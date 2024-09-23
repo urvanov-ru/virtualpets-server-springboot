@@ -37,7 +37,7 @@ spring:
 #spring.mail.password=test
 logging:
   level:
-    root : debug
+    root : info
   file:
     name: ./log/virtualpets_server_springboot.log
 virtualpets-server-springboot:
