@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,10 +60,10 @@ public class TownServiceImpl implements TownApiService {
         
         int levelId = pet.getLevel().getId();
         int experience = pet.getExperience();
-        Level nextLevelLeague = levelDao
-                .findById(pet.getLevel().getId() + 1).orElseThrow();
-        int maxExperience = nextLevelLeague == null ? Integer.MAX_VALUE
-                : nextLevelLeague.getExperience();
+        Optional<Level> nextLevelLeague = levelDao
+                .findById(pet.getLevel().getId() + 1);
+        int maxExperience = nextLevelLeague.map(Level::getExperience)
+                .orElse(Integer.MAX_VALUE);
         int minExperience = pet.getLevel().getExperience();
         LevelInfo levelInfo = new LevelInfo(levelId, experience, minExperience, maxExperience);
 
