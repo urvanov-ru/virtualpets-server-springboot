@@ -36,11 +36,12 @@ public interface PetDao extends JpaRepository<Pet, Integer>,
                 PetDao.getPetNewJournalEntriesSpecification(petId));
     }
 
-    private static Specification<Pet> getPetNewJournalEntriesSpecification(
-            Integer petId) {
+    private static Specification<Pet>
+            getPetNewJournalEntriesSpecification(Integer petId) {
         return (rootPet, criteriaQuery, criteriaBuilder) -> {
-            MapJoin<Pet, JournalEntryId, PetJournalEntry> joinPetJournalEntries = rootPet
-                    .join(Pet_.journalEntries, JoinType.LEFT);
+            MapJoin<Pet, JournalEntryId,
+                    PetJournalEntry> joinPetJournalEntries = rootPet
+                            .join(Pet_.journalEntries, JoinType.LEFT);
             return criteriaBuilder.and(
                     criteriaBuilder
                             .and(criteriaBuilder.equal(
