@@ -11,7 +11,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 public class MailConfig {
-//    
+    
+//    JavaMailSender в Spring Boot создаётся автоматически. Этот код не
+//    нужен
 //    @Bean
 //    public JavaMailSender mailSender() {
 //        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -22,18 +24,18 @@ public class MailConfig {
 //        return mailSender;
 //    }
 //    
-//    @Bean
-//    public SimpleMailMessage templateMessage(
-//            @Value("${virtualpets-server-springboot.mail.from}")
-//            String mailFrom,
-//            @Value("${virtualpets-server-springboot.mail.subject}")
-//            String mailSubject) {
-//        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-//        simpleMailMessage.setFrom(null);
-//        simpleMailMessage.setSubject(mailSubject);
-//        return simpleMailMessage;
-//    }
-//    
-//    @
+    @Bean
+    public SimpleMailMessage templateMessage(
+            @Value("${virtualpets-server-springboot.mail.from}")
+            String mailFrom,
+            @Value("${virtualpets-server-springboot.mail.subject}")
+            String mailSubject) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(null);
+        simpleMailMessage.setSubject(mailSubject);
+        return simpleMailMessage;
+    }
+    
+    
 
 }
