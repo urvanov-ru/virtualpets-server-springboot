@@ -51,7 +51,6 @@ public class PublicController extends ControllerBase { // (3)
     @Operation(summary = "Регистрация нового игрока.")
     @SwaggerCommonResponses
     public void register(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody @Valid RegisterArgument registerArgument) // (3)
                     throws ServiceException {
         publicService.register(registerArgument);
