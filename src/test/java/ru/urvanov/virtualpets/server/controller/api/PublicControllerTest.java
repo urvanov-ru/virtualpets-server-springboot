@@ -36,7 +36,7 @@ class PublicControllerTest extends BaseControllerTest {
         
         // Выполнение запроса и проверка результата
         mockMvc.perform(get(
-                "/api/v1/PublicService/server-technical-info")
+                "/api/v1/PublicService/serverTechnicalInfo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpectAll(status().isOk(), content()
