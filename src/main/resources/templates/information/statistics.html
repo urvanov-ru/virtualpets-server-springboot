@@ -4,7 +4,7 @@
     th:lang = "${#locale.toLanguageTag()}">
 <head>
   <meta charset = "utf-8">
-  <title th:text="#{virtualpets-server-springboot.site.title}"></title>
+  <title th:text = "#{virtualpets-server-springboot.site.title}"></title>
   <link rel = "stylesheet" href = "/wood.css" type = "text/css"
     media = "screen" />
 </head>
@@ -24,7 +24,7 @@
                         <input th:field = "*{maxRecordsCount}" />
                     </div>
                     <div style = "width: 300px;">
-                        <p th:if="${#fields.hasErrors('maxRecordsCount')}" th:errors="*{maxRecordsCount}">Incorrect value</p>
+                        <p th:if = "${#fields.hasErrors('maxRecordsCount')}" th:errors = "*{maxRecordsCount}">Incorrect value</p>
                     </div>
                     <div style = "width: 100px; display: inline;" th:text = "#{virtualpets-server-springboot.site.statistics_type}"></div>
                     <div
@@ -35,7 +35,7 @@
                         </select>
                     </div>
                     <div style = "width: 300px;">
-                        <p th:if="${#fields.hasErrors('type')}" th:errors="*{type}">Incorrect type</p>
+                        <p th:if = "${#fields.hasErrors('type')}" th:errors = "*{type}">Incorrect type</p>
                     </div>
                     <div style = "width: 300px;">
                         <input type = "hidden"
