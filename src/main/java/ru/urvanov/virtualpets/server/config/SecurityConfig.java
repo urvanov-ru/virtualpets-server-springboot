@@ -26,8 +26,6 @@ import ru.urvanov.virtualpets.server.auth.CustomAuthenticationEntryPoint;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    
-    public static String REMEMBER_ME_GAME_KEY = "virtualpets-server-springboot-game";
 
     @Bean
     public SecurityFilterChain securityFilterChainSite(
