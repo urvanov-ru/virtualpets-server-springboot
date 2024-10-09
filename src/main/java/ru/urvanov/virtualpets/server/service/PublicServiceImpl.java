@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ru.urvanov.virtualpets.server.config.VirtualpetsServerSpringBootProperties;
 import ru.urvanov.virtualpets.server.controller.api.domain.LoginArg;
-import ru.urvanov.virtualpets.server.controller.api.domain.LoginResult;
 import ru.urvanov.virtualpets.server.controller.api.domain.RecoverPasswordArg;
 import ru.urvanov.virtualpets.server.controller.api.domain.RegisterArgument;
 import ru.urvanov.virtualpets.server.controller.api.domain.ServerTechnicalInfo;
@@ -53,30 +53,25 @@ public class PublicServiceImpl implements PublicApiService {
     @Transactional(rollbackFor = ServiceException.class)
     public void register(RegisterArgument registerArgument)
             throws ServiceException {
-        try {
-            String clientVersion = registerArgument.version();
-            if (!properties.getVersion().equals(clientVersion)) {
-                throw new IncompatibleVersionException("", properties.getVersion(),
-                        clientVersion);
-            }
-            User user = userDao.findByLogin(registerArgument.login()).orElseThrow();
-            if (user != null) {
-                throw new NameIsBusyException();
-            }
-            if (user == null) {
-                throw new jakarta.persistence.NoResultException();
-            }
-        } catch (jakarta.persistence.NoResultException noResultException) {
-            User user = new User();
-            user.setLogin(registerArgument.login());
-            user.setName(registerArgument.name());
-            user.setPassword(passwordEncoder.encode(registerArgument.password()));
-            user.setEmail(registerArgument.email());
-            user.setRegistrationDate(OffsetDateTime.now(clock));
-            user.setRoles(Role.USER.name());
-            user.setEnabled(true);
-            userDao.save(user);
+        String clientVersion = registerArgument.version();
+        if (!properties.getVersion().equals(clientVersion)) {
+            throw new IncompatibleVersionException("", properties.getVersion(),
+                    clientVersion);
         }
+        Optional<User> existUser = userDao.findByLogin(
+                registerArgument.login());
+        if (existUser.isPresent()) {
+            throw new NameIsBusyException();
+        }
+        User user = new User();
+        user.setLogin(registerArgument.login());
+        user.setName(registerArgument.name());
+        user.setPassword(passwordEncoder.encode(registerArgument.password()));
+        user.setEmail(registerArgument.email());
+        user.setRegistrationDate(OffsetDateTime.now(clock));
+        user.setRoles(Role.USER.name());
+        user.setEnabled(true);
+        userDao.save(user);
     }
     
     @Override
