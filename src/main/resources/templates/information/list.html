@@ -15,15 +15,17 @@
         <div id="main">
 
             <H1 th:text="#{virtualpets-server-springboot.site.information}"></H1>
-            <p>
+            <ul>
+            <li>
                 <a th:href="@{/site/information/gameHelp}" th:text="#{virtualpets-server-springboot.site.game_help}"></a>
-            </p>
-            <p>
+            </li>
+            <li>
                 <a th:href="@{/site/information/serverInfo}" th:text="#{virtualpets-server-springboot.site.server_info}"></a>
-            </p>
-            <p>
+            </li>
+            <li>
                 <a th:href="@{/site/information/statistics}" th:text="#{virtualpets-server-springboot.site.statistics}"></a>
-            </p>
+            </li>
+            </ul>
         </div>
     </div>
     <div th:replace="fragments/footer :: footer">
