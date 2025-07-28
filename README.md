@@ -6,7 +6,7 @@ Spring Boot version.
 Это исходные коды игры про виртуальных питомцев. 
 Используются следующие технологии:
 Java + Spring Framework + SpringBoot
- + Jpa + Hibernate + PostgreSQL + JUnit + dbunit.
+ + Jpa + Hibernate + PostgreSQL + JUnit + TestNG + Mockito
 
 Клиент и сервер взаимодействуют между собой через REST.
 
