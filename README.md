@@ -8,9 +8,6 @@ Spring Boot version.
 Java + Spring Framework + SpringBoot
  + Jpa + Hibernate + PostgreSQL + JUnit + dbunit.
 
-virtualpets-server - сервлет сайта. 
-virtualpets-shared - Проект, содержащий общие коды сервера и клиента.
-
 Клиент и сервер взаимодействуют между собой через REST.
 
 
